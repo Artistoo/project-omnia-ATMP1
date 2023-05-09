@@ -1,0 +1,18 @@
+/* Fonts */
+@font-face {
+  font-family: "Poppins";
+  src: url("../assets/fonts/Poppins-Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Now";
+  src: url("../assets/fonts/Now-Medium.otf") format("truetype");
+}
+@font-face {
+  font-family: "OpenSauce";
+  src: url("../assets/fonts/OpenSauceOne-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Brandink";
+  src: url("../assets/fonts/BrandinkSans.otf") format("truetype");
+}
+/* Colors *//*# sourceMappingURL=fonts&colors.css.map */
