@@ -17,14 +17,14 @@ export default function hero() {
         <>
           {/* Start button */}
           <div
-            className={` btn-one btnLandin  font-[Poppins] h-full  flex items-center justify-around backdrop-blur-lg bg-opacity-20  group cursor-pointer`}
+            className={` btn-one btnLandin  font-[Poppins] h-full  flex items-center justify-center backdrop-blur-lg bg-opacity-20  group cursor-pointer`}
           >
             <button className="pointer-events-none text-[20px]">
               Start Now{" "}
             </button>
             {/* Circle contaier  */}
             <div
-              className={`aspect-square p-[5px] items-center justify-center rounded-full bg-gradient-to-tl flex w-[30px] from-white  group-hover:bg-gradient-to-tl group-hover:from-green-300 group-hover:to-yellow-200 to-gray-400 translate-x-[20px] overflow-hidden`}
+              className={`aspect-square p-[5px] items-center justify-center rounded-full bg-gradient-to-tl flex w-[30px] from-white  group-hover:bg-gradient-to-tl group-hover:from-green-300 group-hover:to-yellow-200 to-gray-400 translate-x-[20px] overflow-hidden absolute right-[33px]`}
             >
               {/* TWO ARROW */}
               <div
@@ -60,7 +60,7 @@ export default function hero() {
       <Bg />
       {/* artwork */}
       <div
-        className={`absolute  left-0 md:w-[50%] w-full  top-0 md:translate-y-[-100px]
+        className={`absolute  left-0 md:w-[700px] w-full  top-0 md:translate-y-[-100px]
         z-[-4] overflow-hidden  items-center justify-center `}
       >
         <img src={VectorLanidingPage} className={` h-auto min-w-[800px] `} />
@@ -83,7 +83,7 @@ export default function hero() {
         </div>
         {/* BTN */}
         <div
-          className={`w-full h-[50px] flex items-center justify-start ml-[60px] gap-[30px] `}
+          className={`w-[90%] h-[50px] flex items-center justify-start ml-[60px] gap-[20px] translate-x-[-20px]`}
         >
           <Buttons.btnOne />
           <Buttons.btnTwo />

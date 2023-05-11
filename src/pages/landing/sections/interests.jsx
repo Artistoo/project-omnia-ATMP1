@@ -10,9 +10,20 @@ import { FaBookReader } from "react-icons/fa";
 import { GrPaint } from "react-icons/gr";
 import { AiFillCode } from "react-icons/ai";
 import { CgDesignmodo } from "react-icons/cg";
+
+//Redux
+import { useDispatch, useSelector } from "react-redux";
+import { addInterest } from "../../../redux/intSlice";
+
+import AddVerifyIcon from "../../../assets/icons/addVerifyIcon";
+
 export default function interests() {
+  // -------- redux -------------------
+  const dispatch = useDispatch();
+  // ------- react state --------------
   const [ButtonFunctionality, setButtonFunctionality] = React.useState("add");
 
+  const [readyToAdd, setReadyToAdd] = React.useState(false);
   const [interestsList, setinterestsList] = React.useState([
     { int: "sport", icon: MdSportsBasketball, selected: false },
     { int: "video games", icon: CgGames, selected: false },
@@ -25,51 +36,53 @@ export default function interests() {
     { int: "coding", icon: AiFillCode, selected: false },
     { int: "desiging", icon: CgDesignmodo, selected: false },
   ]);
+  const userInterest = useSelector((state) => state.intReducer.userInterest);
+
+  React.useEffect(() => {
+    dispatch(addInterest({ interest: [] }));
+  }, []);
+
   /* Compo */
-  const AddInterest = () => {
-    return (
-      <div
-        className={`absolute bg-gradient-to-tl from-white to-blue-100 w-full h-[220px]  flex pt-[25px] pl-[12px] leading-4 flex-col gap-y-[50px] overflow-hidden  translate-y-[420px] border`}
+  const InterestSelectText = () => (
+    <div className="flex w-[40%] min-w-[350px] items-center md:justify-start gap-x-[55px] flex-wrap ">
+      <h2
+        className={`font-[now] text-[46px] w-[50%] leading-[45px] text-gray-900 min-w-[8px]   uppercase`}
       >
-        <MdTypeSpecimen
-          className={`h-auto min-w-[400px] translate-y-[-80px] absolute fill-purple-400 opacity-[0.2] rotate-[30deg] z-[-1] blur-[3px]`}
-        />
-        <p className="text-[15px] text-black font-[BrandinkLight] w-[80%] ">
-          add your own interest and submit it so we can review it , this will
-          help us know more about what our clients are interested in
-        </p>
-        <input
-          placeholder="add your interest"
-          className={`bg-gradient-to-l from-white to-gray-200 p-[10px] text-[15px] rounded-full font-[Poppins]  focus:bg-white w-[95%] self-center `}
-        />
-      </div>
-    );
-  };
+        select your interests{" "}
+      </h2>
+      <p
+        className={`font-[Poppins] text-gray-900 break-all min-w-[20px]  w-[300px] text-[15px] leading-4`}
+      >
+        please select some of what interest you and have people from all over
+        the globe meet you to chat about the things you have in common
+      </p>
+    </div>
+  );
   return (
     <div
       id={`interestBox`}
-      className={`bg-white min-h-[240px] min-w-[300px] w-[90%] self-center m-auto flex items-center justify-center flex-wrap p-[25px] relative`}
+      className={`bg-white min-h-[240px] min-w-[300px] w-[90%] self-center m-auto flex items-center justify-center flex-wrap p-[25px] relative mb-[25px]`}
     >
-      <div className="flex w-[40%] min-w-[350px] items-center justify-center gap-x-[55px] flex-wrap border">
-        <h2
-          className={`font-[now] text-[46px] w-[50%] leading-[45px] text-gray-900 min-w-[8px]  border uppercase`}
-        >
-          select your interests{" "}
-        </h2>
-        <p
-          className={`font-[Poppins] text-gray-900 break-all min-w-[20px] border w-[300px] text-[15px] leading-4`}
-        >
-          please select some of what interest you and have people from all over
-          the globe meet you to chat about the things you have in common
-        </p>
-      </div>
-
-      {/* int */}
+      <InterestSelectText />
+      {/* int boxs */}
       <div className="md:w-1/2  w-full  flex items-center flex-wrap md:justify-start justify-center">
         {interestsList.map((int, index) => {
           return (
             <div
-              className={`font-[Poppins] w-[170px] min-w-max m-[2px] border border-black px-[12px] py-[3px] rounded-full backdrop-blur-lg flex items-center justify-center gap-x-[12px] group overflow-hidden cursor-pointer`}
+              onClick={(e) =>
+                setinterestsList((current) => {
+                  const updatedList = [...current];
+                  updatedList[index] = {
+                    ...updatedList[index],
+                    selected: !updatedList[index].selected,
+                  };
+
+                  return updatedList;
+                })
+              }
+              className={`font-[Poppins] w-[170px] min-w-max m-[2px] border border-black px-[12px] py-[3px] rounded-full backdrop-blur-lg flex items-center justify-center gap-x-[12px] group overflow-hidden cursor-pointer ${
+                int.selected && "border-green-600"
+              }`}
               key={`interestItems${index}`}
             >
               <p>{int.int}</p>
@@ -79,26 +92,41 @@ export default function interests() {
                 }}
                 className={`absolute right-[10px] group-hover:right-[20px] group-hover:rotate-[30deg] group-hover:opacity-[0.4] group-hover:scale-[2] ${
                   int.selected
-                    ? `fill-white right-[20px] rotate-[30deg] opacity-[0.4]scale-[2]`
+                    ? ` right-[20px] rotate-[30deg]   scale-[2] opacity-[0.4]`
                     : "fill-black "
                 } `}
               />
             </div>
           );
         })}
+        {/* BUTTON */}
         <div
-          className={`w-[230px] bg-black opacity-[0.9] hover:opacity-[1] transition-opacity cursor-pointer flex items-center justify-center mx-[3px] rounded-full h-[32px] backdrop-blur-lg gap-x-[20px] md:mt-0 mt-[50px]`}
+          onClick={() => {
+            if (interestsList.some((x) => x.selected)) {
+              dispatch(
+                addInterest({
+                  interest: interestsList
+                    .filter((x) => x.selected)
+                    .map((item) => ({
+                      SelectedInterest: item.int,
+                      icon: item.icon,
+                    })),
+                })
+              );
+            }
+          }}
+          className={`w-[230px] bg-black opacity-[0.9] hover:opacity-[1] transition-opacity cursor-pointer flex items-center justify-center mx-[3px] rounded-full h-[32px] backdrop-blur-lg gap-x-[20px] md:mt-0 mt-[50px] ${
+            interestsList.some((x) => x.selected) && `bg-green-600`
+          }`}
         >
-          <AiFillPlusCircle
-            onClick={() => {
-              if (ButtonFunctionality === "add") {
-              }
-            }}
-            fill="white"
-            size={23}
+          <AddVerifyIcon
+            valid={userInterest?.length && userInterest.filter(Boolean)?.length}
+            confirmed={readyToAdd}
           />
           <p className={`text-gray-300 font-[Poppins]text-[11px] `}>
-            add new interest
+            {interestsList.some((x) => x.selected)
+              ? `verify my selection`
+              : `add your interest`}
           </p>
         </div>
       </div>

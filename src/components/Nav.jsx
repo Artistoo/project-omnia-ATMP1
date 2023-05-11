@@ -76,7 +76,7 @@ export default function Nav({ pageState }) {
             {/* if user loged out */}
             {Lout.map((p, index) => (
               <>
-                <p key={`menuOptionKey${index}`} className={`md:flex hidden`}>
+                <p key={`menuOptionKeyLogedOut${index}`} className={`md:flex hidden`}>
                   {p.content}
                 </p>
               </>
