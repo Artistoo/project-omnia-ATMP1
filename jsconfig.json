@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+      "baseUrl": "./",
+      "paths": {
+        "@context/*": ["src/context/*"],
+        "@asset/*" : ["src/assets/*"]
+      }
+    }
+  }

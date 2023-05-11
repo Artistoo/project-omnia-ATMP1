@@ -1,9 +1,5 @@
 /* Fonts */
 @font-face {
-  font-family: "Poppins";
-  src: url("../assets/fonts/Poppins-Light.ttf") format("truetype");
-}
-@font-face {
   font-family: "Now";
   src: url("../assets/fonts/Now-Medium.otf") format("truetype");
 }
@@ -12,10 +8,198 @@
   src: url("../assets/fonts/OpenSauceOne-Medium.ttf") format("truetype");
 }
 @font-face {
-  font-family: "Brandink";
-  src: url("../assets/fonts/BrandinkSans.otf") format("truetype");
+  font-family: "Poppins";
+  src: url("../assets/fonts/Poppins-ExtraLight.ttf") format("truetype");
+}
+@font-face {
+  font-family: "BrandinkLight";
+  src: url("../assets/fonts/Poppins-ExtraLight.ttf") format("truetype");
 }
 /* Colors */
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
 @tailwind base;
 @tailwind components;
-@tailwind utilities;/*# sourceMappingURL=index.css.map */
+@tailwind utilities;
+body {
+  background: black;
+}
+
+/* HERO SECTION */
+.blueBG {
+  background: linear-gradient(to bottom, rgba(34, 0, 255, 0.5882352941) 30%, black);
+}
+
+.redBg {
+  background: linear-gradient(to bottom, #a80f69 30%, black);
+}
+
+.Landinbtn {
+  height: 100%;
+  font-family: Poppins;
+}
+
+.btn-one {
+  width: 240px;
+  background: linear-gradient(180deg, rgba(26, 1, 255, 0.281), rgba(103, 33, 216, 0.15), rgba(104, 102, 219, 0.089));
+  color: white;
+  border-radius: 50px;
+  -webkit-backdrop-filter: blur(250px) !important;
+          backdrop-filter: blur(250px) !important;
+  border: solid rgba(255, 255, 255, 0.411) 1px !important;
+}
+
+.btn-two {
+  width: 300px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.144), rgba(255, 255, 255, 0.178));
+  letter-spacing: 15px;
+  -webkit-backdrop-filter: blur(150px);
+          backdrop-filter: blur(150px);
+  background-size: 100% 100%;
+  border-radius: 30px;
+  transition: background 100ms, filter 1200ms, color 150ms, border 200ms, box-shadow 450ms ease-in-out;
+  color: white;
+  border: solid thin white;
+  outline: none;
+  filter: drop-shadow(0px 0px 0px white);
+}
+.btn-two:hover {
+  filter: drop-shadow(2px 2px 100px skyblue);
+}
+
+.hide-cursor .Cursor {
+  display: none;
+}
+
+/* INTEREST */
+#interestBox {
+  background: #d9faae;
+}/*# sourceMappingURL=index.css.map */

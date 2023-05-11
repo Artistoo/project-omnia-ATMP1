@@ -1,9 +1,5 @@
 /* Fonts */
 @font-face {
-  font-family: "Poppins";
-  src: url("../assets/fonts/Poppins-Light.ttf") format("truetype");
-}
-@font-face {
   font-family: "Now";
   src: url("../assets/fonts/Now-Medium.otf") format("truetype");
 }
@@ -12,13 +8,17 @@
   src: url("../assets/fonts/OpenSauceOne-Medium.ttf") format("truetype");
 }
 @font-face {
-  font-family: "Brandink";
-  src: url("../assets/fonts/BrandinkSans.otf") format("truetype");
+  font-family: "Poppins";
+  src: url("../assets/fonts/Poppins-ExtraLight.ttf") format("truetype");
+}
+@font-face {
+  font-family: "BrandinkLight";
+  src: url("../assets/fonts/Poppins-ExtraLight.ttf") format("truetype");
 }
 /* Colors */
-$DarkBlue: #2400ff;
+$DarkBlue: #2200ff96;
 $GrayWhite: #f4eeee;
-$LightBlue: #a5fff7;
 $LightPurple: #aba5f1;
 $DarkPurple: #6d55ff;
 $LightGreen: #d9faae;
+$DarkRed: #a80f69;

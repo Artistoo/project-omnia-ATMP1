@@ -1,5 +1,63 @@
 @use "fonts&colors" as FnC;
-
+@use "reset.scss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  background: black;
+}
+
+/* HERO SECTION */
+.blueBG {
+  background: linear-gradient(to bottom, FnC.$DarkBlue 30%, black);
+}
+.redBg {
+  background: linear-gradient(to bottom, FnC.$DarkRed 30%, black);
+}
+.Landinbtn {
+  height: 100%;
+  font-family: Poppins;
+}
+.btn-one {
+  width: 240px;
+  background: linear-gradient(
+    180deg,
+    rgba(26, 1, 255, 0.281),
+    rgba(103, 33, 216, 0.15),
+    rgba(104, 102, 219, 0.089)
+  );
+  color: white;
+  border-radius: 50px;
+  backdrop-filter: blur(250px) !important;
+  border: solid rgba(255, 255, 255, 0.411) 1px !important ;
+}
+.btn-two {
+  width: 300px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.144),
+    rgba(255, 255, 255, 0.178)
+  );
+  letter-spacing: 15px;
+  backdrop-filter: blur(150px);
+  background-size: 100% 100%;
+  border-radius: 30px;
+  transition: background 100ms, filter 1200ms, color 150ms, border 200ms,
+    box-shadow 450ms ease-in-out;
+  color: white;
+  border: solid thin white;
+  outline: none;
+  filter: drop-shadow(0px 0px 0px white);
+  &:hover {
+    filter: drop-shadow(2px 2px 100px skyblue);
+  }
+}
+.hide-cursor .Cursor {
+  display: none;
+}
+
+/* INTEREST */
+#interestBox {
+  background: FnC.$LightGreen;
+}
