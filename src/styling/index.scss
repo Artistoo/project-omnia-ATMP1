@@ -59,5 +59,35 @@ body {
 
 /* INTEREST */
 #interestBox {
-  background: FnC.$LightGreen;
+  background: FnC.$LightBlue;
+  border: solid thin white !important;
+}
+
+/* Login Register Form */
+.GridLoginInputs {
+  display: grid;
+  grid-template-rows: repeat(3, 50px);
+  grid-template-columns: repeat(6, auto-fit);
+  grid-gap: 15px;
+  align-items: center;
+  justify-content: center;
+  font: 16px Poppins;
+  color: black;
+  grid-auto-flow: column;
+  border: solid red thick;
+}
+.LoginInputs {
+  background: linear-gradient(90deg, rgb(247, 244, 244), rgb(238, 236, 236));
+  padding: 9px 20px;
+  grid-column: span 6;
+  border-radius: 30px;
+  backdrop-filter: blur(300px);
+  &:focus {
+    outline: none;
+    border: none;
+  }
+  &:nth-child(1),
+  &:nth-child(2) {
+    grid-column: span 3;
+  }
 }

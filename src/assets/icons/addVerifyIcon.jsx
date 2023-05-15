@@ -1,37 +1,64 @@
 import React from "react";
 
 export default function addVerifyIcon({ confirmed, valid }) {
-  React.useEffect(() => {}, [valid, confirmed]);
-  const [hover, setHover] = React.useState(true);
+  const [ready, setReady] = React.useState(false);
+  React.useEffect(() => {
+    if (valid) {
+      setReady(true);
+    }
+  }, [valid]);
+
   return (
+    /* the white circle container  */
     <div
-      style={{
-        transition: `transform 300ms ease-in-out`,
-      }}
-      onMouseOver={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      className={`text-white relative w-[20px] aspect-square rounded-full bg-gradient-to-l from-white to-gray-100 hover:to-gray-300 flex items-center justify-center  ${
-        valid ? "rotate-[50deg]   translate-x-[-22px]" : ""
-      }`}
+      className={`left-[15px] h-[20px] aspect-square self-center absolute  bg-white rounded-full flex items-center justify-center `}
     >
+      {/* The white full background */}
       <div
-        style={{
-          transition: `transform 300ms ease-in-out`,
-        }}
-        className={`bg-black w-[1.6px] h-[60%] absolute   origin-center  ${
-          valid ? "translate-x-[2px] scale-x-[1.2] " : ""
+        className={`bg-green-300 absolute rounded-full h-full w-full transition-transform duration-[900ms] ${
+          confirmed
+            ? `scale-[30] translate-x-[-5px]`
+            : "scale-[0] translate-x-[-5px]"
         }`}
       />
+      {/* Arrow Plus icon Container */}
       <div
         style={{
-          transition: `transform 300ms ease-in-out`,
+          transition: `transform 1000ms ease-in-out`,
         }}
-        className={`bg-black w-[1.6px] h-[60%] rotate-[90deg] absolute ${
-          valid
-            ? "rotate-[90deg]   scale-y-[0.48] scale-x-[1.1] translate-y-[5.5px] translate-x-[-0.8px]"
-            : ""
+        className={`w-full h-full flex items-center justify-center ${
+          ready ? `translate-x-[-5px]` : `translate-x-[0px]`
         }`}
-      />
+      >
+        {[
+          {
+            style: { transition: `transform 800ms ease-in-out` },
+            className: `h-[11px] w-[1.1px] origin-bottom bg-black absolute ${
+              ready
+                ? `rotate-[-50deg]  scale-x-[1.2] scale-y-[0.8]`
+                : `rotate-[0deg]  scale-x-[1] scale-y-[1]`
+            }`,
+          },
+          {
+            style: { transition: `transform 800ms  ease-in-out` },
+            className: `h-[11px] origin-top w-[1.1px] bg-black absolute ${
+              ready
+                ? `rotate-[50deg]   scale-x-[1.2] scale-y-[0.8]`
+                : `rotate-[0deg]  scale-x-[1] scale-y-[1]`
+            }`,
+          },
+          {
+            style: { transition: `transform 800ms  ease-in-out` },
+            className: `h-[11px] w-[1.1px] bg-black absolute rotate-[90deg] ${
+              ready
+                ? `scale-y-[1.3] scale-x-[1.2] translate-x-[0.3px] `
+                : `scale-y-[1] scale-x-[1] translate-x-[0px]`
+            }`,
+          },
+        ].map((line, index) => (
+          <div style={line.style} className={line.className} />
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,42 +1,47 @@
 import React, { useContext } from "react";
-import { NavLink, Route, Routes } from "react-router-dom";
-import Vector from "./assets/img/VectorLandingPage.png";
+import { NavLink, Route, Routes, Navigate } from "react-router-dom";
 
+//--------------Context---------------
 import { userStateContext } from "./context/userState";
-//pages
+
+//---------------Pages----------------
 import Landing from "./pages/landing/landing";
 import Home from "./pages/home/home";
 import Dashboard from "./pages/dashboard/dashboard";
 import Settings from "./pages/settings/Settings";
-//components
+//------------components---------------
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
-
+//-----------JSX component------------
 function App() {
   //context
   const { userState } = React.useContext(userStateContext);
   //windowState
-  const [pageLoad, setPageLoad] = React.useState(false);
+  const [pageLoading, setPageLoading] = React.useState(true);
+
   React.useEffect(() => {
-    window.onload = setPageLoad(true);
-  }, [pageLoad]);
-  return (
+    window.onload = setPageLoading(false);
+  }, [pageLoading]);
+  return !pageLoading ? (
     <>
-      <Nav pageState={pageLoad} />
+      <Nav pageState={pageLoading} />
       <Routes>
         <Route
           index
-          element={(() => {
-            const { admin, loged } = userState;
-            if (loged) {
-              return admin ? <Dashboard /> : <Home />;
-            } else {
-              return <Landing />;
-            }
-          })()}
+          element={
+            userState.loged ? (
+              userState.admin ? (
+                <Dashboard />
+              ) : (
+                <Home />
+              )
+            ) : (
+              <Landing />
+            )
+          }
         />
         <Route
-          action={`/settings`}
+          path={`/settings`}
           element={() => {
             if (loeged) {
               return <Settings />;
@@ -54,9 +59,12 @@ function App() {
             );
           }}
         />
+        <Route path="user/:userId" element={``} />
       </Routes>
       <Footer />
     </>
+  ) : (
+    <p>Loading</p>
   );
 }
 

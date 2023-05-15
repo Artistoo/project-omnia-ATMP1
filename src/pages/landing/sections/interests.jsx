@@ -42,6 +42,8 @@ export default function interests() {
     dispatch(addInterest({ interest: [] }));
   }, []);
 
+  const ReadyToAddMemo = React.useMemo(() => readyToAdd, [readyToAdd]);
+
   /* Compo */
   const InterestSelectText = () => (
     <div className="flex w-[40%] min-w-[350px] items-center md:justify-start gap-x-[55px] flex-wrap ">
@@ -58,78 +60,115 @@ export default function interests() {
       </p>
     </div>
   );
+  const InterestOptions = () => (
+    <div className="md:w-1/2  w-full  flex items-center flex-wrap md:justify-start justify-center">
+      {/* Interest Boxs */}
+      {interestsList.map((int, index) => {
+        return (
+          <div
+            onClick={(e) =>
+              setinterestsList((current) => {
+                const updatedList = [...current];
+                updatedList[index] = {
+                  ...updatedList[index],
+                  selected: !updatedList[index].selected,
+                };
+                return updatedList;
+              })
+            }
+            className={`font-[Poppins] w-[170px] min-w-max m-[2px] border border-black px-[12px] py-[3px] rounded-full backdrop-blur-lg flex items-center justify-center gap-x-[12px] group overflow-hidden cursor-pointer ${
+              int.selected && "border-green-600"
+            }`}
+            key={`interestItems${index}`}
+          >
+            <p>{int.int}</p>
+            <int.icon
+              style={{
+                transition: `transform 400ms , right 400ms  ease-in-out`,
+              }}
+              className={`absolute right-[10px] group-hover:right-[20px] group-hover:rotate-[30deg] group-hover:opacity-[0.4] group-hover:scale-[2] ${
+                int.selected
+                  ? ` right-[20px] rotate-[30deg]   scale-[2] opacity-[0.4]`
+                  : "fill-black "
+              } `}
+            />
+          </div>
+        );
+      })}
+      {/* BUTTON */}
+      <div
+        onClick={() => {
+          if (interestsList.some((x) => x.selected)) {
+            dispatch(
+              addInterest({
+                interest: interestsList
+                  .filter((x) => x.selected)
+                  .map((item) => ({
+                    SelectedInterest: item.int,
+                    icon: item.icon,
+                  })),
+              })
+            );
+          }
+        }}
+        className={`w-[230px] bg-black opacity-[0.9] hover:opacity-[1] transition-opacity cursor-pointer flex items-center justify-center mx-[3px] rounded-full h-[32px] backdrop-blur-lg gap-x-[20px] md:mt-0 mt-[50px] overflow-hidden
+        ${
+          interestsList?.some((x) => x.selected)
+            ? userInterest?.length ===
+              interestsList?.filter((x) => x.selected)?.length
+              ? `bg-green-300`
+              : `bg-red-300`
+            : "bg-black"
+        }
+        ${userInterest?.length ? `border-black border-[1px]` : ""} `}
+      >
+        <AddVerifyIcon
+          valid={
+            userInterest?.length &&
+            interestsList.filter((x) => x.selected)?.length
+          }
+          confirmed={
+            userInterest?.length &&
+            interestsList.filter((x) => x.selected)?.length ===
+              userInterest?.length
+          }
+        />
+        <p
+          className={`text-gray-300 font-[Poppins] text-[14px] z-[2] ${
+            interestsList?.filter((x) => x.selected)?.length
+              ? `text-black`
+              : `text-white`
+          }`}
+        >
+          {interestsList?.some((x) => x.selected)
+            ? userInterest?.length ===
+              interestsList?.filter((x) => x.selected)?.length
+              ? `Ready To go`
+              : `confirm`
+            : "select some interest"}
+        </p>
+        {/* how many seleted items in the user interest state */}
+        <span
+          style={{
+            transition: `scale 500ms ease-in-out`,
+          }}
+          className={`absolute bg-yellow-200 w-[18px] h-[18px] text-[14px] flex rounded-full font-[Poppins]  items-center justify-center right-[5px] ${
+            userInterest?.length ? `scale-[1]` : "scale-[0]"
+          }`}
+        >
+          {userInterest?.length}
+        </span>
+      </div>
+    </div>
+  );
   return (
     <div
       id={`interestBox`}
       className={`bg-white min-h-[240px] min-w-[300px] w-[90%] self-center m-auto flex items-center justify-center flex-wrap p-[25px] relative mb-[25px]`}
     >
       <InterestSelectText />
+      <InterestOptions />
       {/* int boxs */}
-      <div className="md:w-1/2  w-full  flex items-center flex-wrap md:justify-start justify-center">
-        {interestsList.map((int, index) => {
-          return (
-            <div
-              onClick={(e) =>
-                setinterestsList((current) => {
-                  const updatedList = [...current];
-                  updatedList[index] = {
-                    ...updatedList[index],
-                    selected: !updatedList[index].selected,
-                  };
-
-                  return updatedList;
-                })
-              }
-              className={`font-[Poppins] w-[170px] min-w-max m-[2px] border border-black px-[12px] py-[3px] rounded-full backdrop-blur-lg flex items-center justify-center gap-x-[12px] group overflow-hidden cursor-pointer ${
-                int.selected && "border-green-600"
-              }`}
-              key={`interestItems${index}`}
-            >
-              <p>{int.int}</p>
-              <int.icon
-                style={{
-                  transition: `transform 400ms , right 400ms  ease-in-out`,
-                }}
-                className={`absolute right-[10px] group-hover:right-[20px] group-hover:rotate-[30deg] group-hover:opacity-[0.4] group-hover:scale-[2] ${
-                  int.selected
-                    ? ` right-[20px] rotate-[30deg]   scale-[2] opacity-[0.4]`
-                    : "fill-black "
-                } `}
-              />
-            </div>
-          );
-        })}
-        {/* BUTTON */}
-        <div
-          onClick={() => {
-            if (interestsList.some((x) => x.selected)) {
-              dispatch(
-                addInterest({
-                  interest: interestsList
-                    .filter((x) => x.selected)
-                    .map((item) => ({
-                      SelectedInterest: item.int,
-                      icon: item.icon,
-                    })),
-                })
-              );
-            }
-          }}
-          className={`w-[230px] bg-black opacity-[0.9] hover:opacity-[1] transition-opacity cursor-pointer flex items-center justify-center mx-[3px] rounded-full h-[32px] backdrop-blur-lg gap-x-[20px] md:mt-0 mt-[50px] ${
-            interestsList.some((x) => x.selected) && `bg-green-600`
-          }`}
-        >
-          <AddVerifyIcon
-            valid={userInterest?.length && userInterest.filter(Boolean)?.length}
-            confirmed={readyToAdd}
-          />
-          <p className={`text-gray-300 font-[Poppins]text-[11px] `}>
-            {interestsList.some((x) => x.selected)
-              ? `verify my selection`
-              : `add your interest`}
-          </p>
-        </div>
-      </div>
     </div>
   );
 }

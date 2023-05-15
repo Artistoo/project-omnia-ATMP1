@@ -1,5 +1,7 @@
-import React from "react";
+import React from 'react'
 
 export default function loginRegister() {
-  return <div>loginRegister</div>;
+  return (
+    <div>loginRegister</div>
+  )
 }
