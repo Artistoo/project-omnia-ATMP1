@@ -144,15 +144,18 @@ export default function interests() {
             ? userInterest?.length ===
               interestsList?.filter((x) => x.selected)?.length
               ? `Ready To go`
-              : `confirm`
+              : `confirm my selection`
+            : userInterest?.length
+            ? `add more interests`
             : "select some interest"}
         </p>
+
         {/* how many seleted items in the user interest state */}
         <span
           style={{
             transition: `scale 500ms ease-in-out`,
           }}
-          className={`absolute bg-yellow-200 w-[18px] h-[18px] text-[14px] flex rounded-full font-[Poppins]  items-center justify-center right-[5px] ${
+          className={`absolute bg-yellow-200 w-[18px] h-[18px] text-[12px] flex rounded-full font-[Poppins] font-semibold border border-black items-center justify-center right-[5px] ${
             userInterest?.length ? `scale-[1]` : "scale-[0]"
           }`}
         >
@@ -164,7 +167,7 @@ export default function interests() {
   return (
     <div
       id={`interestBox`}
-      className={`bg-white min-h-[240px] min-w-[300px] w-[90%] self-center m-auto flex items-center justify-center flex-wrap p-[25px] relative mb-[25px]`}
+      className={`bg-white min-h-[240px] min-w-[300px] w-[90%] self-center m-auto flex items-center justify-center flex-wrap p-[25px] relative mb-[100px] `}
     >
       <InterestSelectText />
       <InterestOptions />

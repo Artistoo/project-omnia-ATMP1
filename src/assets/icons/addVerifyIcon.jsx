@@ -27,14 +27,14 @@ export default function addVerifyIcon({ confirmed, valid }) {
           transition: `transform 1000ms ease-in-out`,
         }}
         className={`w-full h-full flex items-center justify-center ${
-          ready ? `translate-x-[-5px]` : `translate-x-[0px]`
+          ready && confirmed ? `translate-x-[-5px]` : `translate-x-[0px]`
         }`}
       >
         {[
           {
             style: { transition: `transform 800ms ease-in-out` },
             className: `h-[11px] w-[1.1px] origin-bottom bg-black absolute ${
-              ready
+              ready && confirmed
                 ? `rotate-[-50deg]  scale-x-[1.2] scale-y-[0.8]`
                 : `rotate-[0deg]  scale-x-[1] scale-y-[1]`
             }`,
@@ -42,7 +42,7 @@ export default function addVerifyIcon({ confirmed, valid }) {
           {
             style: { transition: `transform 800ms  ease-in-out` },
             className: `h-[11px] origin-top w-[1.1px] bg-black absolute ${
-              ready
+              ready && confirmed
                 ? `rotate-[50deg]   scale-x-[1.2] scale-y-[0.8]`
                 : `rotate-[0deg]  scale-x-[1] scale-y-[1]`
             }`,
@@ -50,7 +50,7 @@ export default function addVerifyIcon({ confirmed, valid }) {
           {
             style: { transition: `transform 800ms  ease-in-out` },
             className: `h-[11px] w-[1.1px] bg-black absolute rotate-[90deg] ${
-              ready
+              ready && confirmed
                 ? `scale-y-[1.3] scale-x-[1.2] translate-x-[0.3px] `
                 : `scale-y-[1] scale-x-[1] translate-x-[0px]`
             }`,
