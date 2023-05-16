@@ -4,8 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+//----------BODY THE SCROLL BAR --------
 body {
   background: black;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* HERO SECTION */

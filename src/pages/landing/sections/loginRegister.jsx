@@ -1,20 +1,23 @@
 import React from "react";
+import axios from "axios";
 //------------ICONS ----------------
 import { CgArrowAlignH, CgArrowBottomRight, CgGoogle } from "react-icons/cg";
 import { FaMale, FaFemale } from "react-icons/fa";
 //-----------ASSETS ------------
 import Stars from "../../../assets/img/ThreeDStars.png";
-//-----------Redux ---------------
+//-----------GLOBAL STATES ---------------
 import { useSelector } from "react-redux";
+
 //-----------JSX ------------------
 export default function loginRegister() {
+  //-----------COMPONENTS-------------
   const RegisterForm = () => {
     const [logReg, setLogReg] = React.useState("reg");
     const [forminputs, setForminputs] = React.useState([
       {
         placeHolder: `user name`,
         type: "text",
-        log: false,
+        uses: ["reg"],
         style: `col-span-2`,
         valid: false,
         empty: true,
@@ -23,7 +26,7 @@ export default function loginRegister() {
       {
         placeHolder: `nickname`,
         type: "text",
-        log: false,
+        uses: ["reg"],
         style: `col-span-2`,
         valid: false,
         empty: true,
@@ -32,23 +35,25 @@ export default function loginRegister() {
       {
         placeHolder: `email`,
         type: "email",
-        log: true,
+        uses: ["reg", "log", "FP"],
         style: `col-span-4`,
         valid: false,
         empty: true,
+        onDisapear: `translate-x-[400px]  opacity-0`,
       },
       {
         placeHolder: `password`,
         type: "password",
-        log: true,
+        uses: ["reg", "log"],
         style: `col-span-4`,
         valid: false,
         empty: true,
+        onDisapear: `translate-y-[-400px]  opacity-0`,
       },
       {
         placeHolder: `repeat password`,
         type: "password",
-        log: false,
+        uses: ["reg"],
         style: `col-span-4`,
         valid: false,
         empty: true,
@@ -110,18 +115,16 @@ export default function loginRegister() {
                   setUserData(updatedData);
                 }}
                 style={{
-                  transition: `border 300ms , transform 700ms , opacity 500ms ease-in-out`,
+                  transition: `border 300ms , transform 900ms , opacity 400ms ease-in-out`,
                 }}
                 placeholder={formInp.placeHolder}
                 type={formInp.type}
                 className={`${
                   formInp.style
                 } font-[BrandinkLight] h-[40px] text-[16px]  rounded-full bg-gradient-to-tr from-gray-100 to-gray-200  focus:bg-white focus:outline-none border py-[7px] px-[15px] focus:border-black border-white  ${
-                  transitionAnimation === "log"
-                    ? formInp.log
-                      ? `translate-x-0 translate-y-0`
-                      : `${formInp.onDisapear}`
-                    : `opacity-[1]`
+                  formInp.uses.join("").includes(transitionAnimation)
+                    ? `translate-x-0 translate-y-0 `
+                    : formInp.onDisapear
                 }`}
               />
             ))}
@@ -132,6 +135,7 @@ export default function loginRegister() {
         <div
           className={`flex  h-[120px] w-[90%] items-center justify-between  translate-y-[-50px]`}
         >
+          {/* <-- LOGIN REGISTER SWITCH OPTION --> */}
           <span
             className={`font-[brandinkLight] w-max text-[14px]  cursor-pointer user-none`}
           >
@@ -147,15 +151,21 @@ export default function loginRegister() {
                 : `log in instead `}
             </p>
           </span>
+
+          {/* <-- GOOGLE AUTH OPTION --> */}
           <span className={`font-[brandinkLight] w-max flex `}>
             <div
               style={{
                 transition: `background 500ms , font 300ms , border 550ms ease-in-out`,
               }}
-              className={`w-max px-[19px] py-[7px] flex justify-between text-[13px] gap-x-[5px] border bg-black text-gray-100 hover:bg-gradient-to-l hover:bg-transparent hover:border-black  border-transparent hover:text-black hover:backdrop-blur-lg cursor-pointer rounded-full items-center overflow-hidden relative `}
+              className={`w-max min-w-[200px] px-[19px] py-[7px] flex justify-between text-[13px] gap-x-[15px] border bg-black text-gray-100 hover:bg-gradient-to-l hover:bg-transparent hover:border-black  border-transparent hover:text-black hover:backdrop-blur-lg cursor-pointer rounded-full items-center overflow-hidden relative `}
             >
               <CgGoogle size={20} />
-              <p>sign up with google</p>
+              <p>
+                {transitionAnimation === "log"
+                  ? `login using google`
+                  : `sign up using google`}
+              </p>
             </div>
           </span>
         </div>
@@ -196,7 +206,7 @@ export default function loginRegister() {
 
     return (
       <div
-        className={`md:w-[60%] w-full md:h-full h-[800px]  min-h-[400px]    right-[0px] flex items-center justify-center flex-wrap  absolute `}
+        className={`md:w-[60%] w-full md:h-full h-[800px]  min-h-[400px]    right-[0px] flex items-center justify-center flex-wrap  absolute md:z-0 z-[-1] `}
       >
         <img
           src={Stars}
@@ -250,10 +260,10 @@ export default function loginRegister() {
       </div>
     );
   };
-
+  //-----------MAIN SECTION DISPLAY-------------
   return (
     <div
-      className={` m-[15px] flex flex-wrap min-h-[520px] items-center jsutify-between`}
+      className={` m-[15px] flex flex-wrap min-h-[520px] items-center jsutify-between md:mb-auto mb-[50px]`}
     >
       {/* Register Login Form */}
       <RegisterForm />

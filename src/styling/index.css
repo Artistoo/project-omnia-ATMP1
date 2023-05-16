@@ -152,6 +152,9 @@ table {
 body {
   background: black;
 }
+body::-webkit-scrollbar {
+  display: none;
+}
 
 /* HERO SECTION */
 .blueBG {
