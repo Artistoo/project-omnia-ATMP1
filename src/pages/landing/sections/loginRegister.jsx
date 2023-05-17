@@ -80,7 +80,7 @@ export default function loginRegister() {
 
     return (
       <div
-        className={`min-w-[260px] border w-[95%] md:w-[500px] max-h-[550px] min-h-[480px] flex items-center justify-start md:translate-x-[-300px]  bg-white m-auto flex-col rounded-[15px] p-[20px] gap-y-[20px] relative`}
+        className={`min-w-[260px] border w-[95%] lg:w-[500px] max-h-[550px] min-h-[480px] flex items-center justify-start lg:translate-x-[-300px]  bg-white m-auto flex-col rounded-[15px] p-[20px] gap-y-[20px] relative mb-[40px] z-10`}
       >
         {/* --------- TEXT --------- */}
         <div
@@ -151,10 +151,11 @@ export default function loginRegister() {
                 : `log in instead `}
             </p>
           </span>
-
-          {/* <-- GOOGLE AUTH OPTION --> */}
+          {/* <-- MIDDLEWARE AUTH OPTIONS--> */}
           <span className={`font-[brandinkLight] w-max flex `}>
+            {/*  GOOGLE AUTH OPTION  */}
             <div
+              onClick={() => {}}
               style={{
                 transition: `background 500ms , font 300ms , border 550ms ease-in-out`,
               }}
@@ -219,7 +220,7 @@ export default function loginRegister() {
 
         {/* ---- QUESTIONS BOX -----  */}
         <div
-          className={` flex-col items-start justify-center min-w-[470px] w-[450px] min-h-[260px] backdrop-blur-lg bg-opacity-[0.9] bg-white  rounded-lg md:flex hidden `}
+          className={` flex-col items-start justify-center min-w-[470px] w-[450px] min-h-[260px] backdrop-blur-lg bg-opacity-[0.9] bg-white  rounded-lg lg:flex hidden `}
         >
           {/* --------------TITLE OF THE QUESTION ------------ */}
           <div

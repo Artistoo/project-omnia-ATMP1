@@ -1,15 +1,14 @@
 import React from "react";
 import axios from "axios";
 //-------------- ICONS ----------------
-import { MdArrowBack } from "react-icons/md";
+import { MdArrowBack, MdArrowForward, MdMarkEmailRead } from "react-icons/md";
 //-----------ASSETS--------------
 import JOLLYBLAB from "../../public/JollyBlab TabIcon.png";
+import { FaQuestion } from "react-icons/fa";
 
 /* --------------------MAIN SECTION JSX FUNCTION ------------ */
 export default function () {
   /* -------------COMPONENTS---------------- */
-
-  /* -------------BLUE SQUARE DATA-----------------  */
   const BlueSqaureData = () => {
     /* ----- REACT BLUE SQUARE DATA STATES ------- */
     const [NumbersData, setNumbersData] = React.useState([
@@ -31,7 +30,7 @@ export default function () {
       >
         {/* ----------- BLUE SQUARE LEFT SIDE------------ */}
         <div
-          className={`md:w-1/2  w-[90%] md:absolute left-0 h-[80%] flex justify-center gap-x-[190px] items-start pt-[45px] text-gray-50 text-center`}
+          className={`lg:w-1/2  w-[90%] md:absolute left-0 h-[80%] flex justify-center gap-x-[190px] items-start pt-[45px] text-gray-50 text-center`}
         >
           {/* --------------BOXS DATA & CONTAINER ------------ */}
           {NumbersData.map((footerDataBase, index) => (
@@ -69,7 +68,6 @@ export default function () {
     );
   };
 
-  /* -------------FOOTER CONTENT-------------- */
   const FooterContent = () => {
     /* React state  */
     const [FooterContentLinks, setFooterContentLinks] = React.useState([
@@ -123,7 +121,7 @@ export default function () {
     //---------JSX FOOTER CONTENT COMPONENT--------
     return (
       <div
-        className={`md:w-[50%] w-full min-w-[350px]  h-full flex flex-col items-center justify-center `}
+        className={`lg:w-[50%] w-full min-w-[350px]  h-full flex flex-col items-center justify-center `}
       >
         {/* <---------JOLLY BLAB LOGO---------> */}
         <div className={`w-[100%] h-[46%] flex  items-center justify-center `}>
@@ -195,9 +193,87 @@ export default function () {
     );
   };
 
-  /* -------------FEEDBACKS BOXS-------------- */
   const FooterBoxs = () => {
-    return <div></div>;
+    const [startTypingFeedBack, setstartTypingFeedBack] = React.useState(false);
+
+    return (
+      <div
+        className={`lg:w-[45%] w-full md:h-full h-[70%]  min-w-[400px] flex items-start justify-center  pt-[40px] `}
+      >
+        {/* <------ THE FEEDBACK BOX -------> */}
+        <div
+          className={`bg-gradient-to-l from-gray-400 via-blue-100 to-gray-50 border border-white md:min-h-[220px] min-h-[250px] w-[85%] rounded-md overflow-hidden  p-[20px] flex flex-col justify-center items-center backdrop-blur-lg `}
+        >
+          {/* ------ WHAT TYPA MESSAGE SHOULD I SUBMIT TEXT --------- */}
+          <span
+            style={{
+              transition: "opacity 300ms , transform 400ms ease-in-out",
+            }}
+            className={`w-full flex justify-around items-center h-max ${
+              startTypingFeedBack
+                ? `opacity-0 translate-y-[-30px]`
+                : `opacity-[1]  translate-y-[0px]`
+            }`}
+          >
+            <p
+              className={`self-start translate-x-[-20px] max-w-[320px] leading-[15px] font-[Poppins] `}
+            >
+              let us know if theres anything we can do to make your expirence
+              better
+            </p>
+            <FaQuestion
+              title={`more about ?`}
+              className="border rounded-full p-[7px] w-[28px] h-[28px]"
+            />
+          </span>
+
+          {/* ----------- SUBMIT YOUR FEEDBACK --------- */}
+          <h1
+            style={{
+              transition: `transform 500ms ease-in-out`,
+            }}
+            className={`text-[45px] leading-[45px]  tracking-[0px] font-[Now]  ${
+              startTypingFeedBack
+                ? "translate-y-[-10px]"
+                : "translate-y-[45px] select-none"
+            }`}
+          >
+            SUBMIT YOUR FEEDBACK
+          </h1>
+
+          {/* -------FEEDBACK INPUT-------- */}
+          <span
+            className={`h-[40px]  transition-transform duration-[500ms] w-[98%] relative flex  ${
+              startTypingFeedBack ? "translate-y-0" : " translate-y-[-15px]"
+            }`}
+          >
+            <input
+              style={{
+                transition: `border 450ms  , opacity 300ms 250ms , background 250ms , transform 300ms ease-in-out`,
+              }}
+              type={"email"}
+              placeholder={`submit your email`}
+              className={`w-full h-full absolute  border  font-[brandinkLight] border-black text-[18px] focus:outline-none pl-[15px] select-none origin-right  backdrop-blur-lg focus:valid:bg-green-200 focus:bg-opacity-[0.5]  bg-opacity-[0.3] placeholder:text-gray-500 ${
+                startTypingFeedBack
+                  ? " opacity-[1] bg-gray-200 scale-x-[1]"
+                  : "opacity-0  bg-transparent scale-x-[0]"
+              }`}
+            />
+            <MdArrowForward
+              onClick={() =>
+                setstartTypingFeedBack((current) => (current = !current))
+              }
+              style={{
+                transition: `background 400ms , fill 300ms ease-in-out`,
+              }}
+              className={`absolute right-[0] h-full w-[60px] border bg-black fill-gray-200 hover:border hover:bg-transparent hover:fill-gray-950 border-transparent hover:border-black cursor-pointer ${
+                startTypingFeedBack ? "rounded-0" : "rounded-[5px]"
+              }`}
+            />
+          </span>
+        </div>
+      </div>
+    );
   };
 
   /* <<< ------ MAIN SECTION JSX -------->>> */
@@ -205,7 +281,7 @@ export default function () {
     <div className={`min-h-[600px] h-[850px] flex flex-col relative`}>
       <BlueSqaureData />
       <div
-        className={`flex flex-wrap max-h-[70%] min-h-[600px]  z-10 translate-y-[-110px] `}
+        className={`flex flex-wrap max-h-[70%] min-h-[600px] z-10 translate-y-[-110px] `}
       >
         <FooterContent />
         <FooterBoxs />
@@ -213,64 +289,3 @@ export default function () {
     </div>
   );
 }
-
-/* 
- const [ContactUe, setContactUs] = React.useState("");
-    const [FeedBack, setFeedBack] = React.useState("");
-    const [ContactSupportBox, setContactSupportBox] = React.useState([
-      {
-        title: "contact",
-        placeHolder: "get in touch",
-      },
-      {
-        title: "support",
-        placeHolder: "send us your Feedback",
-      },
-    ]);
-    const [FooterContent, setFooterContent] = React.useState([
-      {
-        category: "company",
-        links: [
-          {
-            about: "mission and vision",
-          },
-          {
-            about: "history",
-          },
-          {
-            about: "about",
-          },
-          {
-            about: "goals",
-          },
-        ],
-      },
-      {
-        category: "service",
-        links: [
-          {
-            about: "usage",
-          },
-          {
-            about: "tutorial",
-          },
-          {
-            about: "security",
-          },
-        ],
-      },
-      {
-        category: "social",
-        links: [
-          {
-            about: "twitter",
-          },
-          {
-            about: "instagram",
-          },
-          {
-            about: "github",
-          },
-        ],
-      },
-    ]); */

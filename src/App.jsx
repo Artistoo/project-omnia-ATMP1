@@ -9,12 +9,13 @@ import Landing from "./pages/landing/landing";
 import Home from "./pages/home/home";
 import Dashboard from "./pages/dashboard/dashboard";
 import Settings from "./pages/settings/Settings";
+import Profile from "./pages/Dynamic/Profile/Profile";
 //------------components---------------
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 //-----------JSX component------------
 function App() {
-  //context
+  //____________ context ______________
   const { userState } = React.useContext(userStateContext);
   //windowState
   const [pageLoading, setPageLoading] = React.useState(true);
@@ -26,6 +27,7 @@ function App() {
     <>
       <Nav pageState={pageLoading} />
       <Routes>
+        {/* ________HOME & LANDING ROUTE______ */}
         <Route
           index
           element={
@@ -33,13 +35,15 @@ function App() {
               userState.admin ? (
                 <Dashboard />
               ) : (
-                <Home />
+                Navigate("/home")
               )
             ) : (
               <Landing />
             )
           }
         />
+        <Route path={`/home`} element={<Home />} />
+        {/* __________SETTING ROUTE__________ */}
         <Route
           path={`/settings`}
           element={() => {
@@ -59,12 +63,13 @@ function App() {
             );
           }}
         />
-        <Route path="user/:userId" element={``} />
+        {/* __________USER PROFILE________ */}
+        <Route path="user/:userId" element={<Profile />} />
       </Routes>
       <Footer />
     </>
   ) : (
-    <p>Loading</p>
+    <p className={`text-gray-100 font-[Poppins]`}>Loading</p>
   );
 }
 
