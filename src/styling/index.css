@@ -15,6 +15,10 @@
   font-family: "BrandinkLight";
   src: url("../assets/fonts/Poppins-ExtraLight.ttf") format("truetype");
 }
+@font-face {
+  font-family: "PoppinsBold";
+  src: url("../assets/fonts/Poppins-ExtraBold.ttf") format("truetype");
+}
 /* Colors */
 html,
 body,
@@ -222,7 +226,7 @@ body::-webkit-scrollbar {
   border: solid red thick;
 }
 
-.LoginInputs {
+#LoginInputs {
   background: linear-gradient(90deg, rgb(247, 244, 244), rgb(238, 236, 236));
   padding: 9px 20px;
   grid-column: span 6;
@@ -230,10 +234,29 @@ body::-webkit-scrollbar {
   -webkit-backdrop-filter: blur(300px);
           backdrop-filter: blur(300px);
 }
-.LoginInputs:focus {
+#LoginInputs:focus {
   outline: none;
   border: none;
 }
-.LoginInputs:nth-child(1), .LoginInputs:nth-child(2) {
+#LoginInputs:nth-child(1), #LoginInputs:nth-child(2) {
   grid-column: span 3;
+}
+
+.circleLoading {
+  background: linear-gradient(185deg, blue, purple, rgb(139, 9, 190), rgb(52, 88, 247)) !important;
+  z-index: -1;
+  background-size: 150% 150% !important;
+  animation: circleLoadingBgAnimation 2000ms ease-in-out alternate infinite;
+  filter: blur(0px);
+}
+
+@keyframes circleLoadingBgAnimation {
+  0% {
+    background-size: 100% !important;
+    filter: blur(150px);
+  }
+  100% {
+    background-size: 500% !important;
+    filter: blur(200px);
+  }
 }/*# sourceMappingURL=index.css.map */

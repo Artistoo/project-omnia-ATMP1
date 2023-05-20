@@ -5,15 +5,19 @@ import "./styling/index.css";
 import { BrowserRouter } from "react-router-dom";
 import store from "./redux/store.js";
 import { Provider } from "react-redux";
+
 import UserStateContext from "./context/userState";
+import FooterContentProvider from "./context/footerContentProvider";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <Provider store={store}>
-      <UserStateContext>
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>
-      </UserStateContext>
-    </Provider>
+    <UserStateContext>
+      <Provider store={store}>
+        <FooterContentProvider>
+          <React.StrictMode>
+            <App />
+          </React.StrictMode>
+        </FooterContentProvider>
+      </Provider>
+    </UserStateContext>
   </BrowserRouter>
 );

@@ -80,7 +80,7 @@ body {
   grid-auto-flow: column;
   border: solid red thick;
 }
-.LoginInputs {
+#LoginInputs {
   background: linear-gradient(90deg, rgb(247, 244, 244), rgb(238, 236, 236));
   padding: 9px 20px;
   grid-column: span 6;
@@ -93,5 +93,30 @@ body {
   &:nth-child(1),
   &:nth-child(2) {
     grid-column: span 3;
+  }
+}
+
+//----------LOGO LOADING---------------
+.circleLoading {
+  background: linear-gradient(
+    185deg,
+    blue,
+    purple,
+    rgb(139, 9, 190),
+    rgb(52, 88, 247)
+  ) !important;
+  z-index: -1;
+  background-size: 150% 150% !important;
+  animation: circleLoadingBgAnimation 2000ms ease-in-out alternate infinite;
+  filter: blur(0px);
+}
+@keyframes circleLoadingBgAnimation {
+  0% {
+    background-size: 100% !important;
+    filter: blur(150px);
+  }
+  100% {
+    background-size: 500% !important;
+    filter: blur(200px);
   }
 }

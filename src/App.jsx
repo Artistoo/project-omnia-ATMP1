@@ -1,76 +1,74 @@
 import React, { useContext } from "react";
 import { NavLink, Route, Routes, Navigate } from "react-router-dom";
 
-//--------------Context---------------
+//__________________CONTEXT_____________________
 import { userStateContext } from "./context/userState";
 
-//---------------Pages----------------
+//__________________PAGES_______________________
 import Landing from "./pages/landing/landing";
-import Home from "./pages/home/home";
 import Dashboard from "./pages/dashboard/dashboard";
 import Settings from "./pages/settings/Settings";
 import Profile from "./pages/Dynamic/Profile/Profile";
-//------------components---------------
+
+//___________________COMPONENTS_______________________
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
-//-----------JSX component------------
-function App() {
-  //____________ context ______________
-  const { userState } = React.useContext(userStateContext);
-  //windowState
-  const [pageLoading, setPageLoading] = React.useState(true);
+import Loading from "./components/Loading";
+import FooterInfo from "./pages/Dynamic/FooterInfomation/FooterInfo";
 
+//___________________JSX component______________________
+function App() {
+  //<-------------CONTEXT----------->
+  const { userState } = React.useContext(userStateContext);
+
+  /* <------------------ STATE HOOK ------------------> */
+  const [pageLoading, setPageLoading] = React.useState(true);
+  const [scrollPosition, setScrollPosition] = React.useState(0);
+
+  
+  //<----------------EFFECT HOOK --------------------->
   React.useEffect(() => {
-    window.onload = setPageLoading(false);
-  }, [pageLoading]);
+    window.onscroll = (e) => {
+      const windowPosition = e.clientY;
+      setScrollPosition(windowPosition);
+    };
+  }, [scrollPosition]);
+
   return !pageLoading ? (
     <>
-      <Nav pageState={pageLoading} />
+      <Nav pageState={pageLoading} scrollPosition={scrollPosition} />
+
+      {/* __________________<<<ROUTES>>>___________________ */}
       <Routes>
-        {/* ________HOME & LANDING ROUTE______ */}
-        <Route
-          index
-          element={
-            userState.loged ? (
-              userState.admin ? (
-                <Dashboard />
-              ) : (
-                Navigate("/home")
-              )
-            ) : (
-              <Landing />
-            )
-          }
-        />
-        <Route path={`/home`} element={<Home />} />
-        {/* __________SETTING ROUTE__________ */}
-        <Route
-          path={`/settings`}
-          element={() => {
-            if (loeged) {
-              return <Settings />;
-            }
-            return (
-              <div
-                className={`w-full h-full flex items-center justify-center `}
-              >
-                <p>
-                  you need to be loged in in order to edit your account setting
-                  , no account found
-                </p>
-                <NavLink to={"/"}>go to login page</NavLink>
-              </div>
-            );
-          }}
-        />
-        {/* __________USER PROFILE________ */}
+        {/* ____________LANDING ROUTE___________ */}
+        <Route index element={<Landing />} />
+
+        {/* _____________SETTING ROUTE________________ */}
+        <Route path={`/settings`} element={<Settings />} />
+
+        {/* _____________USER PROFILE_________________ */}
         <Route path="user/:userId" element={<Profile />} />
+
+        {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
+
+        {/* _____________FOOTER LINKs NAVIGATION _____________ */}
+        <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
       </Routes>
       <Footer />
     </>
   ) : (
-    <p className={`text-gray-100 font-[Poppins]`}>Loading</p>
+    <Loading loading={{ setPageLoading, pageLoading }} />
   );
 }
 
 export default App;
+/* 
+userState.loged ? (
+              userState.admin ? (
+                <Dashboard />
+              ) : (
+                <Home />
+              )
+            ) : (
+              <Landing />
+            ) */

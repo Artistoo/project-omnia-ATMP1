@@ -1,14 +1,17 @@
 import React from "react";
 import axios from "axios";
-//-------------- ICONS ----------------
+import { useNavigate } from "react-router-dom";
+//____________________ ICONS _______________________
 import { MdArrowBack, MdArrowForward, MdMarkEmailRead } from "react-icons/md";
-//-----------ASSETS--------------
+//_____________________ASSETS_______________________
 import JOLLYBLAB from "../../public/JollyBlab TabIcon.png";
 import { FaQuestion } from "react-icons/fa";
-
-/* --------------------MAIN SECTION JSX FUNCTION ------------ */
+import { FooterContext } from "../context/footerContentProvider";
+// ____________MAIN SECTION JSX FUNCTION ______________
 export default function () {
-  /* -------------COMPONENTS---------------- */
+
+  
+  // <----------------COMPONENTS ------------------->
   const BlueSqaureData = () => {
     /* ----- REACT BLUE SQUARE DATA STATES ------- */
     const [NumbersData, setNumbersData] = React.useState([
@@ -69,55 +72,9 @@ export default function () {
   };
 
   const FooterContent = () => {
-    /* React state  */
-    const [FooterContentLinks, setFooterContentLinks] = React.useState([
-      {
-        category: "company",
-        links: [
-          {
-            about: "vision",
-          },
-          {
-            about: "our history",
-          },
-          {
-            about: "about us",
-          },
-          {
-            about: "goals",
-          },
-        ],
-      },
-      {
-        category: "service",
-        links: [
-          {
-            about: "usage",
-          },
-          {
-            about: "tutorial",
-          },
-          {
-            about: "security",
-          },
-        ],
-      },
-      {
-        category: "social",
-        links: [
-          {
-            about: "twitter",
-          },
-          {
-            about: "instagram",
-          },
-          {
-            about: "github",
-          },
-        ],
-      },
-    ]);
-
+    const { FooterContentLinks, setFooterContentLinks } =
+      React.useContext(FooterContext);
+    const Nav = useNavigate();
     //---------JSX FOOTER CONTENT COMPONENT--------
     return (
       <div
@@ -170,6 +127,7 @@ export default function () {
               <div>
                 {footerLink.links.map((item, index) => (
                   <div
+                    onClick={() => Nav("/moreAbout/".concat(item.about))}
                     className={`font-[BrandinkLight] text-white text-md group  flex items-center justify-end gap-x-[0px] flex-row-reverse min-w-max relative cursor-pointer mb-[5px]`}
                   >
                     <p
@@ -198,7 +156,7 @@ export default function () {
 
     return (
       <div
-        className={`lg:w-[45%] w-full md:h-full h-[70%]  min-w-[400px] flex items-start justify-center  pt-[40px] `}
+        className={`lg:w-[45%] max-w-[650px] w-full md:h-full h-[70%]  min-w-[450px] flex items-start justify-center  pt-[40px] `}
       >
         {/* <------ THE FEEDBACK BOX -------> */}
         <div
