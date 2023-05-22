@@ -9,7 +9,7 @@ import Landing from "./pages/landing/landing";
 import Dashboard from "./pages/dashboard/dashboard";
 import Settings from "./pages/settings/Settings";
 import Profile from "./pages/Dynamic/Profile/Profile";
-
+import LoginRegister from "./pages/Auth/loginRegister";
 //___________________COMPONENTS_______________________
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
@@ -25,7 +25,6 @@ function App() {
   const [pageLoading, setPageLoading] = React.useState(true);
   const [scrollPosition, setScrollPosition] = React.useState(0);
 
-  
   //<----------------EFFECT HOOK --------------------->
   React.useEffect(() => {
     window.onscroll = (e) => {
@@ -46,11 +45,13 @@ function App() {
         {/* _____________SETTING ROUTE________________ */}
         <Route path={`/settings`} element={<Settings />} />
 
-        {/* _____________USER PROFILE_________________ */}
-        <Route path="user/:userId" element={<Profile />} />
+        {/* ____________USER ACCOUNT_________________ */}
+        <Route path="user/AccountAuth" element={<LoginRegister />} />
 
         {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
 
+        {/* _____________USER PROFILE_________________ */}
+        <Route path="user/:userId" element={<Profile />} />
         {/* _____________FOOTER LINKs NAVIGATION _____________ */}
         <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
       </Routes>

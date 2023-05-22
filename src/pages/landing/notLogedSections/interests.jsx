@@ -1,7 +1,7 @@
 import React from "react";
+//_________interests icons__________
 import { AiFillPlusCircle } from "react-icons/ai";
 import { MdTypeSpecimen } from "react-icons/md";
-//interests icons
 import { MdPets, MdSportsBasketball } from "react-icons/md";
 import { CgGames } from "react-icons/cg";
 import { TbCookieMan } from "react-icons/tb";
@@ -11,7 +11,7 @@ import { GrPaint } from "react-icons/gr";
 import { AiFillCode } from "react-icons/ai";
 import { CgDesignmodo } from "react-icons/cg";
 
-//Redux
+//_________Redux___________
 import { useDispatch, useSelector } from "react-redux";
 import { addInterest } from "../../../redux/intSlice";
 

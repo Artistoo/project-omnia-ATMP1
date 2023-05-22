@@ -12,64 +12,7 @@ export default function () {
 
   
   // <----------------COMPONENTS ------------------->
-  const BlueSqaureData = () => {
-    /* ----- REACT BLUE SQUARE DATA STATES ------- */
-    const [NumbersData, setNumbersData] = React.useState([
-      {
-        D_one: [new Date().getMonth(), new Date().getFullYear()],
-        D_two: "1,450",
-        D_three: "new document created",
-      },
-      {
-        D_one: [new Date().getMonth(), new Date().getFullYear()],
-        D_two: "450",
-        D_three: "new user added",
-      },
-    ]);
-
-    return (
-      <div
-        className={`h-[30%] min-h-[360px] w-full bg-gradient-to-b from-blue-700  to-black flex items-center justify-center relative`}
-      >
-        {/* ----------- BLUE SQUARE LEFT SIDE------------ */}
-        <div
-          className={`lg:w-1/2  w-[90%] md:absolute left-0 h-[80%] flex justify-center gap-x-[190px] items-start pt-[45px] text-gray-50 text-center`}
-        >
-          {/* --------------BOXS DATA & CONTAINER ------------ */}
-          {NumbersData.map((footerDataBase, index) => (
-            <div
-              key={`blueSquareDBBOX${index}`}
-              className={`
-            flex flex-col gap-y-[10px]  leading-[22px] scale-[1.2]`}
-            >
-              {/* DATE */}
-              <div
-                className={`flex gap-x-[2px] text-[12px] text-white font-[Poppins] justify-center items-center mb-[5px]`}
-              >
-                {footerDataBase.D_one.map((date, index) => (
-                  <>
-                    {!index || "/"}
-                    <p>{date}</p>
-                  </>
-                ))}
-              </div>
-
-              {/* NUMBER */}
-              <p className={`font-[Poppins] text-[50px] font-bold mb-[15px]`}>
-                {footerDataBase.D_two}
-              </p>
-              {/* NUMBER OF */}
-              <p className="text-[13px] font-[Poppins] text-gray-50 w-[100px] leading-[13px]">
-                {footerDataBase.D_three}
-              </p>
-            </div>
-          ))}
-        </div>
-        {/* ----------- BLUE SQUARE RIGHT SIDE------------ */}
-        <div></div>
-      </div>
-    );
-  };
+  
 
   const FooterContent = () => {
     const { FooterContentLinks, setFooterContentLinks } =
@@ -237,7 +180,7 @@ export default function () {
   /* <<< ------ MAIN SECTION JSX -------->>> */
   return (
     <div className={`min-h-[600px] h-[850px] flex flex-col relative`}>
-      <BlueSqaureData />
+      
       <div
         className={`flex flex-wrap max-h-[70%] min-h-[600px] z-10 translate-y-[-110px] `}
       >

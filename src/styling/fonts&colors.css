@@ -19,4 +19,8 @@
   font-family: "PoppinsBold";
   src: url("../assets/fonts/Poppins-ExtraBold.ttf") format("truetype");
 }
+@font-face {
+  font-family: "Garet";
+  src: url("../assets/fonts/Garet-Book.ttf") format("truetype");
+}
 /* Colors *//*# sourceMappingURL=fonts&colors.css.map */

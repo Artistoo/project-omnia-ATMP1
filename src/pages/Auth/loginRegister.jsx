@@ -4,7 +4,7 @@ import axios from "axios";
 import { CgArrowAlignH, CgArrowBottomRight, CgGoogle } from "react-icons/cg";
 import { FaMale, FaFemale } from "react-icons/fa";
 //-----------ASSETS ------------
-import Stars from "../../../assets/img/ThreeDStars.png";
+import Stars from "../../assets/img/ThreeDStars.png";
 //-----------GLOBAL STATES ---------------
 import { useSelector } from "react-redux";
 
@@ -261,6 +261,7 @@ export default function loginRegister() {
       </div>
     );
   };
+
   //-----------MAIN SECTION DISPLAY-------------
   return (
     <div

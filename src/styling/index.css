@@ -19,6 +19,10 @@
   font-family: "PoppinsBold";
   src: url("../assets/fonts/Poppins-ExtraBold.ttf") format("truetype");
 }
+@font-face {
+  font-family: "Garet";
+  src: url("../assets/fonts/Garet-Book.ttf") format("truetype");
+}
 /* Colors */
 html,
 body,
@@ -206,13 +210,13 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-/* INTEREST */
+/* ______________ INTEREST _________________ */
 #interestBox {
   background: #a5fff7;
   border: solid thin white !important;
 }
 
-/* Login Register Form */
+/* _________Login Register Form _________________*/
 .GridLoginInputs {
   display: grid;
   grid-template-rows: repeat(3, 50px);
@@ -240,6 +244,50 @@ body::-webkit-scrollbar {
 }
 #LoginInputs:nth-child(1), #LoginInputs:nth-child(2) {
   grid-column: span 3;
+}
+
+/*  _______________ COMMUNITIES _________________ */
+.communitiesGridDisplay {
+  display: grid;
+  align-content: center;
+  justify-content: center;
+  margin: auto;
+  grid-template-rows: repeat(8, 40px);
+  grid-template-columns: repeat(8, minmax(12%, 70px));
+  gap: 10px;
+}
+@media screen and (max-width: 700px) {
+  .communitiesGridDisplay {
+    border: solid red thin;
+    grid-template-rows: repeat(8, 1fr);
+    grid-template-columns: repeat(8, minmax(8%, 1fr));
+  }
+}
+
+.b {
+  grid-row: span 4;
+  grid-column: span 2;
+  border-radius: 2px;
+}
+
+.nOne {
+  grid-row: span 5;
+}
+
+.nSix {
+  grid-row: span 3;
+}
+
+.nFour {
+  grid-row: span 8;
+}
+
+.nThree {
+  grid-row: span 5;
+}
+
+.nSeven {
+  grid-row: span 3;
 }
 
 .circleLoading {

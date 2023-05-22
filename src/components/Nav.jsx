@@ -9,8 +9,4 @@ export default function Nav({ pageState }) {
   const [open, setOpen] = React.useState(false);
   const { userState } = React.useContext(userStateContext);
   const { admin, loged } = userState;
-  
 }
-
-
-
