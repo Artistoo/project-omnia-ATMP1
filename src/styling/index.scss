@@ -10,6 +10,7 @@ body {
   &::-webkit-scrollbar {
     display: none;
   }
+  overflow-x: hidden;
 }
 
 /* HERO SECTION */
@@ -98,45 +99,6 @@ body {
 
 /*  _______________ COMMUNITIES _________________ */
 
-.communitiesGridDisplay {
-  display: grid;
-  align-content: center;
-  justify-content: center;
-  margin: auto;
-  grid-template-rows: repeat(8, 40px);
-  grid-template-columns: repeat(8, minmax(12%, 70px));
-  gap: 10px;
-  @media screen and (max-width: 700px) {
-    border: solid red thin;
-    grid-template-rows: repeat(8, 1fr);
-    grid-template-columns: repeat(8, minmax(8%, 1fr));
-  
-
-  }
-}
-
-.b {
-  grid-row: span 4;
-  grid-column: span 2;
-  border-radius: 2px;
-}
-
-.nOne {
-  grid-row: span 5;
-}
-.nSix {
-  grid-row: span 3;
-}
-.nFour {
-  grid-row: span 8;
-}
-.nThree {
-  grid-row: span 5;
-}
-.nSeven {
-  grid-row: span 3;
-}
-
 //----------LOGO LOADING---------------
 .circleLoading {
   background: linear-gradient(
@@ -160,4 +122,36 @@ body {
     background-size: 500% !important;
     filter: blur(200px);
   }
+}
+
+// <----------- COLORS SECTION ------------>
+.masked {
+  mask-image: url("../assets/mask/LinesMask.png");
+  mask-size: 100% 100%;
+  background: linear-gradient(
+    45deg,
+    #ff3d8e,
+    rgb(247, 25, 236),
+    #ff8e3d,
+    #e7ff3d,
+    #3dff8e,
+    purple
+  );
+}
+.animateBg {
+  animation: animateBg 2000ms alternate infinite;
+  background-size: 100% 100%;
+  @keyframes animateBg {
+    from {
+      background-size: 100% 100%;
+    }
+    to {
+      background-size: 600% 600%;
+    }
+  }
+}
+//<--------------- NAVBAR -------------->
+.navBar {
+  position: sticky !important;
+  top: 0 !important;
 }

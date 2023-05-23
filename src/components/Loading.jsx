@@ -1,7 +1,7 @@
 import React from "react";
+import Logo from "../assets/icons/Logo";
 import Typist from "react-typist";
 export default function Loading({ loading }) {
-  console.log(loading);
   const [reloadPageStuck, setReloadPageStuck] = React.useState(false);
   React.useEffect(() => {
     window.onload = () => loading.setPageLoading(false);
@@ -15,35 +15,7 @@ export default function Loading({ loading }) {
   return (
     <div className="w-screen h-screen overflow-hidden flex items-center justify-center flex-col ">
       {/* -------- LOGO --------- */}
-      <div
-        id={`Logo`}
-        className={`flex items-center justify-center gap-x-0   w-max p-[5px] h-[80px]  aspect-square relative  scale-[0.7]`}
-      >
-        <div
-          id={`logoLettersContainer`}
-          className={`font-[PoppinsBold] text-white flex text-[55px] z-[10] translate-x-[5px]`}
-        >
-          <p id={"B"}>B</p>
-          <p id={"J"} className={`translate-y-[8px] translate-x-[-14px]`}>
-            J
-          </p>
-        </div>
-        <div
-          className={`gap-y-[2px] flex flex-col translate-x-[-5px] translate-y-[5px] z-[10] `}
-        >
-          {[
-            { id: "circle_one" },
-            { id: "circle_two" },
-            { id: "circle_three" },
-          ].map((dot, index) => (
-            <div
-              key={`LogoDotsNM${index}`}
-              id={dot.id}
-              className={`w-[10px] aspect-square bg-white rounded-full animateDots`}
-            />
-          ))}
-        </div>
-      </div>
+      <Logo />
       {/* -------- TEXT----------- */}
       <p className={`font-[Poppins] text-white`}>Loading</p>
 

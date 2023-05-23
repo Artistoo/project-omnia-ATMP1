@@ -9,15 +9,16 @@ import GetHelp from "../../../assets/img/GetHelp.png";
 
 export default function services() {
   /* <----------- THE SECTION BOXS ----------> */
-  const CategoriesBoxArt = () => {
-    const [CategoryBoxs, CategoryBoxsInView] = useInView({
+  const ServicesBoxArt = () => {
+    const [ServicesBoxsRef, ServicesBoxsInView] = useInView({
       rootMargin: "50px",
-      fallbackInView: true,
-      threshold: 0.3,
+      triggerOnce: true,
+      threshold: 0.5,
       root: null,
     });
+
     const [rotateDegree, setRotateDegree] = React.useState(90);
-    const [CategoriesBoxs, setCategoriesBoxs] = React.useState([
+    const [ServiceBoxs, setCategoriesBoxs] = React.useState([
       {
         grids: {
           width: `21%`,
@@ -119,12 +120,12 @@ export default function services() {
         },
       },
     ]);
-
+    console.log(ServicesBoxsInView);
     React.useEffect(() => {
       const handleScroll = () => {
         const scrollPosition = window.pageYOffset;
         const rotationSpeed = 0.01;
-        const rotationAngle = CategoryBoxsInView
+        const rotationAngle = ServicesBoxsInView
           ? 0
           : (scrollPosition / rotationSpeed) % 90;
         setRotateDegree(rotationAngle);
@@ -134,21 +135,19 @@ export default function services() {
       return () => {
         window.removeEventListener("scroll", handleScroll);
       };
-    }, [CategoryBoxsInView]);
+    }, [ServicesBoxsInView]);
 
     return (
       <div
-        ref={CategoryBoxs}
+        ref={ServicesBoxsRef}
         style={{
-          transform: CategoryBoxsInView
-            ? `rotateX(${rotateDegree}deg)`
-            : "rotateX(-90deg)",
+          /* transform: `rotateX(${ServicesBoxsInView ? `0` : `${rotateDegree}deg`})`, */
           transition: `transform 1000ms  ease-in-out`,
         }}
         className={`min-w-[300px] lg:w-[80%] w-[90%] flex min-h-max  gap-x-[5px] origin-bottom`}
       >
         {/* <------ MAPPING THRO ARRAY OF OBJECTS ------> */}
-        {CategoriesBoxs.map((grid, index) => (
+        {ServiceBoxs.map((grid, index) => (
           /* <------ COLUMNS CONTAINER -----> */
           <div
             key={`categoriesBoxN${index}`}
@@ -219,7 +218,7 @@ export default function services() {
     );
   };
   /* <----------- THE SECTION TEXT ----------> */
-  const CategoriesText = () => (
+  const ServicesText = () => (
     <div
       className={`lg:w-[80%] w-[90%]  py-[25px] flex flex-wrap items-center justify-between lg:px-0 px-[15px] gap-y-[40px]  `}
     >
@@ -278,8 +277,8 @@ export default function services() {
     <div
       className={`min-h-[600px] px-[15px] flex  flex-col  mb-[110px] gap-y-[20px] justify-center items-center  scale-[1.1]`}
     >
-      <CategoriesBoxArt />
-      <CategoriesText />
+      <ServicesBoxArt />
+      <ServicesText />
     </div>
   );
 }

@@ -15,7 +15,7 @@ export default function home() {
   const { userState } = React.useContext(userStateContext);
   const NotLogedRoute = () => {
     return (
-      <div className="max-w-[1400px] flex flex-col items-center justify-center  m-auto">
+      <div >
         <Hero />
         <Interest />
         <Services />
@@ -34,7 +34,7 @@ export default function home() {
   };
 
   return (
-    <div className={`w-full min-h-[1600px] overflow-x-hidden `}>
+    <div className={`  px-[3px] max-w-[1400px] w-full flex flex-col items-center justify-center  m-auto `}>
       {userState?.loged ? (
         !userState.admin ? (
           <Admin />

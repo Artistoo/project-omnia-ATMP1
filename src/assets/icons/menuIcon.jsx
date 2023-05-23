@@ -1,40 +1,60 @@
 import React from "react";
 
-export default function menuIcon({ menuState }) {
-  const menuIconStyle = `bg-gray-300 h-[2px] w-full transition-all duration-[1500ms]  ${
-    menuState.open ? `bg-black` : `bg-white`
-  }`;
+export default function menuIcon({ menuState, ScrollPosition }) {
+  const { open, setOpen } = menuState;
+  const [animateMenu, setanimateMenu] = React.useState(false);
+  React.useEffect(() => {
+    if (open) {
+      setanimateMenu(true);
+    } else {
+      setanimateMenu(false);
+    }
+  }, [open]);
+
   return (
-    <>
-      {/* Menu Close */}
+    <div
+      onClick={() => setOpen((current) => (current = !current))}
+      className="flex flex-col z-[15] w-[60px] h-[50px]  border-red-500 justify-center items-center  group md:hidden"
+    >
+      {/* <------  MENU CONTAINER --------> */}
       <div
-        onClick={() => menuState.setOpen((current) => !current)}
-        className={` flex-col  w-[30px] h-[25px] gap-y-[5.5px]   md:hidden flex relative left-[80%] group justify-center z-[10]`}
+        style={{
+          transition: `transform 500ms 150ms ease-in-out`,
+        }}
+        className={`flex items-center justify-center w-full h-full  flex-col gap-y-[10px] ${
+          animateMenu && `rotate-[45deg]`
+        }`}
       >
-        <hr
+        {/* <------ UPPER MENU LINE --------> */}
+
+        <div
           style={{
-            transition:
-              "transform 1500ms , scale  1500ms , rotate 1500ms ease-in-out",
+            transition: `transform 500ms , background 400ms ease-in-out`,
           }}
-          className={`${menuIconStyle} origin-center ${
-            menuState.open
-              ? `rotate-[45deg]  translate-y-[10px] scale-x-[0.8]`
-              : `rotate-[0deg] translate-y-[0px] scale-x-[1]`
+          className={`w-[90%] origin-center h-[8px]  rounded-full  ${
+            animateMenu
+              ? `rotate-[90deg] translate-y-[10px] scale-x-[0.7] scale-y-[0.5] bg-gray-900`
+              : ScrollPosition
+              ? `bg-gray-950`
+              : `bg-gray-50`
           } `}
         />
-        <hr
-          className={` ${menuIconStyle} origin-center   ${
-            menuState.open
-              ? `rotate-[-45deg] translate-y-[2.8px] scale-x-[0.8]`
-              : `rotate-[0deg] translate-y-[0px] scale-x-[1]`
-          }`}
-        />
-        <hr
-          className={` ${menuIconStyle} ${
-            menuState.open ? `scale-y-[15] opacity-0` : `opacity-1 scale-y-[1]`
-          }`}
+
+        {/* <------ LOWER MENU LINE --------> */}
+        <div
+          style={{
+            transition: `transform 500ms , background 400ms ease-in-out`,
+          }}
+          className={`w-[90%] origin-center h-[8px] rounded-full  ${
+            animateMenu
+              ? `translate-y-[-8px] scale-x-[0.7] scale-y-[0.5] bg-gray-950 `
+              : ScrollPosition
+              ? `bg-gray-950`
+              : `bg-gray-50`
+          }
+        `}
         />
       </div>
-    </>
+    </div>
   );
 }

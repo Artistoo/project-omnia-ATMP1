@@ -15,6 +15,7 @@ import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import Loading from "./components/Loading";
 import FooterInfo from "./pages/Dynamic/FooterInfomation/FooterInfo";
+import Details from "./pages/Details/Details";
 
 //___________________JSX component______________________
 function App() {
@@ -26,15 +27,21 @@ function App() {
   const [scrollPosition, setScrollPosition] = React.useState(0);
 
   //<----------------EFFECT HOOK --------------------->
+
   React.useEffect(() => {
-    window.onscroll = (e) => {
-      const windowPosition = e.clientY;
-      setScrollPosition(windowPosition);
+    const handleScrolling = () => {
+      setScrollPosition(window.scrollY);
     };
-  }, [scrollPosition]);
+    window.addEventListener("scroll", handleScrolling);
+    return () => {
+      removeEventListener("scroll", handleScrolling);
+    };
+  }, []);
 
   return !pageLoading ? (
-    <>
+    <div>
+      {/* _________________<<<NAVBAR>>>____________________ */}
+
       <Nav pageState={pageLoading} scrollPosition={scrollPosition} />
 
       {/* __________________<<<ROUTES>>>___________________ */}
@@ -47,6 +54,8 @@ function App() {
 
         {/* ____________USER ACCOUNT_________________ */}
         <Route path="user/AccountAuth" element={<LoginRegister />} />
+        {/* ____________USER ACCOUNT_________________ */}
+        <Route path="details" element={<Details />} />
 
         {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
 
@@ -55,21 +64,13 @@ function App() {
         {/* _____________FOOTER LINKs NAVIGATION _____________ */}
         <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
       </Routes>
+
+      {/* _________________<<<FOOTER>>>>___________________ */}
       <Footer />
-    </>
+    </div>
   ) : (
     <Loading loading={{ setPageLoading, pageLoading }} />
   );
 }
 
 export default App;
-/* 
-userState.loged ? (
-              userState.admin ? (
-                <Dashboard />
-              ) : (
-                <Home />
-              )
-            ) : (
-              <Landing />
-            ) */

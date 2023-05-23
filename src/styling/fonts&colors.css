@@ -4,10 +4,6 @@
   src: url("../assets/fonts/Now-Medium.otf") format("truetype");
 }
 @font-face {
-  font-family: "OpenSauce";
-  src: url("../assets/fonts/OpenSauceOne-Medium.ttf") format("truetype");
-}
-@font-face {
   font-family: "Poppins";
   src: url("../assets/fonts/Poppins-ExtraLight.ttf") format("truetype");
 }
@@ -22,5 +18,13 @@
 @font-face {
   font-family: "Garet";
   src: url("../assets/fonts/Garet-Book.ttf") format("truetype");
+}
+@font-face {
+  font-family: "OpenSauceReg";
+  src: url("../assets/fonts/OpenSauceOne-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "OpenSauce";
+  src: url("../assets/fonts/OpenSauceOne-Medium.ttf") format("truetype");
 }
 /* Colors *//*# sourceMappingURL=fonts&colors.css.map */

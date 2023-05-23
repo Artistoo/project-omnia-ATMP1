@@ -4,10 +4,6 @@
   src: url("../assets/fonts/Now-Medium.otf") format("truetype");
 }
 @font-face {
-  font-family: "OpenSauce";
-  src: url("../assets/fonts/OpenSauceOne-Medium.ttf") format("truetype");
-}
-@font-face {
   font-family: "Poppins";
   src: url("../assets/fonts/Poppins-ExtraLight.ttf") format("truetype");
 }
@@ -22,6 +18,14 @@
 @font-face {
   font-family: "Garet";
   src: url("../assets/fonts/Garet-Book.ttf") format("truetype");
+}
+@font-face {
+  font-family: "OpenSauceReg";
+  src: url("../assets/fonts/OpenSauceOne-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "OpenSauce";
+  src: url("../assets/fonts/OpenSauceOne-Medium.ttf") format("truetype");
 }
 /* Colors */
 html,
@@ -159,6 +163,7 @@ table {
 @tailwind utilities;
 body {
   background: black;
+  overflow-x: hidden;
 }
 body::-webkit-scrollbar {
   display: none;
@@ -247,49 +252,6 @@ body::-webkit-scrollbar {
 }
 
 /*  _______________ COMMUNITIES _________________ */
-.communitiesGridDisplay {
-  display: grid;
-  align-content: center;
-  justify-content: center;
-  margin: auto;
-  grid-template-rows: repeat(8, 40px);
-  grid-template-columns: repeat(8, minmax(12%, 70px));
-  gap: 10px;
-}
-@media screen and (max-width: 700px) {
-  .communitiesGridDisplay {
-    border: solid red thin;
-    grid-template-rows: repeat(8, 1fr);
-    grid-template-columns: repeat(8, minmax(8%, 1fr));
-  }
-}
-
-.b {
-  grid-row: span 4;
-  grid-column: span 2;
-  border-radius: 2px;
-}
-
-.nOne {
-  grid-row: span 5;
-}
-
-.nSix {
-  grid-row: span 3;
-}
-
-.nFour {
-  grid-row: span 8;
-}
-
-.nThree {
-  grid-row: span 5;
-}
-
-.nSeven {
-  grid-row: span 3;
-}
-
 .circleLoading {
   background: linear-gradient(185deg, blue, purple, rgb(139, 9, 190), rgb(52, 88, 247)) !important;
   z-index: -1;
@@ -307,4 +269,29 @@ body::-webkit-scrollbar {
     background-size: 500% !important;
     filter: blur(200px);
   }
+}
+.masked {
+  -webkit-mask-image: url("../assets/mask/LinesMask.png");
+          mask-image: url("../assets/mask/LinesMask.png");
+  -webkit-mask-size: 100% 100%;
+          mask-size: 100% 100%;
+  background: linear-gradient(45deg, #ff3d8e, rgb(247, 25, 236), #ff8e3d, #e7ff3d, #3dff8e, purple);
+}
+
+.animateBg {
+  animation: animateBg 2000ms alternate infinite;
+  background-size: 100% 100%;
+}
+@keyframes animateBg {
+  from {
+    background-size: 100% 100%;
+  }
+  to {
+    background-size: 600% 600%;
+  }
+}
+
+.navBar {
+  position: sticky !important;
+  top: 0 !important;
 }/*# sourceMappingURL=index.css.map */

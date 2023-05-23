@@ -99,7 +99,7 @@ export default function () {
 
     return (
       <div
-        className={`lg:w-[45%] max-w-[650px] w-full md:h-full h-[70%]  min-w-[450px] flex items-start justify-center  pt-[40px] `}
+        className={`lg:w-[45%] max-w-[650px] w-full md:h-full h-[70%]  min-w-[450px] flex items-start justify-center  pt-[40px] mt-[30px]`}
       >
         {/* <------ THE FEEDBACK BOX -------> */}
         <div
@@ -179,10 +179,10 @@ export default function () {
 
   /* <<< ------ MAIN SECTION JSX -------->>> */
   return (
-    <div className={`min-h-[600px] h-[850px] flex flex-col relative`}>
+    <div className={`min-h-[600px] py-[80px] brder flex flex-col relative justify-around items-center `}>
       
       <div
-        className={`flex flex-wrap max-h-[70%] min-h-[600px] z-10 translate-y-[-110px] `}
+        className={`flex flex-wrap max-h-[70%] min-h-[600px] z-10 w-full justify-center items-center gap-x-[50px] `}
       >
         <FooterContent />
         <FooterBoxs />
