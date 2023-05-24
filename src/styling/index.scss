@@ -100,27 +100,17 @@ body {
 /*  _______________ COMMUNITIES _________________ */
 
 //----------LOGO LOADING---------------
-.circleLoading {
-  background: linear-gradient(
-    185deg,
-    blue,
-    purple,
-    rgb(139, 9, 190),
-    rgb(52, 88, 247)
-  ) !important;
-  z-index: -1;
-  background-size: 150% 150% !important;
-  animation: circleLoadingBgAnimation 2000ms ease-in-out alternate infinite;
-  filter: blur(0px);
-}
-@keyframes circleLoadingBgAnimation {
-  0% {
-    background-size: 100% !important;
-    filter: blur(150px);
-  }
-  100% {
-    background-size: 500% !important;
-    filter: blur(200px);
+.loadingAnimation {
+  animation: circleToSquare 300ms alternate infinite;
+  @keyframes circleToSquare {
+    0% {
+      background-size: 100% !important;
+      filter: blur(150px);
+    }
+    100% {
+      background-size: 500% !important;
+      filter: blur(200px);
+    }
   }
 }
 

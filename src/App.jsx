@@ -55,7 +55,7 @@ function App() {
         {/* ____________USER ACCOUNT_________________ */}
         <Route path="user/AccountAuth" element={<LoginRegister />} />
         {/* ____________USER ACCOUNT_________________ */}
-        <Route path="details" element={<Details />} />
+        <Route path="/details" element={<Details />} />
 
         {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
 

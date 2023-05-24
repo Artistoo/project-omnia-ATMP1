@@ -11,7 +11,7 @@ export default function colors() {
   return (
     <div
       ref={CreativitySection}
-      className={`min-h-[500px] flex flex-wrap items-center justify-center px-[20px] gap-y-[30px] mb-[50px] `}
+      className={`min-h-[500px] mb-[60px] flex flex-wrap items-center justify-center px-[20px] gap-y-[30px] `}
     >
       {/* <------- ARTWORK -----------> */}
       <div

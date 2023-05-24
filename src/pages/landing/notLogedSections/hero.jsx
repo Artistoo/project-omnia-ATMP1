@@ -64,13 +64,13 @@ export default function hero() {
   /* ----------- MAIN SECTION DISPLAY ---------- */
   return (
     <div
-      className={` py-[30px] justify-center items-center flex mb-[85px] lg:mb-[70px] relative  w-full `}
+      className={` py-[30px] justify-center items-center flex mb-[50px] lg:mb-[0px] relative  w-full `}
     >
       <Bg />
       {/*<---------- ARTWORK ----------> */}
       <div
-        className={`absolute  left-0 md:w-[700px] w-full  top-0 md:translate-y-[-100px]
-        z-[-4] lg:overflow-visible overflow-hidden  items-center justify-center `}
+        className={`absolute  left-[20px] md:w-[700px] w-full  top-0 md:translate-y-[-100px] 
+        z-[-4] lg:overflow-visible   items-center justify-center `}
       >
         <img
           src={VectorLanidingPage}
