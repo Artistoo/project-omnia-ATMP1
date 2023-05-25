@@ -145,3 +145,40 @@ body {
   position: sticky !important;
   top: 0 !important;
 }
+//<-----LoadingAnimation ------>
+
+.loadingAnimation {
+  animation: roundSquare 1500ms ease-in-out infinite alternate;
+  animation-delay: calc(var(--index) * 1000ms);
+  @keyframes roundSquare {
+    from {
+      border-radius: 100%;
+      background-color: white;
+      rotate: 0;
+    }
+    to {
+      border-radius: 10%;
+      background-color: var(--original-color);
+      rotate: 45deg;
+    }
+  }
+}
+.circleLoading {
+  background: linear-gradient(130deg, blue, purple, blue, pink, skyblue);
+  pointer-events: none;
+  filter: blur(50px);
+  translate: 0 100%;
+  scale: 3 2;
+  z-index: -1;
+  animation: backgroundMove 5500ms alternate infinite;
+  @keyframes backgroundMove {
+    from {
+      background-size: 100% 100%;
+      filter: blur(50px);
+    }
+    to {
+      background-size: 500% 500%;
+      filter: blur(120px);
+    }
+  }
+}

@@ -1,276 +1,325 @@
 import React from "react";
 import axios from "axios";
+
+/* <----- FORM HANDLING LIBRARIES ------> */
+import DOMPurify from "dompurify";
 //------------ICONS ----------------
-import { CgArrowAlignH, CgArrowBottomRight, CgGoogle } from "react-icons/cg";
+import {
+  CgArrowAlignH,
+  CgArrowBottomLeftR,
+  CgArrowBottomRight,
+  CgArrowLeftR,
+  CgArrowRight,
+  CgGoogle,
+} from "react-icons/cg";
 import { FaMale, FaFemale } from "react-icons/fa";
 //-----------ASSETS ------------
 import Stars from "../../assets/img/ThreeDStars.png";
+/* AVATARS */
+/* MALE */
+import M1Avatar from "../../assets/img/Characters/Male/No comments 7.png";
+import M2Avatar from "../../assets/img/Characters/Male/Teamwork-1.png";
+import M3Avatar from "../../assets/img/Characters/Male/No gravity-2.png";
+import M4Avatar from "../../assets/img/Characters/Male/No gravity.png";
+import M5Avatar from "../../assets/img/Characters/Male/Upstream-8.png";
+import M6Avatar from "../../assets/img/Characters/Male/Upstream-4.png";
+import M7Avatar from "../../assets/img/Characters/Male/Upstream-7.png";
+import M8Avatar from "../../assets/img/Characters/Male/Teamwork-7.png";
+import M9Avatar from "../../assets/img/Characters/Male/Teamwork-8.png";
+/* FEMALE */
+import F1Avatar from "../../assets/img/Characters/Female/Funny Bunny-6.png";
+import F2Avatar from "../../assets/img/Characters/Female/Funny Bunny-8.png";
+import F3Avatar from "../../assets/img/Characters/Female/No gravity-1.png";
+import F4Avatar from "../../assets/img/Characters/Female/Upstream-12.png";
+import F5Avatar from "../../assets/img/Characters/Female/Teamwork.png";
+import F6Avatar from "../../assets/img/Characters/Female/Upstream-10.png";
+import F7Avatar from "../../assets/img/Characters/Female/Teamwork-6.png";
+
 //-----------GLOBAL STATES ---------------
 import { useSelector } from "react-redux";
-
 //-----------JSX ------------------
 export default function loginRegister() {
   //-----------COMPONENTS-------------
   const RegisterForm = () => {
-    const [logReg, setLogReg] = React.useState("reg");
-    const [forminputs, setForminputs] = React.useState([
+    const validEmailServiceProviders = [
       {
-        placeHolder: `user name`,
-        type: "text",
-        uses: ["reg"],
-        style: `col-span-2`,
-        valid: false,
-        empty: true,
-        onDisapear: `translate-x-[-400px] opacity-0`,
+        name: "Gmail",
+        domain: "@gmail",
       },
       {
-        placeHolder: `nickname`,
-        type: "text",
-        uses: ["reg"],
-        style: `col-span-2`,
-        valid: false,
-        empty: true,
-        onDisapear: `translate-x-[400px]  opacity-0`,
+        name: "Outlook",
+        domain: "@outlook",
       },
       {
-        placeHolder: `email`,
-        type: "email",
-        uses: ["reg", "log", "FP"],
-        style: `col-span-4`,
-        valid: false,
-        empty: true,
-        onDisapear: `translate-x-[400px]  opacity-0`,
+        name: "Yahoo Mail",
+        domain: "@yahoo",
       },
       {
-        placeHolder: `password`,
-        type: "password",
-        uses: ["reg", "log"],
-        style: `col-span-4`,
-        valid: false,
-        empty: true,
-        onDisapear: `translate-y-[-400px]  opacity-0`,
+        name: "ProtonMail",
+        domain: "@protonmail",
       },
       {
-        placeHolder: `repeat password`,
-        type: "password",
-        uses: ["reg"],
-        style: `col-span-4`,
-        valid: false,
-        empty: true,
-        onDisapear: `translate-y-[200px]  opacity-0`,
+        name: "Zoho Mail",
+        domain: "@zoho",
       },
-    ]);
-    const [userData, setUserData] = React.useState([
-      { placeHolder: `user name`, data: "" },
-      { placeHolder: `nickname`, data: "" },
-      { placeHolder: `email`, data: "" },
-      { placeHolder: `password`, data: "" },
-      { placeHolder: `repeat password`, data: "" },
-    ]);
-    const [transitionAnimation, setTransitionAnimation] = React.useState("reg");
-    React.useEffect(() => {
-      if (logReg === "log") {
-        setTransitionAnimation("log");
-      } else {
-        setTransitionAnimation("reg");
-      }
-    }, [logReg]);
+      {
+        name: "Apple Mail",
+        domain: "@icloud",
+      },
+      {
+        name: "FastMail",
+        domain: "@fastmail",
+      },
+      {
+        name: "Tutanota",
+        domain: "@tutanota",
+      },
+      {
+        name: "Mail.com",
+        domain: "@mail",
+      },
+      {
+        name: "AOL Mail",
+        domain: "@aol",
+      },
+      {
+        name: "GMX Mail",
+        domain: "@gmx",
+      },
+      {
+        name: "Yandex.Mail",
+        domain: "@yandex",
+      },
+      {
+        name: "Mail.ru",
+        domain: "@mail.ru",
+      },
+      {
+        name: "ProtonMail",
+        domain: "@pm.me",
+      },
+      {
+        name: "Comcast",
+        domain: "@comcast",
+      },
+    ];
 
-    const userInterest = useSelector((state) => state.intReducer.userInterest);
+    const Password = React.useRef("");
 
-    return (
-      <div
-        className={`min-w-[260px] border w-[95%] lg:w-[500px] max-h-[550px] min-h-[480px] flex items-center justify-start lg:translate-x-[-300px]  bg-white m-auto flex-col rounded-[15px] p-[20px] gap-y-[20px] relative mb-[40px] z-10`}
-      >
-        {/* --------- TEXT --------- */}
-        <div
-          className={`w-[50%] h-[180px]  flex items-start justify-start  font-[Now] uppercase text-[29px] self-start translate-x-[10px] tracking-tighter leading-[28px] m-[20px] mb-[50px]  overflow-hidden text-start`}
-        >
-          <div
-            style={{
-              transition: `transform 1000ms ease-in-out`,
-            }}
-            className={`absolute flex items-center justify-center ${
-              transitionAnimation === "log"
-                ? `translate-y-[-85px]`
-                : "translate-y-[10px}"
-            } gap-y-[30px] flex flex-col`}
-          >
-            <p>Register a new user Account</p>
-            <p>Log in to your Account</p>
-          </div>
-        </div>
-
-        {/* --------- FORM --------- */}
-        <div
-          className={`grid grid-cols-4 gap-x-[5px] gap-y-[12px] w-[90%] m-[20px] translate-y-[-40px] overflow-hidden min-h-[200px] `}
-        >
-          <>
-            {forminputs.map((formInp, index) => (
-              <input
-                key={`LoginForm${formInp}${index}`}
-                onChange={(e) => {
-                  const updatedData = [...userData];
-                  updatedData[index].data = e.target.value;
-                  setUserData(updatedData);
-                }}
-                style={{
-                  transition: `border 300ms , transform 900ms , opacity 400ms ease-in-out`,
-                }}
-                placeholder={formInp.placeHolder}
-                type={formInp.type}
-                className={`${
-                  formInp.style
-                } font-[BrandinkLight] h-[40px] text-[16px]  rounded-full bg-gradient-to-tr from-gray-100 to-gray-200  focus:bg-white focus:outline-none border py-[7px] px-[15px] focus:border-black border-white  ${
-                  formInp.uses.join("").includes(transitionAnimation)
-                    ? `translate-x-0 translate-y-0 `
-                    : formInp.onDisapear
-                }`}
-              />
-            ))}
-          </>
-        </div>
-
-        {/* ------ SIGN OPTIONS --------- */}
-        <div
-          className={`flex  h-[120px] w-[90%] items-center justify-between  translate-y-[-50px]`}
-        >
-          {/* <-- LOGIN REGISTER SWITCH OPTION --> */}
-          <span
-            className={`font-[brandinkLight] w-max text-[14px]  cursor-pointer user-none`}
-          >
-            <p
-              onClick={() =>
-                setTransitionAnimation(
-                  transitionAnimation === "reg" ? `log` : "reg"
-                )
-              }
-            >
-              {transitionAnimation === "log"
-                ? `register a new Account`
-                : `log in instead `}
-            </p>
-          </span>
-          {/* <-- MIDDLEWARE AUTH OPTIONS--> */}
-          <span className={`font-[brandinkLight] w-max flex `}>
-            {/*  GOOGLE AUTH OPTION  */}
-            <div
-              onClick={() => {}}
-              style={{
-                transition: `background 500ms , font 300ms , border 550ms ease-in-out`,
-              }}
-              className={`w-max min-w-[200px] px-[19px] py-[7px] flex justify-between text-[13px] gap-x-[15px] border bg-black text-gray-100 hover:bg-gradient-to-l hover:bg-transparent hover:border-black  border-transparent hover:text-black hover:backdrop-blur-lg cursor-pointer rounded-full items-center overflow-hidden relative `}
-            >
-              <CgGoogle size={20} />
-              <p>
-                {transitionAnimation === "log"
-                  ? `login using google`
-                  : `sign up using google`}
-              </p>
-            </div>
-          </span>
-        </div>
-
-        {/* ------ SIGNUP BUTTON --------- */}
-        <button
-          style={{
-            transition: `background 400ms , border 400ms , font 200ms ease-in-out`,
-          }}
-          className={` w-[90%] rounded-full h-[47px]  py-[9px]  bg-black flex items-center justify-center border text-white font-[Poppins] px-[15px] hover:text-gray-800 hover:bg-transparent hover:border-black cursor-pointer relative group`}
-        >
-          <p>{transitionAnimation === "log" ? `login` : "signup"}</p>
-          <p
-            className={`absolute right-[20px] h-[26px] text-gray-900 text-[12px] justify-center items-center flex text-semibold font-[Poppins] aspect-square bg-green-100 rounded-full border border-transparent group-hover:border-black group-hover:bg-transparent transition-opacity duration-[300ms] ${
-              userInterest?.length ? `opacity-[1]` : `opacity-0 `
-            }`}
-          >
-            {userInterest?.length}
-          </p>
-        </button>
-      </div>
-    );
-  };
-  const RegisterArt = () => {
-    const [RegisterQuestions, setRegisterQuestions] = React.useState({
-      index: 0,
-      content: [
+    const [formInputs, setForminputs] = React.useState({
+      Req_Type: "up",
+      inputs: [
         {
-          Q: "select your gender",
-          ST: `select your gender and help us personalize your jolly Blab Expirence`,
-          options: [
-            { A: "male", style: { color: "blue-500" }, icon: FaMale },
-            { A: "female", style: { color: "pink-400" }, icon: FaFemale },
-          ],
+          id: "username",
+          placeholder: "user name",
+          value: "",
+          display: "in",
+          match: `/\w+/g`,
+          error: {
+            empty: "please fill in the lastname input to continue",
+            invalid:
+              "please make sure the email you entered is of a valid type ",
+          },
+        },
+        {
+          id: "lastname",
+          placeholder: "lastname",
+          value: "",
+          match: "",
+          error: {
+            empty: "please fill in the lastname input to continue",
+            invalid:
+              "please make sure the email you entered is of a valid type ",
+          },
+        },
+        {
+          id: "email",
+          placeholder: "email",
+          value: "",
+        },
+        {
+          id: "password",
+          placeholder: "password",
+          value: "",
+          ref: Password,
+        },
+        {
+          id: "repeatPassword",
+          placeholder: "repeat password",
+          value: "",
         },
       ],
     });
 
     return (
       <div
-        className={`md:w-[60%] w-full md:h-full h-[800px]  min-h-[400px]    right-[0px] flex items-center justify-center flex-wrap  absolute md:z-0 z-[-1] `}
+        className={`py-[5px] min-h-[470px] h-[500px] min-w-[400px] md:w-[42%] max-w-[700px]  w-[80%]
+        bg-opacity-[0.8] backdrop-blur-[50px] rounded-md  bg-gray-200 
+        px-[15px] 
+        flex items-center justify-center flex-col `}
       >
-        <img
-          src={Stars}
-          className={`md:w-[600px] w-[800px] md:h-auto blur-md absolute  pointer-events-none`}
-        />
-        {/* LIGHT SPOT EFFECT */}
+        {/* <--- EXPLAINIG WHAT THIS FORM IS FOR----> */}
         <div
-          className={`w-[400px] h-[400px] bg-blue-600 opacity-[0.5] absolute rounded-full z-[-1] blur-[120px] pointer-events-none`}
-        />
-
-        {/* ---- QUESTIONS BOX -----  */}
-        <div
-          className={` flex-col items-start justify-center min-w-[470px] w-[450px] min-h-[260px] backdrop-blur-lg bg-opacity-[0.9] bg-white  rounded-lg lg:flex hidden `}
+          className={`h-[15%] max-w-[85%] min-w-[470px]  text-gray-800  text-[30px] font-[Garet] font-bold leading-[28px] flex justify-between items-center  border px-[12px]`}
         >
-          {/* --------------TITLE OF THE QUESTION ------------ */}
+          {/* TEXT */}
+          <h2 className={`w-[60%] `}>
+            {formInputs.Req_Type === "up"
+              ? `register a new user account`
+              : "in"
+              ? "log in to your account"
+              : "forget your password"}
+          </h2>
+          {/* SIGN IN UP BUTTON */}
           <div
-            className={`flex w-full items-center justify-center gap-x-[30px] mb-[12px]`}
+            style={{
+              transition: `background 150ms ease-in-out`,
+            }}
+            onClick={() =>
+              setForminputs((current) => ({
+                ...current,
+                Req_Type: current.Req_Type === "in" ? "up" : "in",
+              }))
+            }
+            className="flex items-center font-[Poppins] font-thin select-none justify-between px-[15px]  h-[35px] w-[140px] hover:bg-opacity-[0.8] hover:bg-black hover:text-gray-200 group text-gray-950 rounded-full border cursor-pointer overflow-hidden relative"
           >
-            <h2
-              className={`font-[BrandinkLight] text-[30px] w-1/2 leading-[25px]`}
+            <CgArrowRight
+              style={{
+                transition: `color 1000ms 300ms , transform 300ms 300ms ease-in-out `,
+              }}
+              size={30}
+              className="  group-hover:text-gray-200 text-black scale-[0.8]   left-0  translate-x-[-30px]  absolute  group-hover:translate-x-[5px] "
+            />
+            <span
+              className={`w-[65%] h-full text-[18px]   font-[Poppins] flex items-center justify-around group-hover:translate-x-[20px] transition-transform duration-[300ms]  delay-[300ms]`}
             >
-              SELECT YOUR GENDER
-            </h2>
-            <CgArrowBottomRight size={70} />
-          </div>
-          {/* --------------TEXT OF THE QUESTION ------------ */}
-          <div
-            className={` px-[50px] w-full font-[Poppins] leading-[17px] flex items-center justify-center mb-[55px]`}
-          >
-            <p className={`max-w-[90%] w-[350px]`}>
-              select your gender and help us personalize your expirance in jolly
-              blab
-            </p>
-          </div>
-          {/* --------------OPTIONS OF THE QUESTION ------------ */}
-          <div
-            className={`w-[80%] mx-auto flex items-center justify-around gap-x-[15px] text-[16px]`}
-          >
-            <button
-              className={`border-blue-500 py-[6px] px-[55px] rounded-full border hover:bg-blue-600 hover:text-white `}
-            >
-              MALE
-            </button>
-            <button
-              className={`border-pink-500 py-[6px] px-[55px] rounded-full hover:backdrop-blur-lg border hover:bg-pink-600 hover:text-gray-200 cursor-pointer `}
-            >
-              FEMALE
-            </button>
+              <p>sign</p>
+              <div
+                className={`w-[30%]  h-[27px] overflow-hidden flex flex-col items-center py-0 justify-end text-[0.9rem]`}
+              >
+                <p
+                  className={`transition-transform duration-[400ms] ${
+                    formInputs.Req_Type === "in"
+                      ? `translate-y-[105%]`
+                      : `translate-y-[0%]`
+                  }`}
+                >
+                  up
+                </p>
+                <p
+                  className={` transition-transform duration-[400ms] ${
+                    formInputs.Req_Type === "in"
+                      ? `translate-y-[105%]`
+                      : `translate-y-[0%]`
+                  }`}
+                >
+                  in
+                </p>
+              </div>
+            </span>
+            <CgArrowRight
+              style={{
+                transition: `color 1000ms  , transform 300ms , opacity 100ms ease-in-out `,
+              }}
+              size={30}
+              className=" fill-green-400 group-hover:text-gray-200 scale-[0.6] group-hover:scale-[0.8] translate-x-[10px] w-[30%] absolute  right-[10px] group-hover:translate-x-[50px]  "
+            />
           </div>
         </div>
+        {/* <----- FORM INPUTS -----> */}
+        <div className={` min-h-[50%] min-w-[470px] max-w-[80%] border`}></div>
+        <div className={` min-h-[15%] min-w-[470px] max-w-[80%] border`}></div>
+        <div className={` min-h-[15%] min-w-[470px] max-w-[80%] border`}></div>
       </div>
     );
+  };
+
+  /* <-------- THE AVATARS ARTWORK -------> */
+  const RegisterArt = () => {
+    const Avatars = [
+      {
+        M1Avatar,
+        M2Avatar,
+        M3Avatar,
+        M4Avatar,
+        M5Avatar,
+        M6Avatar,
+        M7Avatar,
+        M8Avatar,
+        M9Avatar,
+      },
+      { F1Avatar, F2Avatar, F3Avatar, F4Avatar, F6Avatar, M8Avatar },
+    ];
+    const [PageLoaded, setPageLoaded] = React.useState(false);
+    React.useEffect(() => {
+      const handleLoad = () => {
+        setPageLoaded(true);
+      };
+      if (document.readyState === "complete") {
+        handleLoad();
+      } else {
+        window.addEventListener("load", handleLoad);
+      }
+      return () => {
+        window.removeEventListener("load", handleLoad);
+      };
+    }, []);
+    const AvatarArray = Avatars.map((x) => Object.values(x)).flat();
+    return (
+      <div
+        className={`w-[600px] min-h-[200vh] rotate-[22deg] left-[-260px] translate-y-[-50px] absolute  flex items-center justify-center lg:opacity-[0.5] opacity-[0.2] `}
+      >
+        {/* DARK SPOT ABOVE */}
+        <div
+          className={`h-[500px] absolute top-[0px] w-[110%] bg-gradient-to-b from-black via-black   to-transparent opacity-[0.8] z-[1]    pointer-events-none `}
+        />
+        {/* <------ARTWORK-----> */}
+        <div className={`w-full h-full flex border flex-wrap  `}>
+          {AvatarArray?.map((Avatarimg, index) => (
+            <div
+              className={`h-1/4   w-1/3 border hover:scale-[1.03] transition-transform duration-[150ms]`}
+            >
+              <img
+                style={{
+                  transition: `opacity 500ms  , transform 400ms ease-in-out`,
+                  transitionDelay: `${
+                    Math.floor(Math.random() * AvatarArray.length) * 150
+                  }ms`,
+                }}
+                src={Avatarimg}
+                className={`object-fit w-full h-full ${
+                  PageLoaded
+                    ? `opacity-[1] scale-[1]`
+                    : `opacity-[0] scale-[1.3]`
+                }`}
+              />
+            </div>
+          ))}
+        </div>
+        {/* DARK SPOT DOWN */}
+
+        <div
+          className={`h-[600px] absolute bottom-[170px] w-[110%]  bg-gradient-to-t from-black via-black   to-transparent opacity-[0.8] z-[1] pointer-events-none`}
+        />
+      </div>
+    );
+  };
+
+  const Policy = () => {
+    <div className="absolute lg:flex hidden"></div>;
   };
 
   //-----------MAIN SECTION DISPLAY-------------
   return (
     <div
-      className={` m-[15px] flex flex-wrap min-h-[520px] items-center jsutify-between md:mb-auto mb-[50px]`}
+      className={`  flex flex-wrap min-h-[530px]  mt-[40px] items-center justify-center w-full border  mb-[50px]`}
     >
-      {/* Register Login Form */}
-      <RegisterForm />
       {/* Artwork */}
       <RegisterArt />
+      {/* Register Login Form */}
+      <RegisterForm />
+      {/* POLICY*/}
+      <Policy />
     </div>
   );
 }

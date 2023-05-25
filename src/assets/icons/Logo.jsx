@@ -15,7 +15,9 @@ export default function Logo({
         scale: `${scale}`,
         transition: `scale 300ms ease-in-out`,
       }}
-      className="flex items-center justify-center gap-x-[0px]  m-[10px] scale-[1.1] z-[15]  max-h-full w-max  translate-y-[-5px] "
+      className={`flex items-center justify-center gap-x-[50px]  m-[10px] scale-[1.1] z-[15]  max-h-full w-max  translate-y-[-5px] select-none ${
+        loading && `pointer-events-none`
+      }`}
     >
       {/* <--------- DOTS & LETTERS ---------> */}
       <div className="flex gap-x-[0px] items-center justify-center ">
@@ -33,7 +35,7 @@ export default function Logo({
 
         {/* <--------- DOTS ------------> */}
 
-        <div className="flex flex-col gap-y-[1px] absolute translate-x-[20px] translate-y-[7px]">
+        <div className="flex flex-col items-center justify-center gap-y-[3px] absolute translate-x-[20px] translate-y-[7px]">
           {[
             { color: { original: `purple`, genetic: "white" } },
             { color: { original: `pink`, genetic: "white" } },
@@ -41,18 +43,16 @@ export default function Logo({
           ].map((dot, index) => (
             <div
               style={{
-                "--original-color": dot.color,
+                "--original-color": dot.color.original,
+                "--index": index,
                 width: DotsSize,
-                transition: `background 300ms ${100 * index}ms ease-in-out`,
-                background: Menu
-                  ? color.colors[index]
-                  : loading
-                  ? dot.color.original
-                  : dot.color.genetic,
+                transition: `background 300ms , border-radius  ease-in-out`,
+                transitionDelay: `1500ms`,
+                background: Menu ? color.colors[index] : dot.color.genetic,
               }}
-              className={`  aspect-square rounded-full  ${
-                loading && `loadingAnimation`
-              }`}
+              className={`  aspect-square ${
+                index === 1 && `translate-y-[-0.2px]`
+              } rounded-full  ${loading && `loadingAnimation`}`}
             />
           ))}
         </div>

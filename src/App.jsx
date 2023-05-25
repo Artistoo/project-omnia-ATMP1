@@ -32,6 +32,7 @@ function App() {
     const handleScrolling = () => {
       setScrollPosition(window.scrollY);
     };
+
     window.addEventListener("scroll", handleScrolling);
     return () => {
       removeEventListener("scroll", handleScrolling);
@@ -54,7 +55,8 @@ function App() {
 
         {/* ____________USER ACCOUNT_________________ */}
         <Route path="user/AccountAuth" element={<LoginRegister />} />
-        {/* ____________USER ACCOUNT_________________ */}
+
+        {/* ____________USER DETAILS_________________ */}
         <Route path="/details" element={<Details />} />
 
         {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
