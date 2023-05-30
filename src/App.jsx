@@ -1,6 +1,13 @@
 import React, { useContext } from "react";
-import { NavLink, Route, Routes, Navigate } from "react-router-dom";
-
+import {
+  NavLink,
+  Route,
+  Routes,
+  Navigate,
+  createBrowserRouter,
+  Outlet,
+} from "react-router-dom";
+import { debounce, throttle } from "lodash";
 //__________________CONTEXT_____________________
 import { userStateContext } from "./context/userState";
 
@@ -24,32 +31,16 @@ function App() {
 
   /* <------------------ STATE HOOK ------------------> */
   const [pageLoading, setPageLoading] = React.useState(true);
-  const [scrollPosition, setScrollPosition] = React.useState(0);
-
-  //<----------------EFFECT HOOK --------------------->
-
-  React.useEffect(() => {
-    const handleScrolling = () => {
-      setScrollPosition(window.scrollY);
-    };
-
-    window.addEventListener("scroll", handleScrolling);
-    return () => {
-      removeEventListener("scroll", handleScrolling);
-    };
-  }, []);
 
   return !pageLoading ? (
     <div>
       {/* _________________<<<NAVBAR>>>____________________ */}
-
-      <Nav pageState={pageLoading} scrollPosition={scrollPosition} />
+      <Nav pageState={pageLoading} />
 
       {/* __________________<<<ROUTES>>>___________________ */}
       <Routes>
         {/* ____________LANDING ROUTE___________ */}
         <Route index element={<Landing />} />
-
         {/* _____________SETTING ROUTE________________ */}
         <Route path={`/settings`} element={<Settings />} />
 

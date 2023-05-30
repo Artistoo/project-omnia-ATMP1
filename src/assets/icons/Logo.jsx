@@ -15,12 +15,12 @@ export default function Logo({
         scale: `${scale}`,
         transition: `scale 300ms ease-in-out`,
       }}
-      className={`flex items-center justify-center gap-x-[50px]  m-[10px] scale-[1.1] z-[15]  max-h-full w-max  translate-y-[-5px] select-none ${
+      className={`z-[15] m-[10px] flex max-h-full  w-max translate-y-[-5px] scale-[1.1]  select-none items-center  justify-center gap-x-[50px] ${
         loading && `pointer-events-none`
       }`}
     >
       {/* <--------- DOTS & LETTERS ---------> */}
-      <div className="flex gap-x-[0px] items-center justify-center ">
+      <div className="flex items-center justify-center gap-x-[0px] ">
         {/* <--------- LETTERS ---------> */}
         <div
           style={{
@@ -35,7 +35,7 @@ export default function Logo({
 
         {/* <--------- DOTS ------------> */}
 
-        <div className="flex flex-col items-center justify-center gap-y-[3px] absolute translate-x-[20px] translate-y-[7px]">
+        <div className="absolute flex translate-x-[20px] translate-y-[7px] flex-col items-center justify-center gap-y-[3px]">
           {[
             { color: { original: `purple`, genetic: "white" } },
             { color: { original: `pink`, genetic: "white" } },
@@ -46,8 +46,10 @@ export default function Logo({
                 "--original-color": dot.color.original,
                 "--index": index,
                 width: DotsSize,
-                transition: `background 300ms , border-radius  ease-in-out`,
-                transitionDelay: `1500ms`,
+                transition: `background 300ms ${
+                  index * 120
+                }ms , border-radius 200ms ease-in-out`,
+
                 background: Menu ? color.colors[index] : dot.color.genetic,
               }}
               className={`  aspect-square ${
@@ -65,7 +67,7 @@ export default function Logo({
             transition: `opacity 200ms , transform 250ms ease-in-out`,
             color: color.main,
           }}
-          className={`text-[15px] leading-[12px]  absolute  font-[PoppinsBold] flex items-center justify-center  pt-[10px] flex-col text-start p-[5px]  uppercase scale-[0.9] translate-y-[2px] ${
+          className={`absolute flex  translate-x-[55px] translate-y-[2px] scale-[0.9] flex-col items-start justify-center  p-[5px] pt-[10px] text-start font-[PoppinsBold]  text-[15px] uppercase leading-[12px]  ${
             ScrollingDown
               ? `translate-x-[48px] opacity-[1] `
               : `translate-x-[30px] opacity-[0] `
@@ -73,7 +75,7 @@ export default function Logo({
           }
           `}
         >
-          {["blox", "jolly"].map((logoWord, index) => (
+          {["Bravo", "jolly"].map((logoWord, index) => (
             <p
               key={`blobJollyLogo${logoWord}`}
               style={{
@@ -84,7 +86,7 @@ export default function Logo({
                   ? ` ${
                       index === 0 ? `translate-y-[105%]` : `translate-y-[-105%]`
                     } opacity-[1]`
-                  : ` opacity-[0] translate-y-[0]`
+                  : ` translate-y-[0] opacity-[0]`
               }`}
             >
               {logoWord}
