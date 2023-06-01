@@ -127,66 +127,66 @@ export const Avatars = [
   },
   { F1Avatar, F2Avatar, F3Avatar, F4Avatar, F6Avatar, M8Avatar },
 ];
-export const  validEmailServiceProviders = [
+export const validEmailServiceProviders = [
   {
     name: "Gmail",
-    domain: "@gmail",
+    domain: "gmail",
   },
   {
     name: "Outlook",
-    domain: "@outlook",
+    domain: "outlook",
   },
   {
     name: "Yahoo Mail",
-    domain: "@yahoo",
+    domain: "yahoo",
   },
   {
     name: "ProtonMail",
-    domain: "@protonmail",
+    domain: "protonmail",
   },
   {
     name: "Zoho Mail",
-    domain: "@zoho",
+    domain: "zoho",
   },
   {
     name: "Apple Mail",
-    domain: "@icloud",
+    domain: "icloud",
   },
   {
     name: "FastMail",
-    domain: "@fastmail",
+    domain: "fastmail",
   },
   {
     name: "Tutanota",
-    domain: "@tutanota",
+    domain: "tutanota",
   },
   {
     name: "Mail.com",
-    domain: "@mail",
+    domain: "mail",
   },
   {
     name: "AOL Mail",
-    domain: "@aol",
+    domain: "aol",
   },
   {
     name: "GMX Mail",
-    domain: "@gmx",
+    domain: "gmx",
   },
   {
     name: "Yandex.Mail",
-    domain: "@yandex",
+    domain: "yandex",
   },
   {
     name: "Mail.ru",
-    domain: "@mail.ru",
+    domain: "mail.ru",
   },
   {
     name: "ProtonMail",
-    domain: "@pm.me",
+    domain: "pm.me",
   },
   {
     name: "Comcast",
-    domain: "@comcast",
+    domain: "comcast",
   },
 ];
 export const AvatarArray = Avatars.map((x) => Object.values(x)).flat();

@@ -327,4 +327,20 @@ body::-webkit-scrollbar {
     background-size: 500% 500%;
     filter: blur(120px);
   }
+}
+
+/* <-------- LOGIN SIGN UP -------------> */
+@keyframes InvalidInput {
+  from {
+    opacity: 0.5;
+    border: solid red thin;
+  }
+  50% {
+    opacity: 1;
+    border: solid white thin;
+  }
+  to {
+    opacity: 0.5;
+    border: solid red thin;
+  }
 }/*# sourceMappingURL=index.css.map */
