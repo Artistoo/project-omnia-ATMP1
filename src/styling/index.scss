@@ -198,3 +198,40 @@ body {
     border: solid red thin;
   }
 }
+
+.inputInvalid {
+  animation: invalidInput 400ms ease-in;
+  border: yellow solid thin;
+  outline: red solid thin;
+}
+
+.bgColorful {
+  &:before {
+    content: "";
+    width: 360px;
+    aspect-ratio: 1/1;
+    border-radius: 100%;
+    background: linear-gradient(to left, purple, blue);
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: -1;
+    filter: blur(55px);
+    opacity: 0.5;
+    scale: 3;
+  }
+  &::after {
+    content: "";
+    width: 360px;
+    aspect-ratio: 1/1;
+    border-radius: 100%;
+    background: linear-gradient(to left, rgba(240, 23, 59, 0.582), blue);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    filter: blur(55px);
+    opacity: 0.5;
+    scale: 2;
+  }
+}

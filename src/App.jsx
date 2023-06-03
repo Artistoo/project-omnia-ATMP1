@@ -45,7 +45,7 @@ function App() {
         <Route path={`/settings`} element={<Settings />} />
 
         {/* ____________USER ACCOUNT_________________ */}
-        <Route path="user/AccountAuth" element={<LoginRegister />} />
+        <Route path="user/AccountAuth/" element={<LoginRegister />} />
 
         {/* ____________USER DETAILS_________________ */}
         <Route path="/details" element={<Details />} />
