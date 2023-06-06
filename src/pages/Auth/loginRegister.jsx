@@ -41,21 +41,9 @@ export default function loginRegister() {
   //<-----------COMPONENTS------------->
   const RegisterRequest = () => {
     const [ValidServerRespond, setValidServerRespond] = React.useState(false);
-
     const [formError, setFormError] = React.useState();
-
-    /* API */
-    React.useEffect(() => {
-      axios
-        .get("https://geolocation-db.com/json/")
-        .then((res) => res.data)
-        .then((data) => setUserGeoLocation(data))
-        .catch((err) => {
-          setUserGeoLocation(false);
-        });
-    }, []);
-
-    /* FORM RETURN JSX */
+    const [ErrorBG, setErrorBG] = React.useState();
+    //ROUTES & ERROR
     return (
       <>
         {/* <------- ERROR -------> */}
@@ -65,7 +53,9 @@ export default function loginRegister() {
               transition: `border 400ms 100ms , opacity 200ms , background 220ms ease`,
             }}
             onClick={(e) => setFormError((current) => "")}
-            className={`bg-tranparnet group  absolute top-[100px] h-[50px] w-[80%] min-w-[350px] max-w-[600px] cursor-pointer items-center  justify-center overflow-hidden rounded-md  border  bg-opacity-[0.7] font-[brandinkLight] text-[15px] leading-[13px] text-white  backdrop-blur-[4px] md:w-[40%] ${
+            className={`${
+              ErrorBG || "bg-tranparnet"
+            }bg-tranparnet group  absolute top-[100px] h-[50px] w-[80%] min-w-[350px] max-w-[600px] cursor-pointer items-center  justify-center overflow-hidden rounded-md  border  bg-opacity-[0.7] font-[brandinkLight] text-[15px] leading-[13px] text-white  backdrop-blur-[4px] md:w-[40%] ${
               formError
                 ? "flex border-white opacity-[1]"
                 : `hidden border-transparent opacity-0`
@@ -85,8 +75,7 @@ export default function loginRegister() {
             </>
           </div>
         )}
-
-        {/* <-------- FORM ----------> */}
+        {/* <-------- FORM STAGES ----------> */}
         <Routes>
           <Route
             index
@@ -96,11 +85,23 @@ export default function loginRegister() {
                   formError,
                   setFormError,
                 }}
+                setErrorBG
                 serverRespond={(ValidServerRespond, setValidServerRespond)}
               />
             }
           />
-          <Route path={"verifyEmail"} element={<EmailVarification />} />
+          <Route
+            path={""}
+            setErrorBG
+            element={
+              <EmailVarification
+                Error={{
+                  formError,
+                  setFormError,
+                }}
+              />
+            }
+          />
         </Routes>
       </>
     );

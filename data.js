@@ -75,6 +75,7 @@ export const NavContent = {
   ],
   Loged: {},
 };
+
 export const MenuContent = {
   notLoged: [
     [
@@ -113,6 +114,7 @@ export const MenuContent = {
   ],
   Loged: [],
 };
+
 export const Avatars = [
   {
     M1Avatar,
@@ -127,6 +129,7 @@ export const Avatars = [
   },
   { F1Avatar, F2Avatar, F3Avatar, F4Avatar, F6Avatar, M8Avatar },
 ];
+
 export const validEmailServiceProviders = [
   {
     name: "Gmail",
@@ -189,4 +192,237 @@ export const validEmailServiceProviders = [
     domain: "comcast",
   },
 ];
+
 export const AvatarArray = Avatars.map((x) => Object.values(x)).flat();
+
+export const categoryExamples = {
+  Tribe: [
+    {
+      example: "sport",
+      styling: {
+        bg: "white",
+        fontColor: `text-black`,
+      },
+    },
+
+    {
+      example: "video game",
+      styling: {
+        bg: "#4682B4",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Books",
+      styling: {
+        bg: "transparent",
+        fontColor: `text-green-300`,
+      },
+    },
+    {
+      example: "Astrology and Spirituality",
+      styling: {
+        bg: "#00BFFF",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Books",
+      styling: {
+        bg: "#8A2BE2",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Pets",
+      styling: {
+        bg: "transparent",
+        fontColor: `text-gray-50`,
+      },
+    },
+    {
+      example: "Motivation",
+      styling: {
+        bg: "white",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "",
+      styling: {
+        bg: "transparent",
+        fontColor: `text-transparent`,
+      },
+    },
+    {
+      example: "Art and design",
+      styling: {
+        bg: "white",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Gardening",
+      styling: {
+        bg: "#6A5ACD",
+        fontColor: `text-gray-200`,
+      },
+    },
+    {
+      example: "Travel",
+      styling: {
+        bg: "tranpsarent",
+        fontColor: `text-gray-50`,
+      },
+    },
+    {
+      example: "Music",
+      styling: {
+        bg: "#4B0082",
+        fontColor: `text-white`,
+      },
+    },
+    {
+      example: "Movies",
+      styling: {
+        bg: "#483D8B",
+        fontColor: `text-white`,
+      },
+    },
+    {
+      example: "Food",
+      styling: {
+        bg: "transparent",
+        fontColor: `text-gray-100`,
+      },
+    },
+    {
+      example: "Fitness and Wellness",
+      styling: {
+        bg: "#4169E1",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Fashion",
+      styling: {
+        bg: "transparent",
+        fontColor: `text-white`,
+      },
+    },
+  ],
+  Community: [
+    {
+      example: "Gender Equality Initiative",
+      styling: {
+        bg: "#76b4bd",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Interfaith Dialogue",
+      styling: {
+        bg: "transparent",
+        fontColor: `text-white`,
+      },
+    },
+    {
+      example: "Climate Change Advocacy",
+      styling: {
+        bg: "#009688",
+        fontColor: `text-green-500`,
+      },
+    },
+    {
+      example: "Religions and Phylosophy",
+      styling: {
+        bg: "transparent",
+        fontColor: `text-white`,
+      },
+    },
+    {
+      example: "Digital Privacy Advocacy",
+      styling: {
+        bg: "#ffffff",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Documents and Research",
+      styling: {
+        bg: "#4d648d",
+        fontColor: `text-white`,
+      },
+    },
+    {
+      example: "Youth Empowerment",
+      styling: {
+        bg: "transparent",
+        fontColor: `text-white`,
+      },
+    },
+    {
+      example: "Youth Empowerment",
+      styling: {
+        bg: "#4d648d",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Youth Empowerment",
+      styling: {
+        bg: "#76b4bd",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Youth Empowerment",
+      styling: {
+        bg: "#dcedc1",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Animal Rights Activism",
+      styling: {
+        bg: "#6495ED",
+        fontColor: `text-white`,
+      },
+    },
+    {
+      example: "Digital Rights and Freedom",
+      styling: {
+        bg: "transparent",
+        fontColor: `text-white`,
+      },
+    },
+    {
+      example: "Civic Engagement",
+      styling: {
+        bg: "white",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Cancer Support",
+      styling: {
+        bg: "#5F9EA0",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Refugee Support",
+      styling: {
+        bg: "#3D9970",
+        fontColor: `text-black`,
+      },
+    },
+    {
+      example: "Disability Rights",
+      styling: {
+        bg: "#6495ED",
+        fontColor: `text-white`,
+      },
+    },
+  ],
+};

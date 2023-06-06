@@ -5,8 +5,8 @@ import Hero from "./notLogedSections/hero";
 import Interest from "./notLogedSections/interests";
 import Services from "./notLogedSections/services";
 import Colors from "./notLogedSections/colors";
-import Categories from "./notLogedSections/categories";
-import Features from "./notLogedSections/features";
+import WhiteSections from "./notLogedSections/WhiteSections";
+import Examples from "./notLogedSections/Examples";
 import Divorcity from "./notLogedSections/Divorcity";
 import { Routes, Route } from "react-router-dom";
 import { userStateContext } from "../../context/userState";
@@ -15,13 +15,13 @@ export default function home() {
   const { userState } = React.useContext(userStateContext);
   const NotLogedRoute = () => {
     return (
-      <div className={`gap-y-[50px] flex flex-col max-w-full`}>
+      <div className={`flex max-w-full flex-col gap-y-[50px]`}>
         <Hero />
         <Interest />
         <Services />
         <Colors />
-        <Categories />
-        <Features />
+        <WhiteSections />
+        <Examples />
         <Divorcity />
       </div>
     );
@@ -34,7 +34,9 @@ export default function home() {
   };
 
   return (
-    <div className={` max-w-[1400px] w-full flex flex-col items-center justify-center  m-auto `}>
+    <div
+      className={` m-auto flex w-full max-w-[1400px] flex-col items-center  justify-center `}
+    >
       {userState?.loged ? (
         !userState.admin ? (
           <Admin />

@@ -1,164 +1,205 @@
 import React from "react";
-import Features from "./features.jsx";
 
-// ___________ ASSETS _____________
-import Stars from "../../../assets/img/ThreeDStars.png";
-import { useInView } from "react-intersection-observer";
-import { BsChatLeftText } from "react-icons/bs";
-import { FaHandsHelping } from "react-icons/fa";
-import { TbPigMoney } from "react-icons/tb";
+//Importing asset
+import Community from "../../../assets/img/elections_07.png";
+import Tribe from "../../../assets/img/elections_01.png";
+import { Link } from "react-router-dom";
+import { GiPolarStar } from "react-icons/gi";
+import { BsArrowLeft, BsArrowRight, BsStarFill, BsStars } from "react-icons/bs";
+import { BiStar } from "react-icons/bi";
+import { FaHandPointer } from "react-icons/fa";
+
+import { IoIosArrowDropleft } from "react-icons/io";
+import Slider from "infinite-react-carousel";
 export default function categories() {
-  const Guide = () => {
-    const [cases, setCases] = React.useState([
-      {
-        title: "Collabrite",
-        icon: FaHandsHelping,
-
-        hover: false,
-
-        text: "be the change in the cause you fight for and be part of a bigger community that fight for the same thing",
+  const [Categories, setCategories] = React.useState([
+    {
+      category: `community`,
+      img: Community,
+      selected: true,
+      uses: [
+        "raise funds for your cause",
+        "contribute in what you fight for",
+        "be a part of a greater fight ",
+      ],
+      text: [
+        `debate , let people from all over the world understand your fight , be a part of a bigger couse and have people who fight for the same thing join and support you `,
+        `Connect, Debate, and Unite: Your Platform for Global Discourse
+        `,
+        `protect what you value and be the change you want to see , contribute and find people who support your cause`,
+      ],
+      style: {
+        bg: `bg-gradient-to-tl from-blue-600 to-blue-800`,
       },
-      {
-        title: "Communicate",
-        icon: BsChatLeftText,
-
-        hover: false,
-
-        text: "meet people from all around the world and communicate about what you share in common ",
+    },
+    {
+      category: `Tribe`,
+      img: Tribe,
+      selected: false,
+      uses: [
+        "communicate and meet new peopel",
+        "share your expirences and journys",
+        "create a one big family where you can be understood",
+      ],
+      text: [
+        `its a one big family for if you need help ,  general chat , private consulting or maybe you just need support of a crew for your project of any type`,
+        `get support from people who've been what your going through `,
+        `get motivation and have support for your next move from people who understand your fight`,
+      ],
+      style: {
+        bg: `bg-gradient-to-tl from-pink-500 to-pink-700`,
       },
-      {
-        title: "Raise",
-        icon: TbPigMoney,
+    },
+  ]);
+  const [direction, setdirection] = React.useState({ left: false });
 
-        hover: false,
-        text: "raise money for your cause and meet people who cares for what you fight for and who understand your struggle",
-      },
-    ]);
+  return (
+    
+    <div className={` flex min-h-[700px] items-center justify-center p-[25px] mb-[100px]`}>
+      <div className=" relative  flex h-full  w-full select-none flex-col items-center justify-center gap-y-[20px] overflow-hidden rounded-[15px]  bg-black px-[40px] py-[40px] lg:w-[90%] ">
+        {/* BG */}
+        <div className="absolute bottom-[-15px] h-[600px] w-full scale-[2] bg-gradient-to-t from-blue-900   to-transparent opacity-[1]  blur-[50px]" />
 
-    return (
-      <div
-        className={`flex min-h-[50%]  w-full flex-col items-center justify-center gap-y-[50px]`}
-      >
-        <img
-          src={Stars}
-          className={`absolute translate-y-[-65px] scale-[2] opacity-[0.7] blur-[25px] `}
-        />
-        {/* <---- THE UPPER SECTION TEXT ----> */}
-        <div
-          className={`relative flex max-h-[50%]  min-h-[40%]  w-[80%] select-none flex-col items-center justify-center gap-y-[30px] px-[12px] py-[12px] lg:w-[700px] lg:max-w-[70%] `}
-        >
-          <h2
-            style={{
-              transition: `opacity 500ms ease`,
-            }}
-            className={`select-none text-center font-[garet] text-[80px] font-bold 
-             leading-[75px]  tracking-tighter text-gray-900 `}
+        {/* UPPER TITLE PART */}
+        <div className="z-[1] flex h-[25%] w-full flex-wrap items-center justify-center lg:justify-between lg:px-[40px]   ">
+          {/*  TITLE PART */}
+          <div
+            className={`mb-[6px] flex h-full w-[40%]   min-w-[450px]   flex-col  gap-y-[5px]  px-[13px] font-[Poppins] text-gray-200 md:items-start `}
           >
-            Guide to a{" "}
-            <b
-              className={`bg-gradient-to-tl from-blue-700 via-purple-600 to-green-600   bg-clip-text bg-[500%] text-transparent`}
+            <h2
+              className={`w-[100%]  font-[OpenSauce]  text-[55px]  leading-[58px] md:scale-[1.1] 
+              lg:scale-[1]`}
             >
-              colorFul
-            </b>{" "}
-            journy
-          </h2>
-          <p
-            className={`text-center font-[Poppins] text-[20px] leading-[17px] text-gray-500 `}
+              <b
+                className={`bg-gradient-to-tl from-purple-600 to-blue-400 bg-clip-text text-transparent`}
+              >
+                {" "}
+                Categories{" "}
+              </b>
+              <br />
+              how it works{" "}
+              <b
+                className={`bg-gradient-to-tl from-purple-600 to-blue-400 bg-clip-text text-transparent`}
+              >
+                ?
+              </b>
+            </h2>
+            <p className="mb-[10px]">
+              discover more about the jolly blab group types and how each group
+              work and what it use for
+            </p>
+            <Link
+              to={"/faq"}
+              className={`group relative flex w-max items-center justify-start text-blue-400`}
+            >
+              {/* DISCOVER MORE LINK TEXT */}
+              <p
+                style={{
+                  transition: `transform 220ms ease`,
+                }}
+                className={`group-hover:translate-y-[-13px] `}
+              >
+                still have more questions ?
+              </p>
+
+              {/* DISCOVER MORE LINK ARROW ON HOVER */}
+              <div
+                className={`absolute top-1/2 flex h-[1px] w-full origin-left  scale-x-[0] items-center justify-end bg-blue-400 group-hover:scale-x-[1] group-hover:transition-transform group-hover:delay-[220ms]`}
+              >
+                <BsArrowRight
+                  style={{
+                    transition: `transform 150ms ${350 + 220}ms ease`,
+                  }}
+                  size={17}
+                  className={`translate-x-[5px] scale-x-0 text-blue-400 group-hover:scale-x-[1] `}
+                />
+              </div>
+            </Link>
+          </div>
+
+          <div
+            className={`flex min-h-max w-[45%] min-w-[450px] flex-col items-start justify-center   px-[12px] py-[20px] font-[Poppins] text-[16px] text-gray-300 lg:text-[19px]`}
           >
-            quick guide on how to get started and what it was created for , our
-            commuinty support a wide range of people from all other the globe in
-            one lovely family
-          </p>
-          <button
-            style={{
-              transition: `color 300ms , background 200ms , border 500ms , outline 300ms ease`,
-            }}
-            className={` z-[1] h-[40px] w-[150px] scale-[1.03] rounded-full border border-gray-50 bg-gradient-to-l from-gray-950 to-gray-900 py-[5px] font-[openSauce] text-[14px] font-normal text-gray-300 outline outline-[1px] outline-black hover:rotate-[1deg] hover:border-black hover:from-gray-50 hover:to-white hover:text-black hover:outline-white`}
-          >
-            Discover More
-          </button>
+            {Categories.filter((x) => x.selected)?.map((category) =>
+              category.uses.map((use) => (
+                <div
+                  className={`group flex cursor-pointer items-center justify-center gap-x-[20px]`}
+                >
+                  <IoIosArrowDropleft
+                    style={{
+                      transition: `transform 520ms , color 200ms 220ms , opacity 150ms ease`,
+                    }}
+                    className="group-hover:translate-x-[70%] group-hover:rotate-[180deg] group-hover:text-green-300  group-hover:opacity-[1]"
+                  />
+                  <p
+                    className={`duraiton-[300ms] transition-colors  group-hover:text-green-200`}
+                  >
+                    {use}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
-        {/* <---- THE THREE SECTION BOXS ----> */}
+        {/*  LOWER TWO CARDS PART */}
         <div
-          className={`flex min-h-max flex-wrap items-center justify-center  gap-[10px] px-[5px] py-[12px] `}
+          className={` z-[1] flex w-full flex-col flex-wrap items-center justify-around gap-y-[15px] lg:min-h-[450px] lg:flex-row`}
         >
-          {cases.map((use, index) => (
+          {/* TWO BOXS MAPPING */}
+          {Categories.map((category, index) => (
             <div
-              onMouseOver={() =>
-                setCases((current) => {
-                  const updatedCases = [...current];
-                  updatedCases[index] = { ...updatedCases[index], hover: true };
-                  return updatedCases;
-                })
-              }
-              onMouseLeave={() =>
-                setCases((current) => {
-                  const updatedCases = [...current];
-                  updatedCases[index] = {
-                    ...updatedCases[index],
-                    hover: false,
-                  };
-                  return updatedCases;
-                })
-              }
-              style={{
-                transition: `border 100ms , background 200ms , opacity 500ms , color 200ms ease`,
-              }}
-              className={`group relative  flex min-h-[180px] w-[70%]  min-w-[300px] flex-grow flex-col items-center justify-center gap-y-[30px]  overflow-hidden rounded-[15px] border  border-gray-300  px-[50px] py-[12px] outline outline-[0.5px]  outline-white hover:border-purple-300 hover:outline-black  md:w-[32%] ${
-                cases.some((x) => x.hover)
-                  ? use.hover
-                    ? `hover:bg-black hover:text-white`
-                    : `opacity-[0.8]`
-                  : `opacity-[1]`
-              }`}
+              key={category.category}
+              className={`group  flex h-[200px]  w-[100%] items-center justify-center gap-x-[20px] rounded-lg border border-white px-[10px] py-[12px] lg:h-[420px]  lg:w-[40%] lg:flex-col ${category.style.bg}`}
             >
-              <div
-                className={`flex h-[30%] w-full select-none items-center justify-between`}
-              >
-                <h2
-                  className={`bg-transparent bg-clip-text  font-[Poppins] text-[20px] font-bold  `}
-                >
-                  {use.title}
-                </h2>
-                <use.icon size={27} className={`group-hover:text-green-400`} />
-              </div>
-              <div
-                className={`flex h-[60%] w-full flex-col items-center justify-center `}
-              >
-                <p
+              {/* BOXS IMG */}
+              <div className="flex h-full w-1/2 items-center justify-center  lg:h-[60%] lg:w-full ">
+                <img
                   style={{
-                    transition: `transform 250ms , opacity 250ms ease`,
+                    transition: `transform 250ms ease `,
                   }}
-                  className={`select-none font-[Poppins] text-[16px]  leading-[17px] `}
+                  src={category.img}
+                  className={`scale-[1.5] group-hover:translate-x-[-15px] group-hover:translate-y-[-15px] md:scale-[1.25]`}
+                />
+              </div>
+              {/* TEXT */}
+              <div
+                className={`relative flex   h-[200px] w-1/2 scale-[0.9] flex-col items-center justify-start px-[8px] py-[5px] md:scale-[1] lg:h-[40%] lg:w-full lg:justify-center lg:gap-y-[15px]`}
+              >
+                <div
+                  className={`font-garet relative flex h-[30%] w-full  flex-wrap items-center justify-start text-[35px] font-bold leading-none text-gray-50 `}
                 >
-                  {use.text}
-                </p>
+                  <h2 className="leading-0 text-blue-200 group-hover:bg-gradient-to-tl group-hover:from-green-400 group-hover:to-green-500 group-hover:bg-clip-text group-hover:text-transparent">
+                    {category.category}
+                  </h2>
+                </div>
+
+                <div
+                  className={`relative flex  min-h-max w-full  lg:h-[70%]  `}
+                >
+                  <Slider
+                    dots
+                    pauseOnHover={true}
+                    duration={100}
+                    arrows={false}
+                    wheel={true}
+                    className={`h-full w-full cursor-pointer`}
+                  >
+                    {category.text.map((x) => (
+                      <div
+                        style={{ width: `${100 / category.text.length}%` }}
+                        className={`  relative flex  h-full items-center justify-start font-[Poppins] text-[15px] leading-none text-gray-100`}
+                      >
+                        <p>{x}</p>
+                      </div>
+                    ))}
+                  </Slider>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
-    );
-  };
-  const Categories = () => {
-    return (
-      <div
-        className={` flex h-[50%] min-h-[600px] w-full items-center justify-center border border-white  p-[10px]`}
-      ></div>
-    );
-  };
-
-  return (
-    <div
-      style={{
-        transition: `opacity 300ms , transform 500ms ease`,
-      }}
-      className={`relative flex  min-h-[1000px] w-full flex-col  overflow-hidden bg-gradient-to-tl from-gray-50 to-gray-100 px-[20px] py-[13px] pt-[80px] 
-      `}
-    >
-      <Guide />
-      <Categories />
     </div>
   );
 }

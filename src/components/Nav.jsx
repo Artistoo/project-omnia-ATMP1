@@ -208,7 +208,7 @@ export default function Nav({ pageState }) {
           style={{
             transition: `translate 1000ms ease-in-out`,
           }}
-          className={`absolute top-0 z-[-1] h-full w-full bg-purple-100 bg-opacity-[0.6] backdrop-blur-[40px] hover:translate-y-[5px] ${
+          className={`absolute top-0 z-[-1] h-full w-full bg-purple-100 bg-opacity-[0.6] backdrop-blur-[40px]  ${
             ScrollDown ? "translate-y-[0%]" : `translate-y-[-100%]`
           }`}
         />

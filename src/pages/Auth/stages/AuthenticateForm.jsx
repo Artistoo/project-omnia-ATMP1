@@ -1,30 +1,35 @@
 import React from "react";
-import {
-  Avatars,
-  AvatarArray,
-  validEmailServiceProviders,
-} from "../../../../data";
 import DOMPurify from "dompurify";
-
-//_____________ICONS____________________
+import axios from 'axios'
+//_____________________ICONS____________________
 import { CgArrowRight, CgArrowUp, CgGoogle, CgTwitter } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
 import { AiFillStar, AiOutlineEye, AiOutlineStar } from "react-icons/ai";
 
-//______________ASSETS _________________
+// ___________________ ASSETS ____________________
 import Gender from "../../../assets/icons/gender.jsx";
+
+// _____________________Data ____________________
+import {
+  Avatars,
+  AvatarArray,
+  validEmailServiceProviders,
+} from "../../../../data";
+
+// _____________AUTHENTICATION FORM ____________________
 export default function AuthenticateForm({ serverRespond, Error }) {
   const { formError, setFormError } = Error;
 
-  /* REACT INPUT REF */
+  /* <--------------  REACT INPUT REF -----------> */
   const Password = React.useRef(null);
   const UserName = React.useRef(null);
   const Email = React.useRef(null);
   const RepeatPassword = React.useRef(null);
   const LastName = React.useRef(null);
-
+  
+  /* <--------------  REACT STATES -----------> */
   const [formInputs, setForminputs] = React.useState({
     Req_Type: "up",
     inputs: [
@@ -120,17 +125,14 @@ export default function AuthenticateForm({ serverRespond, Error }) {
         leave: `translate-y-[150px] opacity-0`,
       },
     ],
-    Error: "",
   });
-
-  const [words, setWords] = React.useState({
-    words: ["daniel", "albert", "ali", "mark", "martin"],
+  const [name, setName] = React.useState({
+    name: ["daniel", "albert", "ali", "mark", "martin"],
     index: 0,
   });
   const [userGeoLocation, setUserGeoLocation] = React.useState();
   const [showHidePassword, setShowHidePassword] = React.useState(false);
   const [focused, setFocused] = React.useState(false);
-
   const [gender, setGender] = React.useState("male");
   const [ProfileName, setProfileName] = React.useState("");
   const [userAvatar, setUserAvatar] = React.useState({
@@ -145,7 +147,7 @@ export default function AuthenticateForm({ serverRespond, Error }) {
     },
   });
 
-  /* VARIABLES */
+  /* <------------------ VARIABLES ----------------> */
   const FormReqTypeText = [
     {
       text: `Register New Account`,
@@ -160,6 +162,17 @@ export default function AuthenticateForm({ serverRespond, Error }) {
       show: "fp",
     },
   ];
+
+  /* API */
+  React.useEffect(() => {
+    axios
+      .get("https://geolocation-db.com/json/")
+      .then((res) => res.data)
+      .then((data) => setUserGeoLocation(data))
+      .catch((err) => {
+        setUserGeoLocation(false);
+      });
+  }, []);
 
   //INPUT EVENTS
   const handleBlur = (inputs, e) => {
@@ -185,7 +198,6 @@ export default function AuthenticateForm({ serverRespond, Error }) {
     if (formInputs.inputs.every((x) => x.ready.error === false)) {
       setFormError("");
     }
-
     setFocused(false);
   };
   const handleFocus = (inputs) => {
@@ -392,7 +404,7 @@ export default function AuthenticateForm({ serverRespond, Error }) {
                   ))
                 }
                 defaultValue={
-                  words.words[Math.floor(Math.random() * words.words.length)]
+                  name.name[Math.floor(Math.random() * name.name.length)]
                 }
                 onChange={(e) => setProfileName(e.target.value)}
                 maxLength={6}

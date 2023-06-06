@@ -235,3 +235,22 @@ body {
     scale: 2;
   }
 }
+
+/* THE CATEGORIES SECTION */
+.carousel-dots {
+  width: 100%;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  bottom: 0;
+  color: white !important;
+  @media (max-width: 800px) {
+    display: none;
+    opacity: 0;
+  }
+}
+
+.perspective {
+  perspective: 1000px;
+}
