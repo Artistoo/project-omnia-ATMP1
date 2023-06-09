@@ -1,6 +1,7 @@
 import React from "react";
 import DOMPurify from "dompurify";
-import axios from 'axios'
+import axios from "axios";
+import { validEmail } from "../../../utils/validity";
 //_____________________ICONS____________________
 import { CgArrowRight, CgArrowUp, CgGoogle, CgTwitter } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
@@ -28,7 +29,7 @@ export default function AuthenticateForm({ serverRespond, Error }) {
   const Email = React.useRef(null);
   const RepeatPassword = React.useRef(null);
   const LastName = React.useRef(null);
-  
+
   /* <--------------  REACT STATES -----------> */
   const [formInputs, setForminputs] = React.useState({
     Req_Type: "up",
@@ -72,18 +73,7 @@ export default function AuthenticateForm({ serverRespond, Error }) {
         type: `email`,
         display: "in up fp",
         ready: {
-          match: (value) => {
-            const isEmail =
-              /@([\w-]+)\./.test(value) &&
-              /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value);
-            if (isEmail) {
-              const domain = value.match(/@([\w-]+)\./)[1];
-              return validEmailServiceProviders.some((email) => {
-                return domain === email.domain;
-              });
-            }
-          },
-
+          match: validEmail(value),
           go: false,
           error: false,
           errorMSG: `invalid email , please make sure the email is valid before trying again`,

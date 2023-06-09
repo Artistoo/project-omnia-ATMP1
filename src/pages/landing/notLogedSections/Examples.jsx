@@ -14,6 +14,14 @@ export default function features() {
       Example: categoryExamples.Tribe,
     },
   ]);
+  const [windowSize, setWindowSize] = React.useState(0);
+  React.useEffect(() => {
+    function windowSize() {
+      setWindowSize(window.innerWidth);
+    }
+    window.addEventListener("resize", windowSize);
+    return () => removeEventListener("resize", windowSize);
+  }, [window.innerWidth]);
 
   return (
     <div
@@ -47,7 +55,7 @@ export default function features() {
           </h2>
         </div>
         <div
-          className={`md:px-0 relative flex min-h-[50%]  w-[100%] flex-col items-start justify-start md:pl-auto  pl-[20px] font-[Poppins] text-[17px] text-gray-200 md:h-[65%] md:w-[50%] lg:h-[45%] lg:w-full lg:gap-y-[15px] `}
+          className={`md:pl-auto relative flex min-h-[50%]  w-[100%] flex-col items-start justify-start pl-[20px]  font-[Poppins] text-[17px] text-gray-200 md:h-[65%] md:w-[50%] md:px-0 lg:h-[45%] lg:w-full lg:gap-y-[15px] `}
         >
           <p
             className={`flex h-[30%] w-[90%] translate-y-[10px] flex-col items-center justify-center text-[18px] leading-tight md:h-[50%]  md:w-full md:translate-y-[0] md:break-all md:text-[20px] lg:w-[95%]`}
@@ -83,7 +91,7 @@ export default function features() {
                       ? `bg-white text-black`
                       : `bg-transparent text-white`
                     : !index
-                    ? `bg-white text-black`
+                    ? `lg:bg-white lg:text-black`
                     : `bg-transparent text-white`
                 }`}
               >
@@ -183,17 +191,19 @@ export default function features() {
                       background:
                         CategorySample[Selected ? targetIndex : defaultIndex]
                           .Example[index].styling.bg,
-                      transform: `rotateY(${
-                        Selected
-                          ? !targetIndex
-                            ? `360deg`
-                            : 0
-                          : targetIndex
-                          ? `0`
-                          : `360deg`
-                      })`,
+                      transform:
+                        windowSize < 1024 &&
+                        `rotateY(${
+                          Selected
+                            ? targetIndex
+                              ? `360deg`
+                              : 0
+                            : defaultIndex
+                            ? `0deg`
+                            : ` 360deg`
+                        })`,
                     }}
-                    className={`absolute flex h-full w-full items-center justify-center  font-[opensauce] font-normal ${""}`}
+                    className={`absolute flex h-full w-full items-center justify-center  font-[opensauce] font-normal ${""}  `}
                   >
                     <p
                       className={`w-[60%] ${
@@ -201,7 +211,6 @@ export default function features() {
                           .Example[index].styling.fontColor
                       }`}
                     >
-                      {" "}
                       {
                         CategorySample[Selected ? targetIndex : defaultIndex]
                           .Example[index].example

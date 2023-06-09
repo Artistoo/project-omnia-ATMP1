@@ -43,7 +43,7 @@ export default function loginRegister() {
     const [ValidServerRespond, setValidServerRespond] = React.useState(false);
     const [formError, setFormError] = React.useState();
     const [ErrorBG, setErrorBG] = React.useState();
-    //ROUTES & ERROR
+    
     return (
       <>
         {/* <------- ERROR -------> */}
@@ -91,7 +91,7 @@ export default function loginRegister() {
             }
           />
           <Route
-            path={""}
+            path={"/EmailVarification"}
             setErrorBG
             element={
               <EmailVarification

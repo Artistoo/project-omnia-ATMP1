@@ -1,26 +1,45 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const { MongoClient } = require("mongodb");
-
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
+import session from "express-session";
+import UserSchema from "./models/Users.js";
+import AuthRoute from "./Routes/authenticate.js";
+import Contact from "./Routes/contact.js";
 const app = express();
-const PORT = 5500 || process.env.PORT;
-const DB = process.env.MONGODB;
-const url = `mongodb+srv://jasondesmond198:MYMONGODBPASSWORD@cluster0.1ceqjd5.mongodb.net/?retryWrites=true&w=majority`;
-const client = new MongoClient(url);
+const port = process.env.PORT || 5500;
+const { json } = express;
+dotenv.config();
 
-app.listen(PORT, () => {
-  console.log(PORT);
-});
+//_____________Database______________
+mongoose.set("strictQuery", true);
 
-async function run() {
-  try {
-    await client.connect();
-    console.log("Successfully connected to Atlas");
-  } catch (err) {
-    console.log(err.stack);
-  } finally {
-    await client.close();
-  }
-}
-run().catch(console.dir);
+mongoose
+  .connect(process.env.DB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000,
+  })
+  .then((res) => console.log(res))
+  .catch((err) => console.log(err));
+console.log(`connected to db`);
+
+//_____________MiddleWares________________
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  session({
+    secret: "MyPassword",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+//____________INITIALIZATION_____________
+app.listen(port, () => console.log(`Server running on port ${port}`));
+
+//____________ ROUTES _______________
+app.get("/", (req, res) => res.send("main route"));
+app.use("/auth", AuthRoute);
+app.use("/contact", Contact);

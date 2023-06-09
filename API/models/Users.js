@@ -1,23 +1,35 @@
-const mongoose = require('mongoose')
+import mongoose from "mongoose";
 const UserSchema = new mongoose.Schema({
-    userName : {
-        type : String , 
-        require : true , 
-    },
-    LastName : {
-        type : String , 
-        require : true , 
-    },
-    Email : {
-        type : String , 
-        require : true , 
-    },
-    Password : {
-        type : String , 
-        require : true , 
-    },
-    RepeatPassword : {
-        type : String , 
-        require : true , 
-    },
-}) 
+  userName: {
+    type: String,
+    require: false,
+  },
+  LastName: {
+    type: String,
+    require: false,
+  },
+  Email: {
+    type: String,
+    require: false,
+  },
+  Password: {
+    type: String,
+    require: false,
+  },
+  RepeatPassword: {
+    type: String,
+    require: false,
+  },
+  gender: {
+    type: String,
+    require: false,
+    default: "male",
+  },
+  Avatar: {
+    type: String,
+    require: false,
+  },
+});
+
+const User = mongoose.model("User", UserSchema);
+export default User;

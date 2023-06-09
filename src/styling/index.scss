@@ -251,6 +251,16 @@ body {
   }
 }
 
-.perspective {
-  perspective: 1000px;
+//Contact us Page 
+.animateDots{
+  animation : dotsUpDown 500ms infinite ease-in-out ; 
+
+}
+@keyframes dotsUpDown {
+  from  {
+    translate: 0 -20px !important;
+  }
+  to  {
+    translate: 0 0 !important;
+  }
 }

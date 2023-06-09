@@ -17,6 +17,8 @@ import Dashboard from "./pages/dashboard/dashboard";
 import Settings from "./pages/settings/Settings";
 import Profile from "./pages/Dynamic/Profile/Profile";
 import LoginRegister from "./pages/Auth/loginRegister";
+import ContactForm from "./pages/Contact/contactForm";
+
 //___________________COMPONENTS_______________________
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
@@ -39,22 +41,20 @@ function App() {
 
       {/* __________________<<<ROUTES>>>___________________ */}
       <Routes>
-        {/* ____________LANDING ROUTE___________ */}
         <Route index element={<Landing />} />
-        {/* _____________SETTING ROUTE________________ */}
+
         <Route path={`/settings`} element={<Settings />} />
 
-        {/* ____________USER ACCOUNT_________________ */}
         <Route path="user/AccountAuth/" element={<LoginRegister />} />
 
-        {/* ____________USER DETAILS_________________ */}
         <Route path="/details" element={<Details />} />
+
+        <Route path="/contactUs" element={<ContactForm />} />
 
         {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
 
-        {/* _____________USER PROFILE_________________ */}
         <Route path="user/:userId" element={<Profile />} />
-        {/* _____________FOOTER LINKs NAVIGATION _____________ */}
+
         <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
       </Routes>
 
