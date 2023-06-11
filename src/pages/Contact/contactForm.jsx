@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import DOMPurify from "dompurify";
 import { validEmail } from "../../utils/validity";
+import { Utils } from "../../context/utilsContext";
 //<---------- ICONS ---------->
 import { IoIosArrowForward } from "react-icons/io";
 import {
@@ -14,6 +15,9 @@ import {
 } from "react-icons/bi";
 
 export default function ContactForm() {
+  /* UTILS CONTEXT */
+  const { ReqState, MakeApiReq } = React.useContext(Utils).API;
+  /* STATES */
   const [emailInputs, setEamilInputs] = React.useState([
     [
       {
@@ -31,7 +35,7 @@ export default function ContactForm() {
       },
       {
         title: `Email`,
-        value: "",
+        value: localStorage?.submitedEmail || "",
         ref: React.createRef(),
 
         placeHolder: `profissional or personal email`,
@@ -119,17 +123,22 @@ export default function ContactForm() {
       },
     ],
   ]);
+  const [SendReq, setSendReq] = React.useState({
+    sending: false,
+    sent: false,
+    error: "",
+  });
 
+  /* USE EFFECT */
   React.useEffect(() => {
     const clearStorage = setTimeout(() => {
       localStorage.removeItem("submitedEmail");
     }, 1000);
+
     return () => clearTimeout(clearStorage);
   }, []);
-  const [Sentreq, setSentReq] = React.useState({
-    sending: false,
-    sent: false,
-  });
+  /* EVENT HANDLING */
+
   const ArrowIcon = (index) => {
     return (
       <div
@@ -197,38 +206,17 @@ export default function ContactForm() {
       return update;
     });
   };
-
-  const handleSubmit = () => {
-    const [from, email, message, subject, interest] = [
-      emailInputs[0][0].value,
-      emailInputs[0][1].value,
-      emailInputs[1][0].value,
-      emailInputs[0][2].value,
-      emailInputs[2][0].options.filter((selected) => selected.value),
-     
-    ];
-
-    if (
-      emailInputs
-        .slice(0, 1)
-        .map((inp) => inp.filter((x) => x.req))
-        .flat()
-        .every((l) => l?.valid?.isValid)
-    ) {
-      axios
-        .post("http://localhost:5500/contact", {
-          from,
-          email,
-          message,
-          subject,
-          interest,
-        })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err))
-        .finally(() =>
-          setSentReq((current) => ({ sent: true, sending: false }))
-        );
-    } else {
+  const handleSubmit = async () => {
+    const data = {
+      interest: emailInputs[2][0].options
+        .filter((selected) => selected.value)
+        .map((i) => i.title),
+      email: emailInputs[0][1].value,
+      subject: emailInputs[0][2].value,
+      message: emailInputs[1][0]?.value,
+      from: emailInputs[0][0]?.value,
+    };
+    const FallBack = () => {
       setEamilInputs((current) => {
         return current.map((inputGroup) =>
           inputGroup.map((input) => {
@@ -247,7 +235,20 @@ export default function ContactForm() {
           })
         );
       });
-    }
+    };
+    const condition = emailInputs
+      .slice(0, 1)
+      .flat()
+      .filter((x) => x?.req)
+      .every((i) => i?.valid?.isValid);
+
+    MakeApiReq(
+      condition,
+      `http://localhost:5500/contact`,
+      FallBack,
+      null,
+      data
+    );
   };
 
   return (
@@ -329,10 +330,10 @@ export default function ContactForm() {
                         style={{
                           height: 100 / inputSection.length - 30 + "%",
                         }}
-                        className={`min-w-1/2  relative w-[40%] flex-grow px-[15px]  ${
+                        className={`min-w-1/2  relative w-[40%] flex-grow   ${
                           index === 1
-                            ? `border border-white `
-                            : ` border-b md:h-max`
+                            ? `border border-white px-[0px] pl-[15px]`
+                            : ` border-b px-[15px] md:h-max`
                         }`}
                       >
                         {/* THE ERROR ICON */}
@@ -371,7 +372,7 @@ export default function ContactForm() {
 
                           {(() => {
                             const { placeHolder, title, ref } = inp;
-                            const className = `h-max w-full bg-transparent text-[16px] py-[10px] pt-[15px]  placeholder:text-gray-600 focus:outline-none resize-none`;
+                            const className = `h-full w-full  bg-transparent text-[16px] py-[10px] pt-[15px]  scroller text-gray-200 placeholder:text-gray-600 focus:outline-none resize-none`;
                             const styling = {
                               transition: `color 300ms ,filter 300ms ease `,
                             };
@@ -404,6 +405,21 @@ export default function ContactForm() {
                             );
                           })()}
                         </div>
+                        {/* <------- SERVER RES ERROR ---->  */}
+                        {index === 1 && (
+                          <div
+                            style={{
+                              transition: `transform 150ms ease`,
+                            }}
+                            className={`absolute bottom-0 left-0 h-[30px] w-full translate-y-[35px]  select-none items-center justify-start overflow-hidden font-[Poppins] text-sm font-normal text-red-500 ${
+                              ReqState.error
+                                ? `flex translate-y-0 opacity-[1]`
+                                : `hidden translate-y-[100%] opacity-[0]`
+                            } `}
+                          >
+                            <p> {ReqState.error} : server error</p>
+                          </div>
+                        )}
                       </div>
                     ))
                   : inputSection.map((inp) => (
@@ -468,7 +484,7 @@ export default function ContactForm() {
             onClick={() => handleSubmit()}
             className={`flex h-[15%] max-h-[50px] w-full cursor-pointer items-center justify-center rounded-sm border bg-gradient-to-tl from-gray-300 to-gray-100 text-[18px] font-normal text-black hover:from-transparent hover:to-transparent hover:text-white lg:h-[8%]`}
           >
-            {Sentreq.sending ? `sending` : `submit`}
+            {ReqState.sending ? `sending` : `submit`}
           </div>
         </div>
       </div>

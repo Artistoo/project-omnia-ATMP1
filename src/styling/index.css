@@ -407,4 +407,22 @@ body::-webkit-scrollbar {
   to {
     translate: 0 0 !important;
   }
+}
+.scroller {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  position: relative;
+  padding-inline: 5px;
+}
+.scroller::-webkit-scrollbar {
+  width: 5px;
+  background: rgb(29, 29, 29);
+  border-radius: 8px;
+  margin-block: 15px;
+  border: solid rgb(39, 39, 39) 0.2px;
+}
+.scroller::-webkit-scrollbar-thumb {
+  background: white;
+  border-radius: 100px;
+  width: 90%;
 }/*# sourceMappingURL=index.css.map */

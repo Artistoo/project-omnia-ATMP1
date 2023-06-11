@@ -4,12 +4,21 @@
 @tailwind components;
 @tailwind utilities;
 
-//----------BODY THE SCROLL BAR --------
-body {
-  background: black;
+@mixin scrollRemove() {
   &::-webkit-scrollbar {
     display: none;
   }
+}
+@mixin FlexCenter() {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}
+
+//----------BODY THE SCROLL BAR --------
+body {
+  background: black;
+  @include scrollRemove();
   overflow-x: hidden;
 }
 
@@ -251,16 +260,37 @@ body {
   }
 }
 
-//Contact us Page 
-.animateDots{
-  animation : dotsUpDown 500ms infinite ease-in-out ; 
-
+//Contact us Page
+.animateDots {
+  animation: dotsUpDown 500ms infinite ease-in-out;
 }
 @keyframes dotsUpDown {
-  from  {
+  from {
     translate: 0 -20px !important;
   }
-  to  {
+  to {
     translate: 0 0 !important;
+  }
+}
+
+.scroller {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  position: relative;
+  padding-inline: 5px ;
+  &::-webkit-scrollbar {
+    width: 5px;
+    background: rgb(29, 29, 29);
+    border-radius: 8px;
+    margin-block : 15px ; 
+    border: solid rgb(39, 39, 39) 0.2px;
+    
+    
+    
+  }
+  &::-webkit-scrollbar-thumb{
+    background: white;
+    border-radius: 100px;
+    width: 90%;
   }
 }

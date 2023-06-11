@@ -1,7 +1,6 @@
 import React from "react";
 import DOMPurify from "dompurify";
 import axios from "axios";
-import { validEmail } from "../../../utils/validity";
 //_____________________ICONS____________________
 import { CgArrowRight, CgArrowUp, CgGoogle, CgTwitter } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
@@ -19,9 +18,15 @@ import {
   validEmailServiceProviders,
 } from "../../../../data";
 
+//__________________UTILITIES_______________________
+import { validEmail } from "../../../utils/validity";
+import { Utils } from "../../../context/utilsContext.jsx";
+
 // _____________AUTHENTICATION FORM ____________________
 export default function AuthenticateForm({ serverRespond, Error }) {
   const { formError, setFormError } = Error;
+  /* <---------------- CONTEXT -----------------> */
+  const { ReqState, MakeApiReq } = React.useContext(Utils).API;
 
   /* <--------------  REACT INPUT REF -----------> */
   const Password = React.useRef(null);
@@ -73,7 +78,7 @@ export default function AuthenticateForm({ serverRespond, Error }) {
         type: `email`,
         display: "in up fp",
         ready: {
-          match: validEmail(value),
+          match: (value) => validEmail(value),
           go: false,
           error: false,
           errorMSG: `invalid email , please make sure the email is valid before trying again`,
@@ -156,8 +161,7 @@ export default function AuthenticateForm({ serverRespond, Error }) {
   /* API */
   React.useEffect(() => {
     axios
-      .get("https://geolocation-db.com/json/")
-      .then((res) => res.data)
+      .get("http://ip-api.com/json/?fields=61439")
       .then((data) => setUserGeoLocation(data))
       .catch((err) => {
         setUserGeoLocation(false);
@@ -274,8 +278,9 @@ export default function AuthenticateForm({ serverRespond, Error }) {
       selected: file,
     }));
   };
+
   const handleSubmit = (e) => {
-    if (formInputs.inputs.every((x) => x.ready.go)) {
+    if (!formInputs.inputs.every((x) => x.ready.go)) {
       setForminputs((current) => {
         const update = [...current.inputs];
         update.map((inp) => {
@@ -300,12 +305,17 @@ export default function AuthenticateForm({ serverRespond, Error }) {
       });
     } else {
       navigate("/user/AccountAuth/VarifyAccount");
-      if (ValidServerRespond) {
-        axios
-          .post("")
-          .then((res) => res)
-          .catch((err) => err);
-      }
+      const data = (() => {
+        const dataObject = {};
+        formInputs.inputs.forEach((x) => {
+          dataObject[x.id] = x.value;
+        });
+        return dataObject;
+      })();
+
+      (condition = true), url, fallBackFunction, callBackFunction, data;
+
+      MakeApiReq(true, ``, null, null, data);
     }
 
     /* IF  READY TO GO*/
@@ -451,10 +461,16 @@ export default function AuthenticateForm({ serverRespond, Error }) {
               </div>
             </div>
             {/* GEO LOCATION */}
-            <div className="w-full scale-[0.85] rounded-full border border-black py-[8px]">
-              {typeof userGeoLocation != "boolean"
-                ? userGeoLocation?.country_name || `Loading`
-                : `unknown`}
+            <div className="relatvie group w-full scale-[0.85] overflow-hidden rounded-full border border-black py-[8px]">
+              {"blue planet"}
+              <div
+                style={{
+                  transition: `transform 150ms , opacity 150ms ease`,
+                }}
+                className={`absolute top-0 flex h-full w-full  cursor-pointer  items-center justify-center rounded-full bg-green-400 text-[10px] font-semibold text-gray-800 opacity-0  group-hover:opacity-[1]`}
+              >
+                <p>fetch my location</p>
+              </div>
             </div>
           </div>
 
