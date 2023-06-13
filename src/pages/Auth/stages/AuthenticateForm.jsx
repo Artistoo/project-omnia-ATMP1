@@ -1,6 +1,7 @@
 import React from "react";
 import DOMPurify from "dompurify";
 import axios from "axios";
+import { useCurrentApiQuery } from "../../../redux/API";
 //_____________________ICONS____________________
 import { CgArrowRight, CgArrowUp, CgGoogle, CgTwitter } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
@@ -27,7 +28,8 @@ export default function AuthenticateForm({ serverRespond, Error }) {
   const { formError, setFormError } = Error;
   /* <---------------- CONTEXT -----------------> */
   const { ReqState, MakeApiReq } = React.useContext(Utils).API;
-
+  const { data, isLoading, Error: LocationApiError } = useCurrentApiQuery();
+  console.log(data);
   /* <--------------  REACT INPUT REF -----------> */
   const Password = React.useRef(null);
   const UserName = React.useRef(null);
@@ -125,7 +127,10 @@ export default function AuthenticateForm({ serverRespond, Error }) {
     name: ["daniel", "albert", "ali", "mark", "martin"],
     index: 0,
   });
-  const [userGeoLocation, setUserGeoLocation] = React.useState();
+  const [userGeoLocation, setUserGeoLocation] = React.useState({
+    allow: false,
+    location: () => data?.country,
+  });
   const [showHidePassword, setShowHidePassword] = React.useState(false);
   const [focused, setFocused] = React.useState(false);
   const [gender, setGender] = React.useState("male");
@@ -167,7 +172,6 @@ export default function AuthenticateForm({ serverRespond, Error }) {
         setUserGeoLocation(false);
       });
   }, []);
-
   //INPUT EVENTS
   const handleBlur = (inputs, e) => {
     if (inputs.ready.error) {
@@ -278,7 +282,6 @@ export default function AuthenticateForm({ serverRespond, Error }) {
       selected: file,
     }));
   };
-
   const handleSubmit = (e) => {
     if (!formInputs.inputs.every((x) => x.ready.go)) {
       setForminputs((current) => {
@@ -461,15 +464,31 @@ export default function AuthenticateForm({ serverRespond, Error }) {
               </div>
             </div>
             {/* GEO LOCATION */}
-            <div className="relatvie group w-full scale-[0.85] overflow-hidden rounded-full border border-black py-[8px]">
-              {"blue planet"}
+            <div className="relatvie group h-[30px] w-full scale-[0.85] overflow-hidden rounded-full border border-black py-[8px]">
+              <p>
+                {userGeoLocation.allow
+                  ? data && isLoading
+                    ? `loading`
+                    : data?.country
+                  : "blue planet"}
+              </p>
               <div
+                onClick={() => {
+                  let useData = false;
+                  setUserGeoLocation((c) => ({
+                    ...c,
+                    allow: !userGeoLocation.allow,
+                  }));
+                  useData = true;
+                }}
                 style={{
                   transition: `transform 150ms , opacity 150ms ease`,
                 }}
                 className={`absolute top-0 flex h-full w-full  cursor-pointer  items-center justify-center rounded-full bg-green-400 text-[10px] font-semibold text-gray-800 opacity-0  group-hover:opacity-[1]`}
               >
-                <p>fetch my location</p>
+                <p>
+                  {userGeoLocation.allow ? `blue planet` : `Fetch my Location`}
+                </p>
               </div>
             </div>
           </div>

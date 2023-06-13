@@ -1,55 +1,40 @@
 import nodemailer from "nodemailer";
 import express from "express";
+import { matchRoutes } from "react-router-dom";
 const routes = express.Router();
 
 /* EMAIL ME POST REQUEST */
 routes.post("", (req, res) => {
-  const { interest, email, subject, message, from } = JSON.parse(req.body.data);
+  const { interest, email, subject, message, from } = req.body;
 
-  const validReq = [interest, email, subject, message, from].every(Boolean);
+  const transporter = nodemailer.createTransport({
+    host: "smtp-mail.outlook.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.OFFICIALEMAIL,
+      pass: process.env.PASSWORD,
+    },
+  });
 
-  if (validReq) {
-    const transporter = nodemailer.createTransport({
-      service: "Outlook",
-      auth: {
-        user: process.env.OFFICIALEMAIL,
-        pass: process.env.PASSWORD,
-      },
-    });
+  const mailOptions = {
+    from: "official_Jolly@outlook.com",
+    to: process.env.OFFICIALEMAIL,
+    subject: subject,
+    text: `Name: ${from}\nEmail: ${email}\n\nMessage: ${message}`,
+  };
 
-    const options = {
-      from: email,
-      to: process.env.OFFICIALEMAIL,
-      subject,
-      text: `user with ${interest} interest is saying ${message}`,
-    };
-
-    transporter.sendMail(options, (err, info) => {
-      if (err) {
-        res.status(500).json({
-          message: `nodemailer, failed with status 500, ${err.message}`,
-        });
-      } else {
-        res.status(200).json({ success: `message was sent` });
-      }
-    });
-  } else if (!validReq && type && type == "report") {
-    const transporter = nodemailer.createTransport({
-      auth: {
-        use: process.env.OFFICIALEMAIL,
-        pass: process.env.PASSWORD,
-      },
-    });
-    transporter.sendMail({ from, subject, text: message }, (err, info) => {
-      if (err) {
-        res.status(500).json({ fail: true, message: `failed to submit email` });
-        return;
-      }
-      res.status(200).json({ fail: false });
-    });
-  } else {
-    res.send(`please make sure the form is valid befroe trying again`);
-  }
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send("Failed to send message");
+    } else {
+      console.log("Message sent successfully");
+      res.status(200).send("Message sent successfully");
+    }
+  });
 });
+
+routes.get("", (req, res) => res.send("contact us route"));
 
 export default routes;

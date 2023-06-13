@@ -1,9 +1,13 @@
 import React from "react";
 import axios from "axios";
 import DOMPurify from "dompurify";
+import { Navigate, useNavigate } from "react-router-dom";
+
+/*  */
 import { validEmail } from "../../utils/validity";
 import { Utils } from "../../context/utilsContext";
-//<---------- ICONS ---------->
+import { useSendMeEmailMutation } from "../../redux/API";
+//______________ ICONS ________________
 import { IoIosArrowForward } from "react-icons/io";
 import {
   BiAtom as science,
@@ -15,9 +19,15 @@ import {
 } from "react-icons/bi";
 
 export default function ContactForm() {
-  /* UTILS CONTEXT */
+  const navigate = useNavigate();
+  /*<--------- UTILS CONTEXT ---------> */
   const { ReqState, MakeApiReq } = React.useContext(Utils).API;
-  /* STATES */
+
+  /*<--------- Redux Context -------> */
+  const [sendMeEmail, { isLoading: isSending, isError, error }] =
+    useSendMeEmailMutation();
+
+  /*<----------- STATES --------> */
   const [emailInputs, setEamilInputs] = React.useState([
     [
       {
@@ -54,7 +64,7 @@ export default function ContactForm() {
         req: true,
         valid: {
           validate: (val) => {
-            return /^[a-zA-Z]+$/.test(val);
+            return /^\w+$/.test(val);
           },
           isValid: false,
         },
@@ -128,8 +138,9 @@ export default function ContactForm() {
     sent: false,
     error: "",
   });
+  const [submitted, setSubmited] = React.useState(false);
 
-  /* USE EFFECT */
+  /* <------- USE EFFECT ------> */
   React.useEffect(() => {
     const clearStorage = setTimeout(() => {
       localStorage.removeItem("submitedEmail");
@@ -137,8 +148,8 @@ export default function ContactForm() {
 
     return () => clearTimeout(clearStorage);
   }, []);
-  /* EVENT HANDLING */
 
+  /*<----- EVENT HANDLERS ----->*/
   const ArrowIcon = (index) => {
     return (
       <div
@@ -172,8 +183,19 @@ export default function ContactForm() {
     );
   };
   const handleChange = (e, index, inpindex) => {
+    /* checking if any of the inputs is already valid when any input value changes */
     setEamilInputs((current) => {
       const update = [...current];
+      if (update[index][inpindex].valid.validate(e.target.value)) {
+        update[index][inpindex] = {
+          ...update[index][inpindex],
+          valid: {
+            ...update[index][inpindex].valid,
+            isValid: true,
+          },
+        };
+      }
+      /* adding some stying when the input is not valid onChange  */
       if (
         current[index][inpindex].ref &&
         current[index][inpindex].ref.current
@@ -194,6 +216,8 @@ export default function ContactForm() {
         }, 1500);
         if (DoneReset) clearTimeout(resetBorder);
       }
+
+      /* validating the inputs on change  */
       const validate = update[index][inpindex]?.valid.validate(e.target.value);
       update[index][inpindex] = {
         ...update[index][inpindex],
@@ -216,48 +240,39 @@ export default function ContactForm() {
       message: emailInputs[1][0]?.value,
       from: emailInputs[0][0]?.value,
     };
-    const FallBack = () => {
-      setEamilInputs((current) => {
-        return current.map((inputGroup) =>
-          inputGroup.map((input) => {
-            if (!input?.valid?.isValid) {
-              let done = false;
-              if (input?.ref?.current) {
-                input.ref.current.style.filter = "blur(20px)";
-                const removeInvalidity = setTimeout(() => {
-                  input.ref.current.style.filter = "blur(0)";
-                  done = true;
-                }, 500);
-                if (done) clearTimeout(removeInvalidity);
-              }
-            }
-            return input;
-          })
-        );
-      });
-    };
-    const condition = emailInputs
-      .slice(0, 1)
-      .flat()
-      .filter((x) => x?.req)
-      .every((i) => i?.valid?.isValid);
 
-    MakeApiReq(
-      condition,
-      `http://localhost:5500/contact`,
-      FallBack,
-      null,
-      data
-    );
+    if (
+      emailInputs
+        .slice(0, 1)
+        .flat()
+        .filter((x) => x?.req)
+        .every((i) => i?.valid?.isValid)
+    ) {
+      try {
+        const respond = await sendMeEmail(data);
+        if (respond.error.originalStatus === 200) {
+          setSubmited(true);
+          let done = false;
+          const returnHomeTimer = setTimeout(() => {
+            navigate("/");
+            done = true;
+          }, 6000);
+          done && clearTimeout(returnHomeTimer);
+        } else setSubmited(true);
+      } catch (err) {
+        setSendReq((c) => ({ ...c, error }));
+        setSubmited(false);
+      }
+    }
   };
 
   return (
-    /* PAGE CONTAINER */
+    /* <------------------- PAGE CONTAINER -----------------> */
     <div
       id={`contactFormContainer`}
       className={`relative mb-[150px] mt-[50px] flex h-[1300px] w-full flex-col-reverse flex-wrap gap-y-[0px] px-[20px]  md:h-[1300px] md:gap-y-[50px] lg:h-[900px] lg:flex-row lg:justify-between  `}
     >
-      {/* TEXT TEXT PARENT CONTAINER */}
+      {/*<----------- TEXT TEXT PARENT CONTAINER --------------> */}
       <div
         className={`relative flex h-[40%] w-full   translate-x-[-30px]  scale-[0.9] pt-[20px] md:h-[30%] md:translate-x-0 md:scale-[1]  lg:h-full lg:w-[38%]`}
       >
@@ -310,18 +325,38 @@ export default function ContactForm() {
           </div>
         </div>
       </div>
-      {/* THE FORM */}
+
+      {/*<-------------------- THE FORM  ------------------>*/}
       <div
         className={`relative flex h-[55%] items-center justify-center   md:h-[65%] md:w-full lg:h-full lg:w-[55%] lg:px-[30px]`}
       >
         <div
           className={`relative top-0 flex h-[90%] w-full flex-col items-center justify-center  gap-y-[20px]  font-[Poppins] text-[16px] font-semibold text-gray-500 lg:sticky lg:h-[80%]`}
         >
+          {/* SUCCESSFULLY SENT */}
+          <div
+            style={{
+              transition: `opacity 250ms , transform 300ms ease `,
+            }}
+            className={`pointer-events-none absolute flex h-full w-full flex-col items-center justify-center text-[1.2rem] text-gray-200 ${
+              submitted
+                ? `translate-y-0 opacity-[1]`
+                : `translate-y-[50px] opacity-0`
+            }`}
+          >
+            <img />
+            <p>sent successfully</p>
+          </div>
           {emailInputs.map((inputSection, index) => {
             return (
               <div
+                style={{
+                  transition: `opacity 250ms , transform 300ms ease `,
+                }}
                 key={`inputContactSectionN${index}`}
-                className={`flex h-[35%] w-full  flex-wrap items-center justify-center gap-x-[20px]   gap-y-[12px] lg:h-[32%]`}
+                className={`flex h-[35%] w-full  flex-wrap items-center justify-center gap-x-[20px]   gap-y-[12px] lg:h-[32%] ${
+                  submitted ? `translate-y-[-200px] opacity-0` : ``
+                }`}
               >
                 {/* THE FIRST AND SECOND SECION CONTAINER */}
                 {index != 2
@@ -484,7 +519,7 @@ export default function ContactForm() {
             onClick={() => handleSubmit()}
             className={`flex h-[15%] max-h-[50px] w-full cursor-pointer items-center justify-center rounded-sm border bg-gradient-to-tl from-gray-300 to-gray-100 text-[18px] font-normal text-black hover:from-transparent hover:to-transparent hover:text-white lg:h-[8%]`}
           >
-            {ReqState.sending ? `sending` : `submit`}
+            {isSending ? `sending` : `submit`}
           </div>
         </div>
       </div>

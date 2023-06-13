@@ -3,10 +3,10 @@ const UserSchema = new mongoose.Schema({
   userName: {
     type: String,
     require: false,
+    unique : false , 
   },
   LastName: {
     type: String,
-    require: false,
   },
   Email: {
     type: String,
