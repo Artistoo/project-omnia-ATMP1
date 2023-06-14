@@ -5,7 +5,6 @@ import { Navigate, useNavigate } from "react-router-dom";
 
 /*  */
 import { validEmail } from "../../utils/validity";
-import { Utils } from "../../context/utilsContext";
 import { useSendMeEmailMutation } from "../../redux/API";
 //______________ ICONS ________________
 import { IoIosArrowForward } from "react-icons/io";

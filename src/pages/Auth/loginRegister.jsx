@@ -55,7 +55,7 @@ export default function loginRegister() {
             onClick={(e) => setFormError((current) => "")}
             className={`${
               ErrorBG || "bg-tranparnet"
-            }bg-tranparnet group  absolute top-[100px] h-[50px] w-[80%] min-w-[350px] max-w-[600px] cursor-pointer items-center  justify-center overflow-hidden rounded-md  border  bg-opacity-[0.7] font-[brandinkLight] text-[15px] leading-[13px] text-white  backdrop-blur-[4px] md:w-[40%] ${
+            } group  absolute top-[100px] h-[50px] w-[80%] min-w-[350px] max-w-[600px] cursor-pointer items-center  justify-center overflow-hidden rounded-md  border  bg-opacity-[0.7] font-[brandinkLight] text-[15px] leading-[13px] text-white  backdrop-blur-[4px] md:w-[40%] ${
               formError
                 ? "flex border-white opacity-[1]"
                 : `hidden border-transparent opacity-0`

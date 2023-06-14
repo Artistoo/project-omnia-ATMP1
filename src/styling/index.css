@@ -379,6 +379,19 @@ body::-webkit-scrollbar {
   scale: 2;
 }
 
+.Registering {
+  animation: RegisteringAnimation 400ms infinite alternate ease-in-out;
+  animation-delay: calc(var(--sendingUserDataDelay) * 100ms);
+}
+@keyframes RegisteringAnimation {
+  from {
+    padding: 0 0;
+  }
+  to {
+    padding: 30px 0;
+  }
+}
+
 /* THE CATEGORIES SECTION */
 .carousel-dots {
   width: 100%;

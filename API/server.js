@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import passport from "passport";
 import session from "express-session";
 import UserSchema from "./models/Users.js";
 import AuthRoute from "./Routes/authenticate.js";
@@ -28,7 +29,6 @@ console.log(`connected to db`);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(
   session({
     secret: "MyPassword",
@@ -36,10 +36,13 @@ app.use(
     saveUninitialized: false,
   })
 );
-//____________INITIALIZATION_____________
-app.listen(port, () => console.log(`Server running on port ${port}`));
 
-//____________ ROUTES _______________
-app.get("/", (req, res) => res.send("main route"));
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use("/auth", AuthRoute);
 app.use("/contact", Contact);
+//____________INITIALIZATION_____________
+app.listen(port, () => console.log(`Server running on port ${port}`));
+//____________ ROUTES _______________
+app.get("/", (req, res) => res.send("main route"));

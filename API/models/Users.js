@@ -2,23 +2,20 @@ import mongoose from "mongoose";
 const UserSchema = new mongoose.Schema({
   userName: {
     type: String,
-    require: false,
-    unique : false , 
+    require: true,
+    unique: false,
   },
   LastName: {
     type: String,
+    require: true,
   },
   Email: {
     type: String,
-    require: false,
+    require: true,
   },
   Password: {
     type: String,
-    require: false,
-  },
-  RepeatPassword: {
-    type: String,
-    require: false,
+    require: true,
   },
   gender: {
     type: String,
@@ -26,6 +23,10 @@ const UserSchema = new mongoose.Schema({
     default: "male",
   },
   Avatar: {
+    type: String,
+    require: true,
+  },
+  Location: {
     type: String,
     require: false,
   },

@@ -2,6 +2,8 @@ import React from "react";
 import DOMPurify from "dompurify";
 import axios from "axios";
 import { useCurrentApiQuery } from "../../../redux/API";
+import { useCreateUserMutation } from "../../../redux/API";
+import { useNavigate } from "react-router-dom";
 //_____________________ICONS____________________
 import { CgArrowRight, CgArrowUp, CgGoogle, CgTwitter } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
@@ -21,15 +23,25 @@ import {
 
 //__________________UTILITIES_______________________
 import { validEmail } from "../../../utils/validity";
-import { Utils } from "../../../context/utilsContext.jsx";
 
 // _____________AUTHENTICATION FORM ____________________
-export default function AuthenticateForm({ serverRespond, Error }) {
+export default function AuthenticateForm({ serverRespond, Error, setErrorBG }) {
+  const navigate = useNavigate();
   const { formError, setFormError } = Error;
   /* <---------------- CONTEXT -----------------> */
-  const { ReqState, MakeApiReq } = React.useContext(Utils).API;
-  const { data, isLoading, Error: LocationApiError } = useCurrentApiQuery();
-  console.log(data);
+  const {
+    data: locationData,
+    isLoading,
+    Error: LocationApiError,
+  } = useCurrentApiQuery();
+  const [
+    createUser,
+    {
+      isLoading: isSendingUserData,
+      ServerSideAuthError,
+      isError: isSendingUserDataError,
+    },
+  ] = useCreateUserMutation();
   /* <--------------  REACT INPUT REF -----------> */
   const Password = React.useRef(null);
   const UserName = React.useRef(null);
@@ -129,7 +141,7 @@ export default function AuthenticateForm({ serverRespond, Error }) {
   });
   const [userGeoLocation, setUserGeoLocation] = React.useState({
     allow: false,
-    location: () => data?.country,
+    location: locationData?.country,
   });
   const [showHidePassword, setShowHidePassword] = React.useState(false);
   const [focused, setFocused] = React.useState(false);
@@ -164,14 +176,19 @@ export default function AuthenticateForm({ serverRespond, Error }) {
   ];
 
   /* API */
+  //RESET THE VALUE FOR EACH INPUT WHEN THE FORM REQ TYPE CHANGE
   React.useEffect(() => {
-    axios
-      .get("http://ip-api.com/json/?fields=61439")
-      .then((data) => setUserGeoLocation(data))
-      .catch((err) => {
-        setUserGeoLocation(false);
-      });
-  }, []);
+    setForminputs((c) => ({
+      ...c,
+      inputs: formInputs.inputs.map((x) => {
+        const updated = { ...x };
+        if (updated.ref && updated.ref.current) {
+          updated.ref.current.value = "";
+        }
+        return updated;
+      }),
+    }));
+  }, [formInputs.Req_Type]);
   //INPUT EVENTS
   const handleBlur = (inputs, e) => {
     if (inputs.ready.error) {
@@ -282,7 +299,8 @@ export default function AuthenticateForm({ serverRespond, Error }) {
       selected: file,
     }));
   };
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     if (!formInputs.inputs.every((x) => x.ready.go)) {
       setForminputs((current) => {
         const update = [...current.inputs];
@@ -307,18 +325,29 @@ export default function AuthenticateForm({ serverRespond, Error }) {
         };
       });
     } else {
-      navigate("/user/AccountAuth/VarifyAccount");
-      const data = (() => {
-        const dataObject = {};
-        formInputs.inputs.forEach((x) => {
-          dataObject[x.id] = x.value;
-        });
-        return dataObject;
-      })();
+      if (formInputs.Req_Type === "up") {
+        try {
+          const data = {};
+          formInputs.inputs.map((input) => (data[input.id] = input.value));
+          data.avatar = userAvatar.selected
+            ? URL.createObjectURL(userAvatar.selected)
+            : userAvatar.default[gender];
+          data.gender = gender;
+          data.Location = userGeoLocation.allow
+            ? locationData?.country
+            : "blue planet";
 
-      (condition = true), url, fallBackFunction, callBackFunction, data;
-
-      MakeApiReq(true, ``, null, null, data);
+          const SendUserRegisterData = await createUser(data);
+          if (isSendingUserDataError || ServerSideAuthError) {
+            setFormError((c) => (c = ServerSideAuthError.message));
+            return;
+          }
+          if (!isSendingUserData) navigate("/user/AccountAuth/VarifyAccount");
+          console.log(SendUserRegisterData);
+        } catch (err) {
+          console.log(err);
+        }
+      }
     }
 
     /* IF  READY TO GO*/
@@ -467,19 +496,17 @@ export default function AuthenticateForm({ serverRespond, Error }) {
             <div className="relatvie group h-[30px] w-full scale-[0.85] overflow-hidden rounded-full border border-black py-[8px]">
               <p>
                 {userGeoLocation.allow
-                  ? data && isLoading
+                  ? locationData && isLoading
                     ? `loading`
-                    : data?.country
+                    : locationData?.country
                   : "blue planet"}
               </p>
               <div
                 onClick={() => {
-                  let useData = false;
                   setUserGeoLocation((c) => ({
                     ...c,
                     allow: !userGeoLocation.allow,
                   }));
-                  useData = true;
                 }}
                 style={{
                   transition: `transform 150ms , opacity 150ms ease`,
@@ -720,15 +747,24 @@ export default function AuthenticateForm({ serverRespond, Error }) {
           className={`group relative flex h-[82%] w-[60%] cursor-pointer select-none items-center justify-center overflow-hidden rounded-full border border-white bg-green-400 bg-opacity-[0.7] font-[Poppins] text-[18px] text-gray-800  hover:border-black `}
         >
           {/* OTHER WAYS TO SIGN UP */}
-          <div className="z-[1] flex w-[40%]  items-center justify-around">
+          <div
+            className={`z-[1] flex w-[40%]  items-center ${
+              isSendingUserData ? `Registering gap-x-[0px]` : `gap-x-[16px]`
+            } justify-center`}
+          >
             {/* MAPPING THO LOGOS  */}
             {[CgGoogle, FaGithub, CgTwitter].map((MediaLogo, index) => (
               <MediaLogo
                 key={`mediaSignupLogo${index}`}
                 style={{
+                  "--sendingUserDataDelay": `${index}`,
                   transition: `transform 350ms ease`,
                 }}
-                className="translate-x-[-12px] scale-[1.1] hover:rotate-[360deg]  hover:scale-[1.4] hover:fill-black"
+                className={`hover:fill-blackorigin-center  translate-x-[-12px]  hover:rotate-[360deg] hover:scale-[1.4] ${
+                  isSendingUserData
+                    ? ` Registering scale-[0.3] rounded-full border border-black bg-black p-[12px]`
+                    : `scale-[1.1]`
+                }`}
               />
             ))}
           </div>
@@ -759,6 +795,7 @@ export default function AuthenticateForm({ serverRespond, Error }) {
             className="absolute right-[35px] scale-[1.3] rounded-full  text-green-700  opacity-0 group-hover:translate-x-[15px] group-hover:opacity-[1]  "
           />
         </div>
+
         {/* <--- SWITCH  BUTTON  --->*/}
         <div
           style={{
