@@ -120,7 +120,6 @@ export default function services() {
         },
       },
     ]);
-    console.log(ServicesBoxsInView);
     React.useEffect(() => {
       const handleScroll = () => {
         const scrollPosition = window.pageYOffset;

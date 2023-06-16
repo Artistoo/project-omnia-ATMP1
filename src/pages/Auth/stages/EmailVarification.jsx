@@ -1,13 +1,48 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function EmailVarification({ Error, setErrorBG }) {
+import { useGetVerificationCodeQuery } from "../../../redux/API";
+import { useCreateUserMutation } from "../../../redux/API";
+import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
+
+export default function EmailVarification({
+  Error,
+  setErrorBG,
+  TargetEmail,
+  AuthProcess,
+  form,
+}) {
+  //<---------API CALL --------->
+  const {
+    error: verificationCode,
+    isLoading,
+    data,
+  } = useGetVerificationCodeQuery();
+  const [
+    createUser,
+    { error: regersteringError, isLoading: isRegisteringUser },
+  ] = useCreateUserMutation();
+
+  //<-------- REACT ROUTER ------>
+  const navigate = useNavigate();
   //<-------- REFS -------->
   const CodeRefs = React.useRef([]);
+
+  //<------ OBJECT DECONSTRACTING ----->
+  const { formError, setFormError } = Error;
+  const { setAuthenticationProcess, AuthenticationProcess } = AuthProcess;
+  const { EmailSentTo, setEmailSentTo } = TargetEmail;
+
   //<--------- STATES --------->
   const [resendCountDown, setResendCountDown] = React.useState(4);
-
-  //<---------- INHARETED --------->
-  const { formError, setFormError } = Error;
+  const [ReadyToVerify, setReadyToVerify] = React.useState(false);
+  const [CurrentVerificationCode, setCurrentVerificationCode] = React.useState({
+    code: "",
+    Error: {
+      isError: false,
+      ErrorMessage: "",
+    },
+  });
 
   //<------ INPUTS EVENT HANDLING ------>
   const handlePaste = (e) => {
@@ -30,8 +65,26 @@ export default function EmailVarification({ Error, setErrorBG }) {
         CodeRefs.current[index + 1].focus();
       }
     }
+    if (CodeRefs.current.every((x) => x.value)) {
+      setReadyToVerify(true);
+    } else {
+      setReadyToVerify(false);
+    }
   };
+  const onSubmit = async () => {
+    if (
+      CodeRefs.current.every((x) => x.value) &&
+      parseInt(CodeRefs.current.join("")) === verificationCode
+    ) {
+      createUser(data);
+    }
+  };
+
   //<------USEEFFECT------->
+  //ensuring that the user can't reach this Route without registering or login in first
+  React.useEffect(() => {
+    if (AuthenticationProcess.render.index != 1) navigate("/");
+  }, []);
 
   React.useEffect(() => {
     let done = false;
@@ -63,7 +116,7 @@ export default function EmailVarification({ Error, setErrorBG }) {
             verify your Account
           </h2>
           <p className={`w-[45%] font-[garet] text-[15px] leading-[15px] `}>
-            verify your account to start your journy with a wonderful people{" "}
+            an email was sent to :<b>{EmailSentTo}</b>
           </p>
         </div>
         <div className={`flex w-full items-center justify-between gap-x-[5px]`}>
@@ -81,12 +134,42 @@ export default function EmailVarification({ Error, setErrorBG }) {
             />
           ))}
         </div>
-
         <div className={`flex h-[15%] w-full items-center justify-between `}>
           <div
-            className={`h-[100%] w-[45%] self-start rounded-full border border-black`}
-          ></div>
+            style={{
+              transition: `background 500ms ease`,
+            }}
+            className={`group flex h-[100%] w-[45%] cursor-pointer  select-none items-center justify-center  self-start rounded-full border  font-[Poppins] font-semibold hover:bg-black  ${
+              ReadyToVerify ? `border-green-700` : `border-black`
+            }`}
+          >
+            <p
+              className={`flex items-center justify-center transition-transform duration-[500ms] ${
+                ReadyToVerify ? `group-hover:translate-x-[-10px]` : ``
+              } group-hover:text-gray-50`}
+            >
+              <b
+                className={` group-hover:text-green-400 ${
+                  ReadyToVerify
+                    ? `group-hover:text-green-400 `
+                    : `group-hover:text-gray-50`
+                }`}
+              >
+                {ReadyToVerify ? `go` : `verify`}
+              </b>
+            </p>
 
+            <BsArrowRight
+              style={{
+                transition: `transform 350ms 500ms , opacity 200ms 500ms ease`,
+              }}
+              className={`absolute translate-x-[15px] text-green-400 opacity-0  ${
+                ReadyToVerify
+                  ? `group-hover:translate-x-[20px] group-hover:opacity-[1] `
+                  : ``
+              }`}
+            />
+          </div>
           <div
             onClick={() => {
               setResendCountDown(70);

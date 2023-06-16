@@ -1,16 +1,21 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { LocationApi, ServerSideApi } from "./API";
+import { LocationApi, ServerSideApiPost, ServerSideApiGet } from "./API";
 
 import Int from "./intSlice";
 const store = configureStore({
   reducer: {
     [LocationApi.reducerPath]: LocationApi.reducer,
-    [ServerSideApi.reducerPath]: ServerSideApi.reducer,
+    [ServerSideApiPost.reducerPath]: ServerSideApiPost.reducer,
+    [ServerSideApiGet.reducerPath]: ServerSideApiGet.reducer,
     intReducer: Int,
   },
   middleware: (defaultMiddleware) =>
-    defaultMiddleware().concat(LocationApi.middleware, ServerSideApi.middleware),
+    defaultMiddleware().concat(
+      LocationApi.middleware,
+      ServerSideApiPost.middleware,
+      ServerSideApiGet.middleware
+    ),
 });
 setupListeners(store.dispatch);
 

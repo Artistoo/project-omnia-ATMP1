@@ -8,8 +8,8 @@ import { userStateContext } from "../../context/userState";
 
 //_____________ ICONS_____________
 
-import { BiMessageSquareError } from "react-icons/bi";
-import { CiCircleRemove } from "react-icons/ci";
+import { BiExit, BiMessageSquareError } from "react-icons/bi";
+import { CiCircleRemove, CiWarning } from "react-icons/ci";
 //______________Components________________
 import EmailVarification from "./stages/EmailVarification.jsx";
 import Loading from "../../../src/components/Loading";
@@ -24,26 +24,41 @@ import {
 
 // _____________GLOBAL STATES _____________
 import { useSelector } from "react-redux";
+import { GiCancel, GiReloadGunBarrel } from "react-icons/gi";
+import { TbReload } from "react-icons/tb";
+import { AiOutlineReload } from "react-icons/ai";
+import { BsReverseLayoutSidebarReverse } from "react-icons/bs";
 
 //_________________JSX ___________________
+
 export default function loginRegister() {
   const { userState } = React.useContext(userStateContext);
   const { loged, admin } = userState;
   const navigate = useNavigate();
 
-  /* REACT INPUT REF */
-  const Password = React.useRef(null);
-  const UserName = React.useRef(null);
-  const Email = React.useRef(null);
-  const RepeatPassword = React.useRef(null);
-  const LastName = React.useRef(null);
+  /* Preventing the page from Reloading */
+  React.useEffect(() => {
+    const BeforeReload = (e) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", BeforeReload);
+    return () => removeEventListener("beforeunload", BeforeReload);
+  }, []);
 
   //<-----------COMPONENTS------------->
   const RegisterRequest = () => {
-    const [ValidServerRespond, setValidServerRespond] = React.useState(false);
     const [formError, setFormError] = React.useState();
-    const [ErrorBG, setErrorBG] = React.useState();
-    
+    const [AuthenticationProcess, setAuthenticationProcess] = React.useState({
+      verify: true,
+      render: { element: [AuthenticateForm, EmailVarification], index: 0 },
+    });
+
+    const [EmailSentTo, setEmailSentTo] = React.useState("");
+    const [formData, setformData] = React.useState();
+
+    const RenderAuthProcess =
+      AuthenticationProcess.render.element[AuthenticationProcess.render.index];
+
     return (
       <>
         {/* <------- ERROR -------> */}
@@ -53,13 +68,12 @@ export default function loginRegister() {
               transition: `border 400ms 100ms , opacity 200ms , background 220ms ease`,
             }}
             onClick={(e) => setFormError((current) => "")}
-            className={`${
-              ErrorBG || "bg-tranparnet"
-            } group  absolute top-[100px] h-[50px] w-[80%] min-w-[350px] max-w-[600px] cursor-pointer items-center  justify-center overflow-hidden rounded-md  border  bg-opacity-[0.7] font-[brandinkLight] text-[15px] leading-[13px] text-white  backdrop-blur-[4px] md:w-[40%] ${
-              formError
-                ? "flex border-white opacity-[1]"
-                : `hidden border-transparent opacity-0`
-            }`}
+            className={`
+               bg-tranparnet group  absolute top-[100px] h-[50px] w-[80%] min-w-[350px] max-w-[600px] cursor-pointer items-center  justify-center overflow-hidden rounded-md  border  bg-opacity-[0.7] font-[brandinkLight] text-[15px] leading-[13px] text-white  backdrop-blur-[4px] md:w-[40%] ${
+                 formError
+                   ? "flex border-white opacity-[1]"
+                   : `hidden border-transparent opacity-0`
+               }`}
           >
             <>
               <BiMessageSquareError
@@ -76,37 +90,27 @@ export default function loginRegister() {
           </div>
         )}
         {/* <-------- FORM STAGES ----------> */}
-        <Routes>
-          <Route
-            index
-            element={
-              <AuthenticateForm
-                Error={{
-                  formError,
-                  setFormError,
-                }}
-                setErrorBG
-                serverRespond={(ValidServerRespond, setValidServerRespond)}
-              />
-            }
-          />
-          <Route
-            path={"/EmailVarification"}
-            setErrorBG
-            element={
-              <EmailVarification
-                Error={{
-                  formError,
-                  setFormError,
-                }}
-              />
-            }
-          />
-        </Routes>
+        <RenderAuthProcess
+          Error={{
+            formError,
+            setFormError,
+          }}
+          TargetEmail={{
+            EmailSentTo,
+            setEmailSentTo,
+          }}
+          AuthProcess={{ setAuthenticationProcess, AuthenticationProcess }}
+          Verification={{
+            "": "",
+          }}
+          form={{
+            formData,
+            setformData,
+          }}
+        />
       </>
     );
   };
-
   /* <-------- THE AVATARS ARTWORK -------> */
   const RegisterArt = () => {
     const [PageLoaded, setPageLoaded] = React.useState(false);
@@ -168,12 +172,7 @@ export default function loginRegister() {
     );
   };
 
-  const Policy = () => {
-    <div className="absolute hidden lg:flex"></div>;
-  };
-
   //-----------MAIN SECTION DISPLAY-------------
-
   return (
     <div
       className={`  my-[50px] flex min-h-[530px] flex-wrap items-center justify-center  `}
@@ -182,7 +181,6 @@ export default function loginRegister() {
         <>
           <RegisterArt />
           <RegisterRequest />
-          <Policy />
         </>
       ) : (
         navigate("./")

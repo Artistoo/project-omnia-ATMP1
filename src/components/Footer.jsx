@@ -15,7 +15,6 @@ export default function () {
 
   const navigate = useNavigate();
   const location = useLocation();
-  console.log(location);
   const FooterContent = () => {
     const { FooterContentLinks, setFooterContentLinks } =
       React.useContext(FooterContext);

@@ -7,15 +7,26 @@ import { signUpUtils } from "../utils/signUpUtil.js";
 import mongoose from "mongoose";
 const routes = express.Router();
 routes.post("/login", logInUtil);
-
 routes.post("/signup", signUpUtils);
 routes.post("/logout" /* logoutUtil */);
 routes.post("/delete" /* deleteUtil */);
 
 /* <----- GET -----> */
+
 routes.get("/login", (req, res) => res.send(`log in to your account`));
 routes.get("/signup", (req, res) => res.send(`register a new user account `));
 routes.get("/logout" /* logoutUtil */);
 routes.get("/delete" /* deleteUtil */);
+
+routes.get(`/verify`, (req, res) => {
+  function* generateCode() {
+    while (true) {
+      yield Math.floor((Math.random() * 9999999) % 999999);
+    }
+  }
+  const instance = generateCode();
+  const Current = instance.next().value;
+  res.send(String(Current));
+});
 
 export default routes;

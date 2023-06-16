@@ -12,12 +12,23 @@ export const LocationApi = createApi({
     }),
   }),
 });
+
+export const ServerSideApiGet = createApi({
+  reducerPath: `ServerSideApiGet`,
+  baseQuery: fetchBaseQuery({
+    baseUrl: `http://localhost:5500/`,
+  }),
+  endpoints: (builder) => ({
+    getVerificationCode: builder.query({
+      query: () => "/auth/verify",
+    }),
+  }),
+});
 export const { useCurrentApiQuery } = LocationApi;
-
+export const { useGetVerificationCodeQuery } = ServerSideApiGet;
 //<-------------- POST REQ ----------------->
-
-export const ServerSideApi = createApi({
-  reducerPath: `ServerSideApi`,
+export const ServerSideApiPost = createApi({
+  reducerPath: `ServerSideApiPost`,
   baseQuery: fetchBaseQuery({
     baseUrl: `http://localhost:5500/`,
   }),
@@ -38,4 +49,5 @@ export const ServerSideApi = createApi({
     }),
   }),
 });
-export const { useSendMeEmailMutation, useCreateUserMutation } = ServerSideApi;
+export const { useSendMeEmailMutation, useCreateUserMutation } =
+  ServerSideApiPost;

@@ -8,6 +8,7 @@ import Colors from "./notLogedSections/colors";
 import WhiteSections from "./notLogedSections/WhiteSections";
 import Examples from "./notLogedSections/Examples";
 import Divorcity from "./notLogedSections/Divorcity";
+import FAQ from "./notLogedSections/FAQ";
 import { Routes, Route } from "react-router-dom";
 import { userStateContext } from "../../context/userState";
 
@@ -23,6 +24,7 @@ export default function home() {
         <WhiteSections />
         <Examples />
         <Divorcity />
+        <FAQ />
       </div>
     );
   };

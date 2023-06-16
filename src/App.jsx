@@ -45,7 +45,7 @@ function App() {
 
         <Route path={`/settings`} element={<Settings />} />
 
-        <Route path="user/AccountAuth/" element={<LoginRegister />} />
+        <Route path="/user/AccountAuth" element={<LoginRegister />} />
 
         <Route path="/details" element={<Details />} />
 

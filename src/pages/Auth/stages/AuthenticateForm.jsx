@@ -25,9 +25,18 @@ import {
 import { validEmail } from "../../../utils/validity";
 
 // _____________AUTHENTICATION FORM ____________________
-export default function AuthenticateForm({ serverRespond, Error, setErrorBG }) {
+export default function AuthenticateForm({
+  Error,
+  AuthProcess,
+  VerificationCode,
+  TargetEmail,
+  form,
+}) {
   const navigate = useNavigate();
   const { formError, setFormError } = Error;
+  const { setAuthenticationProcess, AuthenticationProcess } = AuthProcess;
+  const { EmailSentTo, setEmailSentTo } = TargetEmail;
+  const { formData, setformData } = form;
   /* <---------------- CONTEXT -----------------> */
   const {
     data: locationData,
@@ -174,7 +183,6 @@ export default function AuthenticateForm({ serverRespond, Error, setErrorBG }) {
       show: "fp",
     },
   ];
-
   /* API */
   //RESET THE VALUE FOR EACH INPUT WHEN THE FORM REQ TYPE CHANGE
   React.useEffect(() => {
@@ -189,6 +197,7 @@ export default function AuthenticateForm({ serverRespond, Error, setErrorBG }) {
       }),
     }));
   }, [formInputs.Req_Type]);
+
   //INPUT EVENTS
   const handleBlur = (inputs, e) => {
     if (inputs.ready.error) {
@@ -249,26 +258,18 @@ export default function AuthenticateForm({ serverRespond, Error, setErrorBG }) {
       };
 
       // Trigger validation for repeat password whenever any of the password inputs change
-      if (formInputs.inputs[index].id.includes("password")) {
-        const repeatPasswordIndex = 4;
-        const repeatPassword = updated[repeatPasswordIndex].value;
-        const passwordIndex = 3;
-        const password = updated[passwordIndex].value;
-
-        const repeatPasswordValidation =
-          repeatPassword === password || repeatPassword === "";
-
-        updated[repeatPasswordIndex] = {
-          ...updated[repeatPasswordIndex],
-
+      if (formInputs.inputs[4].value != formInputs.inputs[3].value) {
+        formInputs.inputs[4] = {
+          ...formInputs.inputs[4],
           ready: {
-            ...updated[repeatPasswordIndex].ready,
-            error: !repeatPasswordValidation,
-            go: repeatPasswordValidation,
+            ...formInputs.inputs[4].ready,
+            error: true,
+            go: false,
           },
         };
       }
 
+      //Adding some Style on input Error
       if (formInputs.inputs[index].ready.error) {
         e.target.style.border = "solid red thin";
         setFormError(formInputs.inputs[index].ready.errorMSG);
@@ -299,9 +300,12 @@ export default function AuthenticateForm({ serverRespond, Error, setErrorBG }) {
       selected: file,
     }));
   };
-
   const handleSubmit = async (e) => {
-    if (!formInputs.inputs.every((x) => x.ready.go)) {
+    if (
+      !formInputs.inputs
+        .filter((x) => x.display.includes(formInputs.Req_Type))
+        .every((x) => x.ready.go)
+    ) {
       setForminputs((current) => {
         const update = [...current.inputs];
         update.map((inp) => {
@@ -326,31 +330,25 @@ export default function AuthenticateForm({ serverRespond, Error, setErrorBG }) {
       });
     } else {
       if (formInputs.Req_Type === "up") {
-        try {
-          const data = {};
-          formInputs.inputs.map((input) => (data[input.id] = input.value));
-          data.avatar = userAvatar.selected
-            ? URL.createObjectURL(userAvatar.selected)
-            : userAvatar.default[gender];
-          data.gender = gender;
-          data.Location = userGeoLocation.allow
-            ? locationData?.country
-            : "blue planet";
+        /* FORM DATA */
+        const data = {};
+        formInputs.inputs.map((input) => (data[input.id] = input.value));
+        data.avatar = userAvatar.selected
+          ? URL.createObjectURL(userAvatar.selected)
+          : userAvatar.default[gender];
+        data.gender = gender;
+        data.Location = userGeoLocation.allow
+          ? locationData?.country
+          : "blue planet";
 
-          const SendUserRegisterData = await createUser(data);
-          if (isSendingUserDataError || ServerSideAuthError) {
-            setFormError((c) => (c = ServerSideAuthError.message));
-            return;
-          }
-          if (!isSendingUserData) navigate("/user/AccountAuth/VarifyAccount");
-          console.log(SendUserRegisterData);
-        } catch (err) {
-          console.log(err);
-        }
+        data.VerificationCode = VerificationCode;
+        const SendUserRegisterData = await createUser(data);
+
+        setformData(data);
+      
+        setEmailSentTo(formInputs.inputs[2]?.value);
       }
     }
-
-    /* IF  READY TO GO*/
   };
 
   return (
@@ -807,7 +805,7 @@ export default function AuthenticateForm({ serverRespond, Error, setErrorBG }) {
               Req_Type: formInputs.Req_Type === "in" ? "up" : "in",
             }))
           }
-          className={`group relative  flex h-[82%] w-[35%] cursor-pointer select-none  select-none overflow-hidden  rounded-full border border-black bg-transparent  bg-white  bg-opacity-[0.5] pl-[15px] font-[Poppins]  text-[18px] hover:border-white hover:bg-black hover:text-gray-400 `}
+          className={`group relative  flex h-[82%] w-[35%] cursor-pointer select-none  overflow-hidden  rounded-full border border-black bg-transparent  bg-white  bg-opacity-[0.5] pl-[15px] font-[Poppins]  text-[18px] hover:border-white hover:bg-black hover:text-gray-400 `}
         >
           {formInputs.Req_Type != "fp" ? (
             <>
