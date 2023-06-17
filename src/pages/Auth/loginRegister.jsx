@@ -32,6 +32,7 @@ import { BsReverseLayoutSidebarReverse } from "react-icons/bs";
 //_________________JSX ___________________
 
 export default function loginRegister() {
+  //<---------- CONTEXT ---------->
   const { userState } = React.useContext(userStateContext);
   const { loged, admin } = userState;
   const navigate = useNavigate();
@@ -46,68 +47,72 @@ export default function loginRegister() {
   }, []);
 
   //<-----------COMPONENTS------------->
+  const FormErrorBox = ({ Error, form }) => {
+    /* Error Component Descructering Data */
+    const { setFormError, formError } = Error;
+    const { formData, setformData } = form;
+    return (
+      formError && (
+        <div
+          style={{
+            transition: `border 400ms 100ms , opacity 200ms , background 220ms ease`,
+          }}
+          onClick={(e) => setFormError((current) => "")}
+          className={`
+       bg-tranparnet group  absolute top-[100px] h-[50px] w-[80%] min-w-[350px] max-w-[600px] cursor-pointer items-center  justify-center overflow-hidden rounded-md  border  bg-opacity-[0.7] font-[brandinkLight] text-[15px] leading-[13px] text-white  backdrop-blur-[4px] md:w-[40%] ${
+         Object.keys(formData)?.length ? `translate-y-[65px]` : ``
+       } ${
+            formError
+              ? "flex border-white opacity-[1]"
+              : `hidden border-transparent opacity-0`
+          }`}
+        >
+          <>
+            <BiMessageSquareError
+              fill={"red"}
+              className="absolute left-0 h-full translate-x-[25px] scale-[2]  text-red-600  opacity-[0.8] transition-transform duration-[300ms] group-hover:scale-0"
+            />
+            <CiCircleRemove
+              fill={"red"}
+              className="absolute left-0 h-full translate-x-[25px]   scale-0  text-red-600 opacity-[0.8] transition-transform duration-[300ms] group-hover:scale-[2]"
+            />
+
+            <p className="h-max w-full pl-[75px]  pr-[20px]">{formError} </p>
+          </>
+        </div>
+      )
+    );
+  };
+
   const RegisterRequest = () => {
     const [formError, setFormError] = React.useState();
-    const [AuthenticationProcess, setAuthenticationProcess] = React.useState({
-      verify: true,
-      render: { element: [AuthenticateForm, EmailVarification], index: 0 },
-    });
 
-    const [EmailSentTo, setEmailSentTo] = React.useState("");
-    const [formData, setformData] = React.useState();
-
-    const RenderAuthProcess =
-      AuthenticationProcess.render.element[AuthenticationProcess.render.index];
+    const [EmailSentTo, setEmailSentTo] = React.useState(""); // the email that recieved the email of verification
+    const [formData, setformData] = React.useState({}); // form data
+    const dataToBeSent = {
+      Error: {
+        formError,
+        setFormError,
+      },
+      form: {
+        formData,
+        setformData,
+      },
+    };
+    const [CurrentStage, setCurrentStage] = React.useState(
+      () => AuthenticateForm
+    );
+    React.useEffect(() => {
+      if (Object.keys(formData).length) {
+        setCurrentStage((c) => (c = EmailVarification));
+      }
+    }, [formData]);
 
     return (
       <>
-        {/* <------- ERROR -------> */}
-        {formError && (
-          <div
-            style={{
-              transition: `border 400ms 100ms , opacity 200ms , background 220ms ease`,
-            }}
-            onClick={(e) => setFormError((current) => "")}
-            className={`
-               bg-tranparnet group  absolute top-[100px] h-[50px] w-[80%] min-w-[350px] max-w-[600px] cursor-pointer items-center  justify-center overflow-hidden rounded-md  border  bg-opacity-[0.7] font-[brandinkLight] text-[15px] leading-[13px] text-white  backdrop-blur-[4px] md:w-[40%] ${
-                 formError
-                   ? "flex border-white opacity-[1]"
-                   : `hidden border-transparent opacity-0`
-               }`}
-          >
-            <>
-              <BiMessageSquareError
-                fill={"red"}
-                className="absolute left-0 h-full translate-x-[25px] scale-[2]  text-red-600  opacity-[0.8] transition-transform duration-[300ms] group-hover:scale-0"
-              />
-              <CiCircleRemove
-                fill={"red"}
-                className="absolute left-0 h-full translate-x-[25px]   scale-0  text-red-600 opacity-[0.8] transition-transform duration-[300ms] group-hover:scale-[2]"
-              />
-
-              <p className="h-max w-full pl-[75px]  pr-[20px]">{formError} </p>
-            </>
-          </div>
-        )}
+        <FormErrorBox {...dataToBeSent} />
         {/* <-------- FORM STAGES ----------> */}
-        <RenderAuthProcess
-          Error={{
-            formError,
-            setFormError,
-          }}
-          TargetEmail={{
-            EmailSentTo,
-            setEmailSentTo,
-          }}
-          AuthProcess={{ setAuthenticationProcess, AuthenticationProcess }}
-          Verification={{
-            "": "",
-          }}
-          form={{
-            formData,
-            setformData,
-          }}
-        />
+        <CurrentStage {...dataToBeSent} />
       </>
     );
   };

@@ -1,49 +1,46 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useGetVerificationCodeQuery } from "../../../redux/API";
-import { useCreateUserMutation } from "../../../redux/API";
-import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
+import {
+  useCreateUserMutation,
+  useGetVerificationCodeQuery,
+  useVerifyAccountMutation,
+} from "../../../redux/API";
 
-export default function EmailVarification({
-  Error,
-  setErrorBG,
-  TargetEmail,
-  AuthProcess,
-  form,
-}) {
+import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
+import Loading from "../../../components/Loading.jsx";
+import Logo from "../../../assets/icons/Logo.jsx";
+
+/* <------------- JSX --------------> */
+export default function EmailVarification({ Error, form }) {
+  //<------ OBJECT DECONSTRACTING ----->
+  const { formError, setFormError } = Error;
+  const { formData } = form;
+
   //<---------API CALL --------->
-  const {
-    error: verificationCode,
-    isLoading,
-    data,
-  } = useGetVerificationCodeQuery();
   const [
     createUser,
     { error: regersteringError, isLoading: isRegisteringUser },
   ] = useCreateUserMutation();
+  const [
+    verifyAccount,
+    {
+      error: VerificationCodeError,
+      isLoading: isSendingVerificationCode,
+      data: VerificationCode,
+    },
+  ] = useVerifyAccountMutation();
 
   //<-------- REACT ROUTER ------>
   const navigate = useNavigate();
   //<-------- REFS -------->
   const CodeRefs = React.useRef([]);
 
-  //<------ OBJECT DECONSTRACTING ----->
-  const { formError, setFormError } = Error;
-  const { setAuthenticationProcess, AuthenticationProcess } = AuthProcess;
-  const { EmailSentTo, setEmailSentTo } = TargetEmail;
-
   //<--------- STATES --------->
   const [resendCountDown, setResendCountDown] = React.useState(4);
   const [ReadyToVerify, setReadyToVerify] = React.useState(false);
-  const [CurrentVerificationCode, setCurrentVerificationCode] = React.useState({
-    code: "",
-    Error: {
-      isError: false,
-      ErrorMessage: "",
-    },
-  });
-
+  const [CurrentVerificationCode, setCurrentVerificationCode] =
+    React.useState();
   //<------ INPUTS EVENT HANDLING ------>
   const handlePaste = (e) => {
     const pasteData = e.clipboardData.getData("text");
@@ -71,21 +68,51 @@ export default function EmailVarification({
       setReadyToVerify(false);
     }
   };
-  const onSubmit = async () => {
+  const handleSubmit = async () => {
     if (
       CodeRefs.current.every((x) => x.value) &&
-      parseInt(CodeRefs.current.join("")) === verificationCode
+      +CodeRefs.current.map((x) => x.value).join("") === VerificationCode
     ) {
       createUser(data);
+      if (!isRegisteringUser && !regersteringError) {
+        navigate(`/hello`);
+      }
+    } else {
+      setFormError(
+        (c) =>
+          (c = !CodeRefs.current.every((x) => x.value)
+            ? `please submit a valid verificaiton code before submiting your code`
+            : !+CodeRefs.current.map((x) => x.value).join("") ===
+              VerificationCode
+            ? `incorrect verification code`
+            : `invalid code`)
+      );
     }
   };
-
   //<------USEEFFECT------->
-  //ensuring that the user can't reach this Route without registering or login in first
   React.useEffect(() => {
-    if (AuthenticationProcess.render.index != 1) navigate("/");
+    verifyAccount(JSON.stringify({ email: `${formData.email}` }))
+      .unwrap()
+      .then((response) => {
+        if (response && response.data) {
+          setCurrentVerificationCode(
+            JSON.stringify(response.data)?.verificationCode
+          );
+          console.log(
+            `${JSON.stringify(response.data)} : the verification code is `
+          );
+        } else {
+          setFormError(`An error occurred, please try again later.`);
+          console.log(response);
+        }
+      })
+      .catch((error) => {
+        setFormError(`An error occurred: ${error.message}`);
+        console.log(error);
+      });
   }, []);
 
+  /* RESEND COUNTER */
   React.useEffect(() => {
     let done = false;
     const resendTimer = setInterval(() => {
@@ -116,9 +143,10 @@ export default function EmailVarification({
             verify your Account
           </h2>
           <p className={`w-[45%] font-[garet] text-[15px] leading-[15px] `}>
-            an email was sent to :<b>{EmailSentTo}</b>
+            an email was sent to :<b>{formData?.email}</b>
           </p>
         </div>
+
         <div className={`flex w-full items-center justify-between gap-x-[5px]`}>
           {new Array(6).fill("").map((digit, index) => (
             <input
@@ -134,12 +162,16 @@ export default function EmailVarification({
             />
           ))}
         </div>
-        <div className={`flex h-[15%] w-full items-center justify-between `}>
+
+        {/*THE TWO  BUTTONS CONTAINER */}
+        <div className={`flex h-[15%] w-full items-center justify-between`}>
+          {/* <---- SUBMIT BUTTON ----> */}
           <div
+            onClick={handleSubmit}
             style={{
               transition: `background 500ms ease`,
             }}
-            className={`group flex h-[100%] w-[45%] cursor-pointer  select-none items-center justify-center  self-start rounded-full border  font-[Poppins] font-semibold hover:bg-black  ${
+            className={`group flex h-[100%] w-[45%] cursor-pointer  select-none items-center justify-center  self-start rounded-full border  font-[Poppins] font-semibold hover:bg-black    ${
               ReadyToVerify ? `border-green-700` : `border-black`
             }`}
           >
@@ -170,6 +202,7 @@ export default function EmailVarification({
               }`}
             />
           </div>
+          {/*<---- RESEND EMAIL BUTTON ---> */}
           <div
             onClick={() => {
               setResendCountDown(70);

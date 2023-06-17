@@ -47,7 +47,17 @@ export const ServerSideApiPost = createApi({
         body: userData,
       }),
     }),
+    verifyAccount: builder.mutation({
+      query: (email) => ({
+        url: `/auth/verify`,
+        method: "POST",
+        body: email,
+      }),
+    }),
   }),
 });
-export const { useSendMeEmailMutation, useCreateUserMutation } =
-  ServerSideApiPost;
+export const {
+  useSendMeEmailMutation,
+  useCreateUserMutation,
+  useVerifyAccountMutation,
+} = ServerSideApiPost;

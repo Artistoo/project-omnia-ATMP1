@@ -25,18 +25,12 @@ import {
 import { validEmail } from "../../../utils/validity";
 
 // _____________AUTHENTICATION FORM ____________________
-export default function AuthenticateForm({
-  Error,
-  AuthProcess,
-  VerificationCode,
-  TargetEmail,
-  form,
-}) {
+export default function AuthenticateForm({ Error, form }) {
   const navigate = useNavigate();
+
   const { formError, setFormError } = Error;
-  const { setAuthenticationProcess, AuthenticationProcess } = AuthProcess;
-  const { EmailSentTo, setEmailSentTo } = TargetEmail;
   const { formData, setformData } = form;
+
   /* <---------------- CONTEXT -----------------> */
   const {
     data: locationData,
@@ -301,11 +295,7 @@ export default function AuthenticateForm({
     }));
   };
   const handleSubmit = async (e) => {
-    if (
-      !formInputs.inputs
-        .filter((x) => x.display.includes(formInputs.Req_Type))
-        .every((x) => x.ready.go)
-    ) {
+    if (!formInputs.inputs.every((x) => x.ready.go)) {
       setForminputs((current) => {
         const update = [...current.inputs];
         update.map((inp) => {
@@ -340,13 +330,9 @@ export default function AuthenticateForm({
         data.Location = userGeoLocation.allow
           ? locationData?.country
           : "blue planet";
-
-        data.VerificationCode = VerificationCode;
-        const SendUserRegisterData = await createUser(data);
-
+        data.displayName = name;
+        /* updating the form Data state */
         setformData(data);
-      
-        setEmailSentTo(formInputs.inputs[2]?.value);
       }
     }
   };
@@ -523,7 +509,7 @@ export default function AuthenticateForm({
             className={`relative flex h-full w-[30%] appearance-none items-center justify-center `}
           >
             <label
-              for={"userAvatarFile"}
+              htmlFor={"userAvatarFile"}
               className={`group flex h-[80%] w-[90%] cursor-pointer items-center justify-center `}
             >
               <img
