@@ -438,4 +438,23 @@ body::-webkit-scrollbar {
   background: white;
   border-radius: 100px;
   width: 90%;
+}
+
+.isSendingVerificationCodeLoading {
+  animation: sendingCode 1500ms infinite ease;
+  animation-delay: calc(var(--codeInputAt) * 100ms);
+}
+@keyframes sendingCode {
+  from {
+    border-radius: 0;
+    background: black;
+    scale: 0.1;
+    pointer-events: none;
+  }
+  to {
+    border-radius: 50%;
+    background: transparent;
+    scale: 0.5;
+    pointer-events: none;
+  }
 }/*# sourceMappingURL=index.css.map */

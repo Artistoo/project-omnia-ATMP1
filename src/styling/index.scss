@@ -247,15 +247,13 @@ body {
 .Registering {
   animation: RegisteringAnimation 400ms infinite alternate ease-in-out;
   animation-delay: calc(var(--sendingUserDataDelay) * 100ms);
-  
+
   @keyframes RegisteringAnimation {
     from {
       padding: 0 0;
-    
     }
     to {
       padding: 30px 0;
-
     }
   }
 }
@@ -304,5 +302,25 @@ body {
     background: white;
     border-radius: 100px;
     width: 90%;
+  }
+}
+
+//Authenticating User
+.isSendingVerificationCodeLoading {
+  animation: sendingCode 1500ms infinite ease;
+  animation-delay: calc(var(--codeInputAt) * 100ms);
+  @keyframes sendingCode {
+    from {
+      border-radius: 0;
+      background: black;
+      scale: 0.1;
+      pointer-events: none;
+    }
+    to {
+      border-radius: 50%;
+      background: transparent;
+      scale: 0.5;
+      pointer-events: none;
+    }
   }
 }

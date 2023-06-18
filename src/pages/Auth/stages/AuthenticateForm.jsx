@@ -294,8 +294,13 @@ export default function AuthenticateForm({ Error, form }) {
       selected: file,
     }));
   };
+
   const handleSubmit = async (e) => {
-    if (!formInputs.inputs.every((x) => x.ready.go)) {
+    if (
+      !formInputs.inputs
+        .filter((x) => x.display.includes(formInputs.Req_Type))
+        .every((x) => x.ready.go)
+    ) {
       setForminputs((current) => {
         const update = [...current.inputs];
         update.map((inp) => {
@@ -323,16 +328,18 @@ export default function AuthenticateForm({ Error, form }) {
         /* FORM DATA */
         const data = {};
         formInputs.inputs.map((input) => (data[input.id] = input.value));
-        data.avatar = userAvatar.selected
+        data.Avatar = userAvatar.selected
           ? URL.createObjectURL(userAvatar.selected)
           : userAvatar.default[gender];
         data.gender = gender;
         data.Location = userGeoLocation.allow
           ? locationData?.country
           : "blue planet";
-        data.displayName = name;
+        data.displayName = ProfileName;
         /* updating the form Data state */
-        setformData(data);
+        (() => setformData(data))();
+      } else {
+        ("");
       }
     }
   };
@@ -423,8 +430,8 @@ export default function AuthenticateForm({ Error, form }) {
                   name.name[Math.floor(Math.random() * name.name.length)]
                 }
                 onChange={(e) => setProfileName(e.target.value)}
-                maxLength={6}
-                className="w-[70%] appearance-none bg-transparent px-[7px] outline-none valid:text-green-600 focus:border-none focus:text-black"
+                maxLength={8}
+                className="w-[70%] appearance-none truncate bg-transparent px-[7px] outline-none valid:text-green-600 focus:border-none focus:text-black"
               />
             </div>
             {/* GENDER */}

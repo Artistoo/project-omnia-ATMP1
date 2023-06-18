@@ -1,9 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
 import {
   useCreateUserMutation,
-  useGetVerificationCodeQuery,
   useVerifyAccountMutation,
 } from "../../../redux/API";
 
@@ -28,19 +27,39 @@ export default function EmailVarification({ Error, form }) {
       error: VerificationCodeError,
       isLoading: isSendingVerificationCode,
       data: VerificationCode,
+      mutate: refetchData,
     },
   ] = useVerifyAccountMutation();
 
   //<-------- REACT ROUTER ------>
   const navigate = useNavigate();
+
   //<-------- REFS -------->
   const CodeRefs = React.useRef([]);
 
   //<--------- STATES --------->
-  const [resendCountDown, setResendCountDown] = React.useState(4);
+  const [resendCountDown, setResendCountDown] = React.useState(70);
   const [ReadyToVerify, setReadyToVerify] = React.useState(false);
   const [CurrentVerificationCode, setCurrentVerificationCode] =
     React.useState();
+
+  const validRequest = async () => {
+    if (
+      parseInt(CodeRefs.current.map((x) => x.value).join("")) ===
+      CurrentVerificationCode
+    ) {
+      createUser(formData)
+        .then((res) => {
+          navigate(`/hello`);
+        })
+        .catch((err) => setFormError(`an error occured : ${err.message}`));
+    }
+  };
+  /* <------MEMORIZING VERIFICATIONCODE -----> */
+  const CurrentVerificationCodeMemo = React.useMemo(
+    () => CurrentVerificationCode,
+    [CurrentVerificationCode]
+  );
   //<------ INPUTS EVENT HANDLING ------>
   const handlePaste = (e) => {
     const pasteData = e.clipboardData.getData("text");
@@ -49,6 +68,12 @@ export default function EmailVarification({ Error, form }) {
       CodeRefs.current.forEach((inp, index) => {
         inp.value = digits[index];
       });
+      if (
+        +CodeRefs.current.map((x) => x.value).join("") ===
+        CurrentVerificationCodeMemo
+      ) {
+        validRequest();
+      }
     }
   };
   const handleInput = (e, index) => {
@@ -64,59 +89,45 @@ export default function EmailVarification({ Error, form }) {
     }
     if (CodeRefs.current.every((x) => x.value)) {
       setReadyToVerify(true);
+      validRequest();
     } else {
       setReadyToVerify(false);
     }
   };
   const handleSubmit = async () => {
-    if (
-      CodeRefs.current.every((x) => x.value) &&
-      +CodeRefs.current.map((x) => x.value).join("") === VerificationCode
-    ) {
-      createUser(data);
-      if (!isRegisteringUser && !regersteringError) {
-        navigate(`/hello`);
-      }
-    } else {
-      setFormError(
-        (c) =>
-          (c = !CodeRefs.current.every((x) => x.value)
-            ? `please submit a valid verificaiton code before submiting your code`
-            : !+CodeRefs.current.map((x) => x.value).join("") ===
-              VerificationCode
-            ? `incorrect verification code`
-            : `invalid code`)
-      );
+    if (CodeRefs.current.every((x) => x.value)) {
+      validRequest();
     }
   };
+
   //<------USEEFFECT------->
-  React.useEffect(() => {
-    verifyAccount(JSON.stringify({ email: `${formData.email}` }))
-      .unwrap()
-      .then((response) => {
-        if (response && response.data) {
-          setCurrentVerificationCode(
-            JSON.stringify(response.data)?.verificationCode
-          );
-          console.log(
-            `${JSON.stringify(response.data)} : the verification code is `
-          );
-        } else {
-          setFormError(`An error occurred, please try again later.`);
-          console.log(response);
+  /*  */
+
+  const FetchVerificationCode = () => {
+    verifyAccount({ email: formData.email })
+      .then((res) => {
+        if (res.data) {
+          setCurrentVerificationCode(res.data.verificationCode);
         }
       })
-      .catch((error) => {
-        setFormError(`An error occurred: ${error.message}`);
-        console.log(error);
+      .catch((err) => {
+        setFormError(
+          `an error occured while sending verification code email , please try again later `
+        );
+        console.log(err);
       });
+  };
+  React.useEffect(() => {
+    FetchVerificationCode();
   }, []);
 
   /* RESEND COUNTER */
   React.useEffect(() => {
     let done = false;
     const resendTimer = setInterval(() => {
-      setResendCountDown((current) => current - 1);
+      if (!isSendingVerificationCode) {
+        setResendCountDown((current) => current - 1);
+      }
       if (resendCountDown <= 0) {
         done = true;
         setResendCountDown(0);
@@ -142,11 +153,14 @@ export default function EmailVarification({ Error, form }) {
           >
             verify your Account
           </h2>
-          <p className={`w-[45%] font-[garet] text-[15px] leading-[15px] `}>
-            an email was sent to :<b>{formData?.email}</b>
+          <p
+            className={`w-[45%] truncate font-[garet] text-[15px] leading-[15px]`}
+          >
+            an email was sent to : <br />
+            <b>{formData?.email}</b>
           </p>
         </div>
-
+        {/* CODE INPUTS  */}
         <div className={`flex w-full items-center justify-between gap-x-[5px]`}>
           {new Array(6).fill("").map((digit, index) => (
             <input
@@ -158,7 +172,12 @@ export default function EmailVarification({ Error, form }) {
               onBlur={(e) =>
                 (CodeRefs.current[index].style.border = "solid black thin")
               }
-              className={`aspect-square w-[13%] rounded-sm border border-black bg-gradient-to-tl from-gray-50 to-gray-100 text-center font-[opensauce] text-[30px] focus:outline-none`}
+              style={{ "--codeInputAt": `${index}` }}
+              className={`aspect-square w-[13%] rounded-sm border border-black bg-gradient-to-tl from-gray-50 to-gray-100 text-center font-[opensauce] text-[30px] focus:outline-none ${
+                isSendingVerificationCode
+                  ? `isSendingVerificationCodeLoading`
+                  : ``
+              }`}
             />
           ))}
         </div>
@@ -204,8 +223,11 @@ export default function EmailVarification({ Error, form }) {
           </div>
           {/*<---- RESEND EMAIL BUTTON ---> */}
           <div
-            onClick={() => {
-              setResendCountDown(70);
+            onClick={(e) => {
+              if (!resendCountDown) {
+                FetchVerificationCode();
+                setResendCountDown(70);
+              }
             }}
             style={{
               transition: `width 600ms ease-in-out`,
@@ -271,9 +293,11 @@ export default function EmailVarification({ Error, form }) {
                     : `scale-0 opacity-0`
                 }`}
               >
-                {resendCountDown < 64
-                  ? `Resend email After `
-                  : `Email was Sent `}
+                {!isSendingVerificationCode
+                  ? resendCountDown < 64
+                    ? `Resend email After `
+                    : `Email was Sent `
+                  : `sending `}
               </p>
             </div>
           </div>

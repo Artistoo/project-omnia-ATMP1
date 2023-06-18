@@ -33,7 +33,6 @@ export default function () {
           >
             {/* <------LOGO JOLLY IMAGE-------> */}
             <img src={JOLLYBLAB} className={`aspect-square h-[180px]`} />
-
             {/* <------LOGO JOLLY TEXT---------> */}
             <span
               className={`flex w-1/2 flex-col items-center justify-center gap-y-[11px] leading-[25px] text-gray-50`}

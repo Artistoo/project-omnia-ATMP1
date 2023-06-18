@@ -89,6 +89,8 @@ export default function loginRegister() {
 
     const [EmailSentTo, setEmailSentTo] = React.useState(""); // the email that recieved the email of verification
     const [formData, setformData] = React.useState({}); // form data
+    const [sendingVerificationCode, setSendingVerificationCode] =
+      React.useState(false);
     const dataToBeSent = {
       Error: {
         formError,
@@ -97,6 +99,10 @@ export default function loginRegister() {
       form: {
         formData,
         setformData,
+      },
+      isSendingVerificationCode: {
+        sendingVerificationCode,
+        setSendingVerificationCode,
       },
     };
     const [CurrentStage, setCurrentStage] = React.useState(
