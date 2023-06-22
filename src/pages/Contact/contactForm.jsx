@@ -19,8 +19,6 @@ import {
 
 export default function ContactForm() {
   const navigate = useNavigate();
-  /*<--------- UTILS CONTEXT ---------> */
-  const { ReqState, MakeApiReq } = React.useContext(Utils).API;
 
   /*<--------- Redux Context -------> */
   const [sendMeEmail, { isLoading: isSending, isError, error }] =
@@ -446,12 +444,12 @@ export default function ContactForm() {
                               transition: `transform 150ms ease`,
                             }}
                             className={`absolute bottom-0 left-0 h-[30px] w-full translate-y-[35px]  select-none items-center justify-start overflow-hidden font-[Poppins] text-sm font-normal text-red-500 ${
-                              ReqState.error
+                              isError
                                 ? `flex translate-y-0 opacity-[1]`
                                 : `hidden translate-y-[100%] opacity-[0]`
                             } `}
                           >
-                            <p> {ReqState.error} : server error</p>
+                            <p> {isError} : server error</p>
                           </div>
                         )}
                       </div>

@@ -4,6 +4,9 @@ import axios from "axios";
 import {
   useCreateUserMutation,
   useVerifyAccountMutation,
+  useLoginMutation,
+  LocationApi,
+  useNotifyMutation,
 } from "../../../redux/API";
 
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
@@ -11,10 +14,12 @@ import Loading from "../../../components/Loading.jsx";
 import Logo from "../../../assets/icons/Logo.jsx";
 
 /* <------------- JSX --------------> */
-export default function EmailVarification({ Error, form }) {
+export default function EmailVarification({ Error, form, location }) {
   //<------ OBJECT DECONSTRACTING ----->
   const { formError, setFormError } = Error;
-  const { formData } = form;
+  const { formData, setFormData } = form;
+
+  const { locationData } = location;
 
   //<---------API CALL --------->
   const [
@@ -31,6 +36,11 @@ export default function EmailVarification({ Error, form }) {
     },
   ] = useVerifyAccountMutation();
 
+  const [
+    Notify,
+    { error: NotifyingError, isLoading: isNotifying, data: NotificationStatus },
+  ] = useNotifyMutation();
+
   //<-------- REACT ROUTER ------>
   const navigate = useNavigate();
 
@@ -42,24 +52,14 @@ export default function EmailVarification({ Error, form }) {
   const [ReadyToVerify, setReadyToVerify] = React.useState(false);
   const [CurrentVerificationCode, setCurrentVerificationCode] =
     React.useState();
+  const [VerificationAttempt, setVerificationAttempt] = React.useState(1);
 
-  const validRequest = async () => {
-    if (
-      parseInt(CodeRefs.current.map((x) => x.value).join("")) ===
-      CurrentVerificationCode
-    ) {
-      createUser(formData)
-        .then((res) => {
-          navigate(`/hello`);
-        })
-        .catch((err) => setFormError(`an error occured : ${err.message}`));
-    }
-  };
   /* <------MEMORIZING VERIFICATIONCODE -----> */
   const CurrentVerificationCodeMemo = React.useMemo(
     () => CurrentVerificationCode,
     [CurrentVerificationCode]
   );
+
   //<------ INPUTS EVENT HANDLING ------>
   const handlePaste = (e) => {
     const pasteData = e.clipboardData.getData("text");
@@ -68,12 +68,7 @@ export default function EmailVarification({ Error, form }) {
       CodeRefs.current.forEach((inp, index) => {
         inp.value = digits[index];
       });
-      if (
-        +CodeRefs.current.map((x) => x.value).join("") ===
-        CurrentVerificationCodeMemo
-      ) {
-        validRequest();
-      }
+      validRequest();
     }
   };
   const handleInput = (e, index) => {
@@ -81,7 +76,7 @@ export default function EmailVarification({ Error, form }) {
       CodeRefs.current[index].style.border = "solid red thin";
       return;
     }
-
+    //focusing on the next input when one is valid
     if (CodeRefs.current[index].value) {
       if (CodeRefs.current[index] && CodeRefs.current[index + 1]) {
         CodeRefs.current[index + 1].focus();
@@ -101,45 +96,140 @@ export default function EmailVarification({ Error, form }) {
   };
 
   //<------USEEFFECT------->
-  /*  */
-
-  const FetchVerificationCode = () => {
-    verifyAccount({ email: formData.email })
-      .then((res) => {
-        if (res.data) {
-          setCurrentVerificationCode(res.data.verificationCode);
-        }
-      })
-      .catch((err) => {
-        setFormError(
-          `an error occured while sending verification code email , please try again later `
-        );
-        console.log(err);
-      });
+  //<------ VERIFYING ACCOUNT STATE UPDATE ------>
+  const FetchVerificationCode = async () => {
+    const VerificationRespond = await verifyAccount({ email: formData.email });
+    if (VerificationRespond.data) {
+      console.log(VerificationRespond);
+      setCurrentVerificationCode(VerificationRespond.data.verificationCode);
+    }
+    if (VerificationRespond.error) {
+      console.log(VerificationRespond.error.data);
+    }
   };
+  const validRequest = async () => {
+    if (
+      parseInt(CodeRefs.current.map((x) => x.value).join("")) ===
+      CurrentVerificationCodeMemo
+    ) {
+      /* REGISTER REQUIEST HANDLING */
+      if (Object.values(formData).length > 2) {
+        createUser(formData)
+          .then((res) => {
+            if (res.data) {
+              console.log(res.data);
+              localStorage.setItem("user", JSON.stringify(res.data));
+              if (!isRegisteringUser && !regersteringError) {
+                let Redirected = false;
+                const redirectTimer = setTimeout(() => {
+                  Redirected = true;
+                  navigate(`/GetReady`);
+                }, 2000);
+                Redirected && clearTimeout(redirectTimer);
+              } else {
+                setFormError((c) => (c = regersteringError.message));
+              }
+            } else if (res.error) {
+              setFormError(res.error.error);
+            }
+          })
+          .catch((err) => setFormError(`an error occured : ${err.message}`));
+      } else if (Object.values(formData).length < 3) {
+        login(formData).then((res) => {
+          if (res.data) {
+            if (res.data.admin) {
+              Notify({ ip: location.query })
+                .then((res) => {
+                  if (res.data) {
+                    localStorage.setItem("user", JSON.stringify(res.data));
+                    navigate("/Dashboard");
+                  } else {
+                    setFormError(
+                      `can't log in as an admin failed to notify admin`
+                    );
+                  }
+                })
+                .catch((err) => console.log(err));
+            } else {
+              localStorage.setItem("user", JSON.stringify(res.data));
+              navigate(import.meta.VITE_BASEURL);
+            }
+          }
+        });
+      }
+    } else {
+      /* updating the attemps counter state */
+      setVerificationAttempt((c) => c + 1);
+      /* Apply some Styling on Wrong Verification Attempt Input */
+      CodeRefs.current.map((x) => {
+        x.style.border = "solid red thin";
+        x.style.rotate = "10deg";
+
+        let done = false;
+        const resetErrorStyling = setTimeout(() => {
+          x.style.border = "solid black thin";
+          x.style.rotate = "0deg";
+          done = true;
+        }, 2000);
+        done && clearTimeout(resetErrorStyling);
+      });
+    }
+  };
+
+  /* console.log(CurrentVerificationCodeMemo); */
+
   React.useEffect(() => {
     FetchVerificationCode();
   }, []);
+  //<---- TOO MANY ATTEMPTS HANDLING ------>
+  React.useEffect(() => {
+    const AttempsLimit = 15;
+    if (VerificationAttempt >= AttempsLimit) {
+      setFormError(`too many wrong Attemps , please try again later `);
+      let redirected = false;
+      const redirestTimer = setTimeout(() => navigate(`/`), 2500);
+      redirected && clearTimeout(redirestTimer);
+    }
+
+    console.log(VerificationAttempt);
+  }, [VerificationAttempt]);
+
+  /* console.log(CurrentVerificationCodeMemo || ""); */
 
   /* RESEND COUNTER */
   React.useEffect(() => {
     let done = false;
+
     const resendTimer = setInterval(() => {
-      if (!isSendingVerificationCode) {
-        setResendCountDown((current) => current - 1);
-      }
+      setResendCountDown((current) => current - 1);
       if (resendCountDown <= 0) {
         done = true;
         setResendCountDown(0);
       }
       if (done) clearInterval(resendTimer);
     }, 1000);
-
     return () => {
       clearInterval(resendTimer);
     };
   }, [resendCountDown]);
 
+  /* <---- REGISTERING THE USER ------> */
+  React.useEffect(() => {
+    if (isRegisteringUser) {
+      CodeRefs.current.forEach((x) => {
+        x.style.border = `solid green thin`;
+        let validAnimationPlayed = false;
+        let resetStyling = setTimeout(() => {
+          x.style.border = `solid black thin`;
+          validAnimationPlayed = true;
+        }, 4000);
+        validAnimationPlayed && clearTimeout(resetStyling);
+      });
+    }
+  }, [isRegisteringUser]);
+
+  if (isSendingVerificationCode) return <Logo Menu={false} loading={true} />;
+  /* if (VerificationCodeError) setFormError(VerificationCodeError.error.message); */
   return (
     <div className={`flex h-[100%] w-full items-center justify-center`}>
       <div
@@ -172,12 +262,11 @@ export default function EmailVarification({ Error, form }) {
               onBlur={(e) =>
                 (CodeRefs.current[index].style.border = "solid black thin")
               }
-              style={{ "--codeInputAt": `${index}` }}
-              className={`aspect-square w-[13%] rounded-sm border border-black bg-gradient-to-tl from-gray-50 to-gray-100 text-center font-[opensauce] text-[30px] focus:outline-none ${
-                isSendingVerificationCode
-                  ? `isSendingVerificationCodeLoading`
-                  : ``
-              }`}
+              style={{
+                "--codeInputAt": `${index}`,
+                transition: `border 500ms , rotate 400ms ease`,
+              }}
+              className={`aspect-square w-[13%] rounded-sm border border-black bg-gradient-to-tl from-gray-50 to-gray-100 text-center font-[opensauce] text-[30px] focus:outline-none `}
             />
           ))}
         </div>
@@ -206,7 +295,11 @@ export default function EmailVarification({ Error, form }) {
                     : `group-hover:text-gray-50`
                 }`}
               >
-                {ReadyToVerify ? `go` : `verify`}
+                {isRegisteringUser
+                  ? `redirecting`
+                  : ReadyToVerify
+                  ? `go`
+                  : `verify`}
               </b>
             </p>
 

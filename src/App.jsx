@@ -18,6 +18,7 @@ import Settings from "./pages/settings/Settings";
 import Profile from "./pages/Dynamic/Profile/Profile";
 import LoginRegister from "./pages/Auth/loginRegister";
 import ContactForm from "./pages/Contact/contactForm";
+import GetReady from "./pages/Auth/stages/GetReady.jsx";
 
 //___________________COMPONENTS_______________________
 import Nav from "./components/Nav";
@@ -25,6 +26,7 @@ import Footer from "./components/Footer";
 import Loading from "./components/Loading";
 import FooterInfo from "./pages/Dynamic/FooterInfomation/FooterInfo";
 import Details from "./pages/Details/Details";
+import NoPageFound from "./pages/NotFound/NoPageFound";
 
 //___________________JSX component______________________
 function App() {
@@ -42,19 +44,19 @@ function App() {
       {/* __________________<<<ROUTES>>>___________________ */}
       <Routes>
         <Route index element={<Landing />} />
-
         <Route path={`/settings`} element={<Settings />} />
-
-        <Route path="/user/AccountAuth" element={<LoginRegister />} />
-
         <Route path="/details" element={<Details />} />
-
+        <Route path="/user">
+          <Route path="AccountAuth" element={<LoginRegister />} />
+          <Route path="GetReady" element={<GetReady />} />
+        </Route>
         <Route path="/contactUs" element={<ContactForm />} />
 
+
+        <Route path='*' element={<NoPageFound />} />
         {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
 
         <Route path="user/:userId" element={<Profile />} />
-
         <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
       </Routes>
 

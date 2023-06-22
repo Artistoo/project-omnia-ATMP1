@@ -9,10 +9,12 @@ import JOLLYBLAB from "../../public/JollyBlab TabIcon.png";
 import { FaQuestion } from "react-icons/fa";
 import { FooterContext } from "../context/footerContentProvider";
 
+// ____________DATA ______________
+import { HideAt } from "../../data";
+
 // ____________MAIN SECTION JSX FUNCTION ______________
 export default function () {
   // <----------------COMPONENTS ------------------->
-
   const navigate = useNavigate();
   const location = useLocation();
   const FooterContent = () => {
@@ -22,7 +24,11 @@ export default function () {
     //---------JSX FOOTER CONTENT COMPONENT--------
     return (
       <div
-        className={` flex h-full  w-full min-w-[350px]  items-center justify-center `}
+        className={` flex h-full  w-full min-w-[350px]  items-center justify-center ${
+          HideAt.Footer.some((x) => x === location.pathname)
+            ? `pointer-events-none opacity-0`
+            : `pointer-events-auto opacity-[1]`
+        }`}
       >
         {/* <---------JOLLY BLAB LOGO---------> */}
         <div

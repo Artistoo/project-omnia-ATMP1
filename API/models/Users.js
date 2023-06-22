@@ -9,6 +9,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
+  DisplayName: {
+    type: String,
+    require: false,
+  },
   Email: {
     type: String,
     require: true,
@@ -29,6 +33,16 @@ const UserSchema = new mongoose.Schema({
   Location: {
     type: String,
     require: false,
+  },
+  Verify: {
+    type: Boolean,
+    require: false,
+    default: false,
+  },
+  admin: {
+    type: Boolean,
+    require: false,
+    default: false,
   },
 });
 

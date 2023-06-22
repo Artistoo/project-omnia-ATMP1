@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-
+import { useCurrentApiQuery } from "../../redux/API";
 /* __________FORM HANDLING LIBRARIES __________ */
 
 import { Route, Routes, useNavigate, useParams } from "react-router-dom";
@@ -84,13 +84,22 @@ export default function loginRegister() {
     );
   };
 
+  const {
+    data: locationData,
+    isLoading,
+    Error: LocationApiError,
+  } = useCurrentApiQuery();
+  const [userGeoLocation, setUserGeoLocation] = React.useState({
+    allow: false,
+    location: locationData?.country,
+  });
+
   const RegisterRequest = () => {
     const [formError, setFormError] = React.useState();
 
     const [EmailSentTo, setEmailSentTo] = React.useState(""); // the email that recieved the email of verification
     const [formData, setformData] = React.useState({}); // form data
-    const [sendingVerificationCode, setSendingVerificationCode] =
-      React.useState(false);
+
     const dataToBeSent = {
       Error: {
         formError,
@@ -100,9 +109,14 @@ export default function loginRegister() {
         formData,
         setformData,
       },
-      isSendingVerificationCode: {
-        sendingVerificationCode,
-        setSendingVerificationCode,
+
+      useMyLocation: {
+        userGeoLocation,
+        setUserGeoLocation,
+      },
+      location: {
+        locationData,
+        isLoading,
       },
     };
     const [CurrentStage, setCurrentStage] = React.useState(
@@ -125,6 +139,8 @@ export default function loginRegister() {
   /* <-------- THE AVATARS ARTWORK -------> */
   const RegisterArt = () => {
     const [PageLoaded, setPageLoaded] = React.useState(false);
+    const [FadeBeforeRedirect, setFadeBeforeRedirect] = React.useState(false);
+
     React.useEffect(() => {
       const handleLoad = () => {
         setPageLoaded(true);
@@ -138,6 +154,12 @@ export default function loginRegister() {
         window.removeEventListener("load", handleLoad);
       };
     }, []);
+
+    React.useEffect(() => {
+      if (localStorage?.user) {
+        setFadeBeforeRedirect(true);
+      }
+    }, [localStorage?.user]);
 
     return (
       <div
@@ -165,6 +187,8 @@ export default function loginRegister() {
                   }}
                   src={Avatarimg}
                   className={`object-fit h-full w-full ${
+                    FadeBeforeRedirect ? `opacity-0` : `opacity-[1]`
+                  } ${
                     PageLoaded
                       ? `scale-[1] opacity-[1]`
                       : `scale-[1.3] opacity-[0]`

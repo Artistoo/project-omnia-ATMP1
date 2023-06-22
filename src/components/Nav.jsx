@@ -1,27 +1,27 @@
 import React from "react";
 import { userStateContext } from "../context/userState";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { debounce } from "lodash";
+
 //________________________ASSETS________________________
 import LogoBlack from "../../public/JollyBlabLogoV2Black.png";
 import LogoWhite from "../../public/JollyBlabLogoV2White.png";
 import Logo from "../assets/icons/Logo";
 
 // ________________ DATA _________________
-import { NavContent, MenuContent } from "../../data";
+import { NavContent, MenuContent, HideAt } from "../../data";
 
-//components
+// ________________ COMPONENTS _________________
 import MenuIcon from "../assets/icons/menuIcon";
 import { IoIosArrowDown } from "react-icons/io";
 import { CgArrowDown } from "react-icons/cg";
 import { TbArrowDownBar } from "react-icons/tb";
-
+/* <___________ JSW _________________ */
 export default function Nav({ pageState }) {
   /* <- TRACKING SCROLL POSITION -> */
   const [scrollPosition, setScrollPosition] = React.useState(0);
 
   //<----------------EFFECT HOOK --------------------->
-
   React.useEffect(() => {
     const handleScrolling = debounce(() => {
       setScrollPosition(window.scrollY);
@@ -39,7 +39,9 @@ export default function Nav({ pageState }) {
   );
 
   /* <----------- REACT ROUTER -------> */
+  const location = useLocation();
   const navigate = useNavigate();
+  
   // <------------------ STATES ------------------------>
   const [open, setOpen] = React.useState(false);
   const [showTutorial, setshowTutorial] = React.useState(false);
@@ -285,7 +287,11 @@ export default function Nav({ pageState }) {
       style={{
         transition: `height 100ms ease-in-out`,
       }}
-      className={`navBar z-[15]  m-auto mb-[15px] flex h-[100px] flex-col items-center justify-center `}
+      className={`navBar z-[15]  m-auto mb-[15px] flex h-[100px] flex-col items-center justify-center ${
+        HideAt.Nav.some((x) => x === location.pathname)
+          ? `pointer-events-none opacity-0`
+          : `pointer-events-auto opacity-[1]`
+      }`}
     >
       {/* <------ WHITE BACKGROUND IN THE NAVBAR -------> */}
       <WhiteBgNavBar />

@@ -12,7 +12,6 @@ export const LocationApi = createApi({
     }),
   }),
 });
-
 export const ServerSideApiGet = createApi({
   reducerPath: `ServerSideApiGet`,
   baseQuery: fetchBaseQuery({
@@ -26,32 +25,47 @@ export const ServerSideApiGet = createApi({
 });
 export const { useCurrentApiQuery } = LocationApi;
 export const { useGetVerificationCodeQuery } = ServerSideApiGet;
+
 //<-------------- POST REQ ----------------->
 export const ServerSideApiPost = createApi({
   reducerPath: `ServerSideApiPost`,
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://localhost:5500/`,
+    baseUrl: `http://localhost:5500`,
   }),
   endpoints: (builder) => ({
     sendMeEmail: builder.mutation({
       query: (email) => ({
-        url: "/contact",
+        url: "/email",
         method: "POST",
         body: email,
       }),
     }),
     createUser: builder.mutation({
       query: (userData) => ({
-        url: `/auth/signup`,
+        url: `auth/register`,
         method: "POST",
         body: userData,
       }),
     }),
     verifyAccount: builder.mutation({
       query: (email) => ({
-        url: `/auth/verify`,
+        url: `email/verify`,
         method: "POST",
         body: email,
+      }),
+    }),
+    Login: builder.mutation({
+      query: (user) => ({
+        url: "auth/login",
+        method: "POST",
+        body: user,
+      }),
+    }),
+    Notify: builder.mutation({
+      query: (ip) => ({
+        url: "",
+        method: "POST",
+        body: ip,
       }),
     }),
   }),
@@ -60,4 +74,6 @@ export const {
   useSendMeEmailMutation,
   useCreateUserMutation,
   useVerifyAccountMutation,
+  useLoginMutation,
+  useNotifyMutation
 } = ServerSideApiPost;

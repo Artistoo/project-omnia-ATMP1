@@ -2,7 +2,7 @@ import React from "react";
 import DOMPurify from "dompurify";
 import axios from "axios";
 import { useCurrentApiQuery } from "../../../redux/API";
-import { useCreateUserMutation } from "../../../redux/API";
+import { useCreateUserMutation, useLoginMutation } from "../../../redux/API";
 import { useNavigate } from "react-router-dom";
 //_____________________ICONS____________________
 import { CgArrowRight, CgArrowUp, CgGoogle, CgTwitter } from "react-icons/cg";
@@ -25,26 +25,29 @@ import {
 import { validEmail } from "../../../utils/validity";
 
 // _____________AUTHENTICATION FORM ____________________
-export default function AuthenticateForm({ Error, form }) {
+export default function AuthenticateForm({
+  Error,
+  form,
+  location,
+  useMyLocation,
+}) {
   const navigate = useNavigate();
 
   const { formError, setFormError } = Error;
   const { formData, setformData } = form;
-
+  const { locationData, isLoading } = location;
+  const { userGeoLocation, setUserGeoLocation } = useMyLocation;
   /* <---------------- CONTEXT -----------------> */
-  const {
-    data: locationData,
-    isLoading,
-    Error: LocationApiError,
-  } = useCurrentApiQuery();
+
   const [
-    createUser,
+    Login,
     {
-      isLoading: isSendingUserData,
-      ServerSideAuthError,
+      isLoading: isLogingIn,
+      data: CurrentUser,
       isError: isSendingUserDataError,
     },
-  ] = useCreateUserMutation();
+  ] = useLoginMutation();
+
   /* <--------------  REACT INPUT REF -----------> */
   const Password = React.useRef(null);
   const UserName = React.useRef(null);
@@ -53,6 +56,28 @@ export default function AuthenticateForm({ Error, form }) {
   const LastName = React.useRef(null);
 
   /* <--------------  REACT STATES -----------> */
+
+  const [name, setName] = React.useState({
+    name: ["daniel", "albert", "Isac", "mark", "martin"],
+    index: 0,
+  });
+
+  /* TODO : make the hide show password button work  */
+  const [showHidePassword, setShowHidePassword] = React.useState(false);
+  const [focused, setFocused] = React.useState(false);
+  const [gender, setGender] = React.useState("male");
+  const [ProfileName, setProfileName] = React.useState("");
+  const [userAvatar, setUserAvatar] = React.useState({
+    selected: false,
+    default: {
+      male: Object.values(Avatars[0])[
+        Math.floor(Math.random() * Object.keys(Avatars[0])?.length)
+      ],
+      female: Object.values(Avatars[1])[
+        Math.floor(Math.random() * Object.keys(Avatars[1])?.length)
+      ],
+    },
+  });
   const [formInputs, setForminputs] = React.useState({
     Req_Type: "up",
     inputs: [
@@ -138,29 +163,6 @@ export default function AuthenticateForm({ Error, form }) {
       },
     ],
   });
-  const [name, setName] = React.useState({
-    name: ["daniel", "albert", "ali", "mark", "martin"],
-    index: 0,
-  });
-  const [userGeoLocation, setUserGeoLocation] = React.useState({
-    allow: false,
-    location: locationData?.country,
-  });
-  const [showHidePassword, setShowHidePassword] = React.useState(false);
-  const [focused, setFocused] = React.useState(false);
-  const [gender, setGender] = React.useState("male");
-  const [ProfileName, setProfileName] = React.useState("");
-  const [userAvatar, setUserAvatar] = React.useState({
-    selected: false,
-    default: {
-      male: Object.values(Avatars[0])[
-        Math.floor(Math.random() * Object.keys(Avatars[0])?.length)
-      ],
-      female: Object.values(Avatars[1])[
-        Math.floor(Math.random() * Object.keys(Avatars[1])?.length)
-      ],
-    },
-  });
 
   /* <------------------ VARIABLES ----------------> */
   const FormReqTypeText = [
@@ -218,6 +220,7 @@ export default function AuthenticateForm({ Error, form }) {
     }
     setFocused(false);
   };
+
   const handleFocus = (inputs) => {
     if (!inputs.ready.error) {
       setFormError("");
@@ -226,6 +229,7 @@ export default function AuthenticateForm({ Error, form }) {
     }
     setFocused(true);
   };
+
   const handleChange = (index, e) => {
     const { value } = e.target;
     const { sanitize } = DOMPurify;
@@ -242,7 +246,9 @@ export default function AuthenticateForm({ Error, form }) {
       //UPDATING THE ERROR STATE
       updated[index] = {
         ...updated[index],
+
         value: sanitizedValue,
+
         stars: matchedCriteria.length,
         ready: {
           ...updated[index].ready,
@@ -287,6 +293,7 @@ export default function AuthenticateForm({ Error, form }) {
       };
     });
   };
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     setUserAvatar((prevState) => ({
@@ -295,12 +302,13 @@ export default function AuthenticateForm({ Error, form }) {
     }));
   };
 
+  /* HANDLING FORM SUBMIT */
   const handleSubmit = async (e) => {
-    if (
-      !formInputs.inputs
-        .filter((x) => x.display.includes(formInputs.Req_Type))
-        .every((x) => x.ready.go)
-    ) {
+    const RequiredData = formInputs.inputs.filter((x) =>
+      x.display.includes(formInputs.Req_Type)
+    );
+    if (!RequiredData.every((x) => x.ready.go)) {
+      /* ADDING SOME FUNCTINALITY FOR THE INPUTS THAT AREN'T READY TO SUBMIT  */
       setForminputs((current) => {
         const update = [...current.inputs];
         update.map((inp) => {
@@ -324,31 +332,54 @@ export default function AuthenticateForm({ Error, form }) {
         };
       });
     } else {
-      if (formInputs.Req_Type === "up") {
-        /* FORM DATA */
-        const data = {};
-        formInputs.inputs.map((input) => (data[input.id] = input.value));
-        data.Avatar = userAvatar.selected
-          ? URL.createObjectURL(userAvatar.selected)
-          : userAvatar.default[gender];
-        data.gender = gender;
-        data.Location = userGeoLocation.allow
-          ? locationData?.country
-          : "blue planet";
-        data.displayName = ProfileName;
-        /* updating the form Data state */
-        (() => setformData(data))();
-      } else {
-        ("");
+      let data;
+      switch (formInputs.Req_Type) {
+        case "up":
+          /* <------ REGISTER REQUIEST -------> */
+          data = {};
+          RequiredData.map((input) => (data[input.id] = input.value));
+          /* FORM DATA */
+          data.Avatar = userAvatar.selected
+            ? URL.createObjectURL(userAvatar.selected)
+            : userAvatar.default[gender];
+          data.gender = gender;
+          data.Location = userGeoLocation.allow
+            ? locationData?.country
+            : "blue planet";
+          data.displayName = ProfileName;
+          setformData(data);
+
+        /* <------ LOGIN REQUIEST -------> */
+        case "in":
+          data = {};
+          RequiredData.map((input) => (data[input.id] = input.value));
+          Login(data)
+            .then((res) => {
+              if (res.data) {
+                console.log(res.data);
+                localStorage.setItem("user", JSON.stringify(res.data));
+              } else if (res.error){
+                console.log(res)
+                setFormError(res.error.data)
+              }
+            })
+            .catch((err) => {
+              console.log(err)
+              setFormError(err.message || `an error occured while login in`);
+            });
+        case "fp":
+          return;
       }
     }
   };
 
+
+
   return (
     <div
-      className={`flex h-[500px] min-h-[470px] w-[80%]  min-w-[350px] max-w-[600px] flex-col
-    items-center justify-center  gap-y-[20px] rounded-md bg-gradient-to-tr from-gray-100
-    via-gray-300 
+      className={`flex h-[500px] min-h-[470px] w-[80%]   min-w-[450px] max-w-[600px]
+    flex-col items-center  justify-center gap-y-[20px] rounded-md bg-gradient-to-tr
+    from-gray-100 via-gray-300
     to-gray-200 px-[22px] py-[5px] backdrop-blur-[50px] md:w-[40%] `}
     >
       {/*<----------- FORM TITLE AND CARD ----------->*/}
@@ -642,7 +673,9 @@ export default function AuthenticateForm({ Error, form }) {
                   {/* EYE PASSWORD */}
                   <div
                     onClick={() => {
-                      setShowHidePassword((current) => (current = !current));
+                      setShowHidePassword((current) => {
+                        return (current = !showHidePassword);
+                      });
                       setForminputs((current) => {
                         const update = { ...current };
                         const currentType = update.inputs[3].type;
@@ -740,7 +773,7 @@ export default function AuthenticateForm({ Error, form }) {
           {/* OTHER WAYS TO SIGN UP */}
           <div
             className={`z-[1] flex w-[40%]  items-center ${
-              isSendingUserData ? `Registering gap-x-[0px]` : `gap-x-[16px]`
+              isLogingIn ? `Registering gap-x-[0px]` : `gap-x-[16px]`
             } justify-center`}
           >
             {/* MAPPING THO LOGOS  */}
@@ -752,7 +785,7 @@ export default function AuthenticateForm({ Error, form }) {
                   transition: `transform 350ms ease`,
                 }}
                 className={`hover:fill-blackorigin-center  translate-x-[-12px]  hover:rotate-[360deg] hover:scale-[1.4] ${
-                  isSendingUserData
+                  isLogingIn
                     ? ` Registering scale-[0.3] rounded-full border border-black bg-black p-[12px]`
                     : `scale-[1.1]`
                 }`}

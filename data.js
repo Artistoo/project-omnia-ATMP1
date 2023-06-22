@@ -426,3 +426,8 @@ export const categoryExamples = {
     },
   ],
 };
+
+export const HideAt = {
+  Footer: [""],
+  Nav: [""],
+};

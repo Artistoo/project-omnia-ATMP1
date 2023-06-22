@@ -1,7 +1,9 @@
-import React from 'react'
+/* import mongoose from 'mongoose'
 
-export default function ProfileSettings() {
-  return (
-    <div>ProfileSettings</div>
-  )
-}
+const ProfileSettings = new mongoose.Schema({
+
+
+
+
+
+}) */
