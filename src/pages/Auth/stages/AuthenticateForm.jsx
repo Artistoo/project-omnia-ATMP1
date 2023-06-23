@@ -356,15 +356,19 @@ export default function AuthenticateForm({
           Login(data)
             .then((res) => {
               if (res.data) {
-                console.log(res.data);
-                localStorage.setItem("user", JSON.stringify(res.data));
-              } else if (res.error){
-                console.log(res)
-                setFormError(res.error.data)
+                if (res.data.admin) {
+                  setformData(data);
+                } else if (res.data.Verify) {
+                  setformData(data);
+                } else {
+                  navigate(`/`);
+                  localStorage.setItem("user", JSON.stringify(res.data));
+                }
+              } else if (res.error) {
+                setFormError(res.error.data);
               }
             })
             .catch((err) => {
-              console.log(err)
               setFormError(err.message || `an error occured while login in`);
             });
         case "fp":
@@ -372,8 +376,6 @@ export default function AuthenticateForm({
       }
     }
   };
-
-
 
   return (
     <div

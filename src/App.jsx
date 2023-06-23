@@ -44,22 +44,25 @@ function App() {
       {/* __________________<<<ROUTES>>>___________________ */}
       <Routes>
         <Route index element={<Landing />} />
+
         <Route path={`/settings`} element={<Settings />} />
+
         <Route path="/details" element={<Details />} />
+
         <Route path="/user">
           <Route path="AccountAuth" element={<LoginRegister />} />
           <Route path="GetReady" element={<GetReady />} />
         </Route>
+
         <Route path="/contactUs" element={<ContactForm />} />
 
-
-        <Route path='*' element={<NoPageFound />} />
+        <Route path="*" element={<NoPageFound />} />
         {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
 
         <Route path="user/:userId" element={<Profile />} />
         <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
       </Routes>
-
+  
       {/* _________________<<<FOOTER>>>>___________________ */}
       <Footer />
     </div>

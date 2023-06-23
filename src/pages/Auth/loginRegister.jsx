@@ -32,9 +32,11 @@ import { BsReverseLayoutSidebarReverse } from "react-icons/bs";
 //_________________JSX ___________________
 
 export default function loginRegister() {
+  //TODO: set the forget password functionality  -- work more on notify API
+
   //<---------- CONTEXT ---------->
-  const { userState } = React.useContext(userStateContext);
-  const { loged, admin } = userState;
+  const { loged, admin } = React.useContext(userStateContext).userState;
+
   const navigate = useNavigate();
 
   /* Preventing the page from Reloading */
@@ -83,7 +85,7 @@ export default function loginRegister() {
       )
     );
   };
-
+  //<-------------- API ----------------->
   const {
     data: locationData,
     isLoading,
@@ -127,6 +129,9 @@ export default function loginRegister() {
         setCurrentStage((c) => (c = EmailVarification));
       }
     }, [formData]);
+    React.useEffect(() => {
+      if (loged) navigate("/");
+    }, [loged]);
 
     return (
       <>
@@ -136,6 +141,7 @@ export default function loginRegister() {
       </>
     );
   };
+
   /* <-------- THE AVATARS ARTWORK -------> */
   const RegisterArt = () => {
     const [PageLoaded, setPageLoaded] = React.useState(false);

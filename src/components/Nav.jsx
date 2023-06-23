@@ -7,6 +7,7 @@ import { debounce } from "lodash";
 import LogoBlack from "../../public/JollyBlabLogoV2Black.png";
 import LogoWhite from "../../public/JollyBlabLogoV2White.png";
 import Logo from "../assets/icons/Logo";
+import AddChannel from "../assets/icons/AddChannel.jsx";
 
 // ________________ DATA _________________
 import { NavContent, MenuContent, HideAt } from "../../data";
@@ -15,8 +16,12 @@ import { NavContent, MenuContent, HideAt } from "../../data";
 import MenuIcon from "../assets/icons/menuIcon";
 import { IoIosArrowDown } from "react-icons/io";
 import { CgArrowDown } from "react-icons/cg";
-import { TbArrowDownBar } from "react-icons/tb";
-/* <___________ JSW _________________ */
+import { TbArrowDownBar, TbBuildingCommunity } from "react-icons/tb";
+import { RiNotification3Line } from "react-icons/ri";
+import { GoSearch } from "react-icons/go";
+import { BsPeople } from "react-icons/bs";
+
+/* <___________ JSX _________________ */
 export default function Nav({ pageState }) {
   /* <- TRACKING SCROLL POSITION -> */
   const [scrollPosition, setScrollPosition] = React.useState(0);
@@ -41,7 +46,7 @@ export default function Nav({ pageState }) {
   /* <----------- REACT ROUTER -------> */
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   // <------------------ STATES ------------------------>
   const [open, setOpen] = React.useState(false);
   const [showTutorial, setshowTutorial] = React.useState(false);
@@ -231,6 +236,74 @@ export default function Nav({ pageState }) {
       </>
     );
   };
+  const Search = () => {
+    const [SearchingQuery, setSearchingQuery] = React.useState("");
+    const handleSearching = (e) => {
+      setSearchingQuery(e.target.value);
+      if (e.target.value?.length != 0) {
+        e.target.style.border = "solid gray thin";
+      } else {
+        e.target.style.border = "solid transparent thin";
+      }
+    };
+    const CategorySelect = (e) => {
+      e.preventDefault();
+    };
+
+    return (
+      <div
+        className={`relative flex w-full justify-center  overflow-hidden px-[15px] `}
+      >
+        <input
+          style={{
+            transition: `border 350ms ease `,
+          }}
+          onChange={handleSearching}
+          placeholder={`search tho ${15} channel`}
+          className={`h-[42px] w-full rounded-full border border-none   px-[20px] font-[OpenSauceReg]  text-[15px] outline-none placeholder:text-gray-600 ${
+            ScrollDown
+              ? ` bg-gray-300 bg-opacity-[0.8] text-gray-800 backdrop-blur-lg`
+              : `bg-gradient-to-tl from-neutral-900 to-gray-900 text-gray-400 `
+          }`}
+        />
+
+        <div
+          style={
+            {
+              //TODO: add the scrolling category functionality
+              /* bottom : 30 + '%', */
+            }
+          }
+          onScroll={CategorySelect}
+          className={`absolute right-[30px] h-[300%] w-[40px] `}
+        >
+          {[
+            { icon: GoSearch },
+            { icon: BsPeople },
+            { icon: TbBuildingCommunity },
+          ].map((category, index) => (
+            <category.icon
+              key={`${category.icon.toString()}${index}`}
+              className={`h-1/3 w-full p-[12px] text-gray-400`}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
+  const UserProfile = ({ Avatar }) => {
+    return (
+      <div
+        className={`flex h-full w-full items-center  justify-center overflow-hidden p-[15px]  `}
+      >
+        <img
+          src={Avatar}
+          className={`h-auto w-[110%] max-w-[100px] rounded-full lg:w-[80%]`}
+        />
+      </div>
+    );
+  };
+
   const Works = ({ e }) => {
     return (
       <div
@@ -254,6 +327,8 @@ export default function Nav({ pageState }) {
       </div>
     );
   };
+  if (localStorage?.user) {
+  }
 
   //<---------- FUNCTIONS-------------->
   const useScrollDirection = () => {
@@ -321,121 +396,172 @@ export default function Nav({ pageState }) {
             }
           />
         </Link>
-
-        <div
-          className={`hidden h-full w-[75%] items-center  justify-around text-[17px]  md:flex
-
-          ${ScrollDown ? "text-gray-800" : "text-gray-100 "}
+        {/* LOGEDOUT USER NAVBAR */}
+        {!loged && (
+          <>
+            <div
+              className={`hidden h-full w-[75%] items-center  justify-around text-[17px]  md:flex
+              ${ScrollDown ? "text-gray-800" : "text-gray-100 "}
           `}
-        >
-          {/* THE NAV BAR FOR IF THE USER IS NOT LOGED */}
-          {!loged &&
-            (() => {
-              /* <-- COMPONENTS --> */
-              const Links = (e, defaultStyle) => (
-                <div
-                  onClick={() => navigate(e.onClick?.to)}
-                  className={`${defaultStyle} group flex h-[30%] flex-col items-center justify-start  overflow-hidden rounded-full px-[10px]`}
-                >
-                  <p
-                    className={`transition-translate duration-[250ms] group-hover:translate-y-[-100%]`}
-                  >
-                    {e.text}
-                  </p>
+            >
+              {/* THE NAV BAR FOR IF THE USER IS NOT LOGED */}
+              {(() => {
+                /* <-- COMPONENTS --> */
+                const Links = (e, defaultStyle) => (
                   <div
-                    className={`transition-translate relative flex w-full items-center justify-center duration-[250ms] group-hover:translate-y-[-100%]`}
+                    onClick={() => navigate(e.onClick?.to)}
+                    className={`${defaultStyle} group flex h-[30%] flex-col items-center justify-start  overflow-hidden rounded-full px-[10px]`}
                   >
-                    <p>GO</p>
-                    <CgArrowDown
-                      style={{
-                        transition: `transform 500ms 100ms ,opacity 400ms ease-in-out  `,
-                      }}
-                      className="absolute  origin-center rotate-[-90deg] opacity-0  group-hover:translate-x-[22px] group-hover:opacity-[1]"
-                    />
+                    <p
+                      className={`transition-translate duration-[250ms] group-hover:translate-y-[-100%]`}
+                    >
+                      {e.text}
+                    </p>
+                    <div
+                      className={`transition-translate relative flex w-full items-center justify-center duration-[250ms] group-hover:translate-y-[-100%]`}
+                    >
+                      <p>GO</p>
+                      <CgArrowDown
+                        style={{
+                          transition: `transform 500ms 100ms ,opacity 400ms ease-in-out  `,
+                        }}
+                        className="absolute  origin-center rotate-[-90deg] opacity-0  group-hover:translate-x-[22px] group-hover:opacity-[1]"
+                      />
+                    </div>
                   </div>
-                </div>
-              );
-              const Show = (e) => <Works e />;
-              const BTN = (e) => (
-                <div
-                  onClick={() => navigate(e.onClick?.to)}
-                  style={{
-                    transition: `opacity 200ms ,background 250ms , border 500ms ease-in-out `,
-                  }}
-                  className={`backdrop-lg flex min-w-[40%] cursor-pointer items-center justify-center rounded-full border px-[20px] py-[5px]
+                );
+                const Show = (e) => <Works e />;
+                const BTN = (e) => (
+                  <div
+                    onClick={() => navigate(e.onClick?.to)}
+                    style={{
+                      transition: `opacity 200ms ,background 250ms , border 500ms ease-in-out `,
+                    }}
+                    className={`backdrop-lg flex min-w-[40%] cursor-pointer items-center justify-center rounded-full border px-[20px] py-[5px]
                 
                 ${
                   ScrollDown
                     ? `border-black hover:border-white hover:bg-black hover:bg-opacity-[0.8] hover:text-gray-100`
                     : `hover:bg-white hover:bg-opacity-[0.7] hover:text-gray-950`
                 }`}
-                >
-                  <p>{e.text}</p>
-                </div>
-              );
+                  >
+                    <p>{e.text}</p>
+                  </div>
+                );
 
-              /* THE TWO SECTION BUTTONS AND LINKS CONTAINER */
+                /* THE TWO SECTION BUTTONS AND LINKS CONTAINER */
 
-              return NavContent?.notLoged?.map((Nav, index) => {
-                return (
-                  /* CONTAINER OF EACH NAV SECTION BUTTONS AND LINKS */
-                  <div
-                    key={`NavSectionN${index}`}
-                    style={{
-                      fontFamily: `OpenSauce`,
-                      fontWeight: `thin`,
-                    }}
-                    className={`flex h-full min-w-max items-center justify-center gap-x-[20px]  
+                return NavContent?.notLoged?.map((Nav, index) => {
+                  return (
+                    /* CONTAINER OF EACH NAV SECTION BUTTONS AND LINKS */
+                    <div
+                      key={`NavSectionN${index}`}
+                      style={{
+                        fontFamily: `OpenSauce`,
+                        fontWeight: `thin`,
+                      }}
+                      className={`flex h-full min-w-max items-center justify-center gap-x-[20px]  
                     ${
                       Nav.type === "btn"
                         ? "w-[40%] gap-x-[20px]"
                         : "w-[60%] gap-x-[15px]"
                     }`}
-                  >
-                    {/* THE NAV BAR CONTENT */}
-                    {Nav?.content?.map((item) => {
-                      return ((
-                        defaultStyle = `cursor-pointer 
+                    >
+                      {/* THE NAV BAR CONTENT */}
+                      {Nav?.content?.map((item) => {
+                        return ((
+                          defaultStyle = `cursor-pointer 
                         ${
                           ScrollDown
                             ? `hover:text-gray-50`
                             : `hover:text-green-300`
                         }
                         `
-                      ) => {
-                        switch (item.type) {
-                          case "link":
-                            return Links(item, defaultStyle);
-                          case "show":
-                            return Show(item, defaultStyle);
-                          case "btn":
-                            return BTN(item);
-                        }
-                      })();
-                    })}
-                  </div>
-                );
-              });
-            })()}
-          {/* THE NAV BAR FOR IF THE USER IS LOGED */}
-        </div>
+                        ) => {
+                          switch (item.type) {
+                            case "link":
+                              return Links(item, defaultStyle);
+                            case "show":
+                              return Show(item, defaultStyle);
+                            case "btn":
+                              return BTN(item);
+                          }
+                        })();
+                      })}
+                    </div>
+                  );
+                });
+              })()}
+              {/* THE NAV BAR FOR IF THE USER IS LOGED */}
+            </div>
 
-        <div
-          className={`flex h-full w-[80%]  items-center  justify-between px-[25px] md:hidden `}
-        >
-          <div
-            className={`flex w-[70%] scale-[1.1] items-center justify-center`}
-          >
-            <Works />
-          </div>
+            <div
+              className={`flex h-full w-[80%]  items-center  justify-between px-[25px] md:hidden `}
+            >
+              <div
+                className={`flex w-[70%] scale-[1.1] items-center justify-center`}
+              >
+                <Works />
+              </div>
 
-          <div className={` flex h-full w-[20%] items-center  justify-end `}>
-            <MenuIcon
-              ScrollPosition={ScrollDown}
-              menuState={{ open, setOpen }}
-            />
-          </div>
-        </div>
+              <div
+                className={` flex h-full w-[20%] items-center  justify-end `}
+              >
+                <MenuIcon
+                  ScrollPosition={ScrollDown}
+                  menuState={{ open, setOpen }}
+                />
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* LOGEDIN USER NAVBAR */}
+        {loged &&
+          (() => {
+            const {
+              userName,
+              LastName,
+              DisplayName,
+              Email,
+              gender,
+              Avatar,
+              Location,
+              admin,
+            } = JSON.parse(localStorage?.user);
+
+            return (
+              <div
+                className={`flex h-[85%] w-[570px] items-center justify-between border lg:w-[80%] `}
+              >
+                <div
+                  className={`flex h-full w-[60%] max-w-[600px] items-center  justify-center border lg:w-[50%] `}
+                >
+                  <Search />
+                </div>
+                <div
+                  className={`flex h-full  w-[22%] max-w-[200px] items-center justify-around border border-yellow-300`}
+                >
+                  {[{ icon: RiNotification3Line }, { icon: AddChannel }].map(
+                    (Icon, index) => (
+                      <div
+                        key={`NavIcons${index}`}
+                        className={`group flex w-[45%]  items-center justify-center `}
+                      >
+                        <Icon.icon
+                          className={`z-10 h-[25px] w-auto text-white`}
+                          ScrollingDown={ScrollDown}
+                        />
+                      </div>
+                    )
+                  )}
+                </div>
+                <div className={`h-full w-[15%] border border-red-500 `}>
+                  <UserProfile Avatar={Avatar} />
+                </div>
+              </div>
+            );
+          })()}
       </div>
     </nav>
   );
