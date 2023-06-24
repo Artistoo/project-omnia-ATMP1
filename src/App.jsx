@@ -4,8 +4,6 @@ import {
   Route,
   Routes,
   Navigate,
-  createBrowserRouter,
-  Outlet,
 } from "react-router-dom";
 import { debounce, throttle } from "lodash";
 //__________________CONTEXT_____________________
@@ -32,14 +30,13 @@ import NoPageFound from "./pages/NotFound/NoPageFound";
 function App() {
   //<-------------CONTEXT----------->
   const { userState } = React.useContext(userStateContext);
-
   /* <------------------ STATE HOOK ------------------> */
   const [pageLoading, setPageLoading] = React.useState(true);
 
   return !pageLoading ? (
     <div>
       {/* _________________<<<NAVBAR>>>____________________ */}
-      <Nav pageState={pageLoading} />
+      <Nav />
 
       {/* __________________<<<ROUTES>>>___________________ */}
       <Routes>
@@ -62,7 +59,7 @@ function App() {
         <Route path="user/:userId" element={<Profile />} />
         <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
       </Routes>
-  
+
       {/* _________________<<<FOOTER>>>>___________________ */}
       <Footer />
     </div>

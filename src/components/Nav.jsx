@@ -22,7 +22,7 @@ import { GoSearch } from "react-icons/go";
 import { BsPeople } from "react-icons/bs";
 
 /* <___________ JSX _________________ */
-export default function Nav({ pageState }) {
+export default function Nav() {
   /* <- TRACKING SCROLL POSITION -> */
   const [scrollPosition, setScrollPosition] = React.useState(0);
 
@@ -236,10 +236,12 @@ export default function Nav({ pageState }) {
       </>
     );
   };
-  const Search = () => {
+  const Search = ({ SearchingState }) => {
     const [SearchingQuery, setSearchingQuery] = React.useState("");
+    const { isSearching, setIsSearching } = SearchingState;
     const handleSearching = (e) => {
       setSearchingQuery(e.target.value);
+
       if (e.target.value?.length != 0) {
         e.target.style.border = "solid gray thin";
       } else {
@@ -255,15 +257,17 @@ export default function Nav({ pageState }) {
         className={`relative flex w-full justify-center  overflow-hidden px-[15px] `}
       >
         <input
+          /* onFocus={(e) => setIsSearching(true)}
+          onBlur={(e) => setIsSearching(false)} */
           style={{
             transition: `border 350ms ease `,
           }}
           onChange={handleSearching}
           placeholder={`search tho ${15} channel`}
-          className={`h-[42px] w-full rounded-full border border-none   px-[20px] font-[OpenSauceReg]  text-[15px] outline-none placeholder:text-gray-600 ${
+          className={`h-[47px] w-full rounded-full border border-none   px-[20px] font-[OpenSauceReg]  text-[15px] outline-none placeholder:text-gray-600 ${
             ScrollDown
-              ? ` bg-gray-300 bg-opacity-[0.8] text-gray-800 backdrop-blur-lg`
-              : `bg-gradient-to-tl from-neutral-900 to-gray-900 text-gray-400 `
+              ? `  bg-gray-300 bg-opacity-[0.8] text-gray-800 backdrop-blur-lg`
+              : `bg-transparent bg-gradient-to-tl from-neutral-900 to-gray-900 text-gray-400 `
           }`}
         />
 
@@ -284,21 +288,28 @@ export default function Nav({ pageState }) {
           ].map((category, index) => (
             <category.icon
               key={`${category.icon.toString()}${index}`}
-              className={`h-1/3 w-full p-[12px] text-gray-400`}
+              className={`h-1/3 w-full p-[10px] text-gray-400 md:p-[12px]`}
             />
           ))}
         </div>
       </div>
     );
   };
-  const UserProfile = ({ Avatar }) => {
+  const UserProfile = ({ Avatar, menuState, AddingState }) => {
+    const { ProfileMenu, setProfileMenu } = menuState;
+    const { Adding, setAdding } = AddingState;
     return (
+      /* TODO: match the menu bg color with the user avatar */
       <div
+        onClick={() => {
+          setProfileMenu((c) => (c = !c));
+          setAdding(false);
+        }}
         className={`flex h-full w-full items-center  justify-center overflow-hidden p-[15px]  `}
       >
         <img
           src={Avatar}
-          className={`h-auto w-[110%] max-w-[100px] rounded-full lg:w-[80%]`}
+          className={`h-auto w-[110%] max-w-[100px] rounded-full lg:w-[60%]`}
         />
       </div>
     );
@@ -357,6 +368,29 @@ export default function Nav({ pageState }) {
     return scrollingDown;
   };
 
+  /* IF NO NAV BAR DISPLAY  */
+  if (HideAt.Nav.some((x) => x === location.pathname)) {
+    return (
+      <Logo
+        ScrollingDown={useScrollDirection()}
+        scale={ScrollDown ? 1.4 : 1.2}
+        Menu={true}
+        color={
+          ScrollDown || open
+            ? {
+                main: "black",
+                colors: [`black`, `black`, `black`],
+              }
+            : {
+                main: "white",
+                colors: [`white`, `white`, `white`],
+              }
+        }
+      />
+    );
+  }
+
+  /* IF NAV BAR DISPLAY  */
   return (
     <nav
       style={{
@@ -396,6 +430,7 @@ export default function Nav({ pageState }) {
             }
           />
         </Link>
+
         {/* LOGEDOUT USER NAVBAR */}
         {!loged && (
           <>
@@ -530,17 +565,50 @@ export default function Nav({ pageState }) {
               admin,
             } = JSON.parse(localStorage?.user);
 
+            const [Adding, setAdding] = React.useState(false);
+            const [ProfileMenu, setProfileMenu] = React.useState(false);
+            /* const [MenuHovering, setMenuHovering] = React.useState(false); */
+            const [isSearching, setIsSearching] = React.useState(false);
+            /* Closing the Menu on Outside click */
+            /* React.useEffect(() => {
+              const closeOnOutSideClick = () => {
+                if (!MenuHovering) {
+                  setProfileMenu(false);
+                  setAdding(false);
+                }
+              };
+              window.addEventListener("click", closeOnOutSideClick);
+              return () => removeEventListener("click", closeOnOutSideClick);
+            }, [MenuHovering]); */
+
             return (
               <div
-                className={`flex h-[85%] w-[570px] items-center justify-between border lg:w-[80%] `}
+                /* onMouseEnter={() => setMenuHovering(true)}
+                onMouseLeave={() => setMenuHovering(false)} */
+                className={`flex h-[85%] w-[480px] items-center justify-between border border-red-500 md:w-[570px] lg:w-[70%] `}
               >
+                {/* _____SEARCH_____ */}
                 <div
-                  className={`flex h-full w-[60%] max-w-[600px] items-center  justify-center border lg:w-[50%] `}
+                  className={`md:transalte-x-0 relative flex h-full w-[50%] max-w-[600px]  items-center justify-center border md:w-[60%] lg:w-[50%] `}
                 >
-                  <Search />
+                  <Search SearchingState={{ isSearching, setIsSearching }} />
+                  <div
+                    style={{
+                      transition: `opacity 300ms ease`,
+                    }}
+                    className={`pointer-events-none absolute left-0 flex h-full w-[80%] bg-gradient-to-r  from-black to-transparent  md:hidden ${
+                      isSearching
+                        ? `opacity-0`
+                        : ScrollDown
+                        ? `opacity-0`
+                        : `opacity-[0.5]`
+                    }`}
+                  />
                 </div>
+
+                {/* ____NOTIFICATION ADD CHANNEL BUTTON____ */}
                 <div
-                  className={`flex h-full  w-[22%] max-w-[200px] items-center justify-around border border-yellow-300`}
+                  className={`flex h-full w-[30%] max-w-[200px] items-center justify-around border border-yellow-300 md:pointer-events-auto md:w-[22%] md:translate-x-0 md:opacity-[1]`}
                 >
                   {[{ icon: RiNotification3Line }, { icon: AddChannel }].map(
                     (Icon, index) => (
@@ -549,15 +617,55 @@ export default function Nav({ pageState }) {
                         className={`group flex w-[45%]  items-center justify-center `}
                       >
                         <Icon.icon
+                          AddingState={{ Adding, setAdding }}
+                          menuState={{ ProfileMenu, setProfileMenu }}
                           className={`z-10 h-[25px] w-auto text-white`}
                           ScrollingDown={ScrollDown}
                         />
                       </div>
                     )
                   )}
+                  {/* MENU */}
+                  {(Adding || ProfileMenu) && (
+                    <div
+                      style={{
+                        transition: `transform 300ms ease `,
+                      }}
+                      className={`absolute right-[25px] top-full min-h-[150px] w-[250px] translate-x-[20px] overflow-hidden rounded-sm border border-white bg-gray-200 bg-opacity-[0.5] backdrop-blur-md ${
+                        ProfileMenu
+                          ? `lg:translate-x-[220px] `
+                          : `lg:translate-x-[20px]`
+                      }`}
+                    >
+                      <div
+                        style={{
+                          transition: `transform 300ms ease-in-out`,
+                        }}
+                        className={`absolute  flex h-full w-[200%] ${
+                          !ProfileMenu ? `translate-x-[50%] ` : `translate-x-0`
+                        } `}
+                      >
+                        {[{ mapOver: [] }, { mapOver: [] }].map((menu) => (
+                          <div className={`h-full w-1/2 bg-black`}>
+                            {menu.mapOver?.map((x) => {
+                              x;
+                            })}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className={`h-full w-[15%] border border-red-500 `}>
-                  <UserProfile Avatar={Avatar} />
+
+                {/* USER PROFILE */}
+                <div
+                  className={`z-10 h-full w-[20%] border border-red-500 md:w-[15%]`}
+                >
+                  <UserProfile
+                    Avatar={Avatar}
+                    AddingState={{ Adding, setAdding }}
+                    menuState={{ ProfileMenu, setProfileMenu }}
+                  />
                 </div>
               </div>
             );
