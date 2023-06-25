@@ -457,4 +457,13 @@ body::-webkit-scrollbar {
     scale: 0.5;
     pointer-events: none;
   }
+}
+
+.MenuScrollBar::-webkit-scrollbar {
+  background: transparent;
+  scrollbar-gutter: stable;
+}
+.MenuScrollBar::-webkit-scrollbar-thumb {
+  border-radius: 15px;
+  scrollbar-gutter: stable;
 }/*# sourceMappingURL=index.css.map */

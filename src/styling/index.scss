@@ -324,3 +324,7 @@ body {
     }
   }
 }
+.MenuScrollBar{
+  &::-webkit-scrollbar { background: transparent; scrollbar-gutter: stable ;  }
+  &::-webkit-scrollbar-thumb { border-radius: 15px; scrollbar-gutter: stable  }
+}

@@ -2,6 +2,8 @@ import React from "react";
 import { userStateContext } from "../context/userState";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { debounce } from "lodash";
+import {Slider } from 'infinite-react-carousel'
+
 
 //________________________ASSETS________________________
 import LogoBlack from "../../public/JollyBlabLogoV2Black.png";
@@ -15,12 +17,22 @@ import { NavContent, MenuContent, HideAt } from "../../data";
 // ________________ COMPONENTS _________________
 import MenuIcon from "../assets/icons/menuIcon";
 import { IoIosArrowDown } from "react-icons/io";
-import { CgArrowDown } from "react-icons/cg";
+import { CgArrowDown, CgArrowLeft, CgNotifications } from "react-icons/cg";
 import { TbArrowDownBar, TbBuildingCommunity } from "react-icons/tb";
 import { RiNotification3Line } from "react-icons/ri";
 import { GoSearch } from "react-icons/go";
 import { BsPeople } from "react-icons/bs";
-
+import { GrAdd } from "react-icons/gr";
+import {
+  BiArrowFromLeft,
+  BiArrowFromRight,
+  BiInfinite,
+  BiMenu,
+  BiNotification,
+} from "react-icons/bi";
+import { GiSettingsKnobs } from "react-icons/gi";
+import { MdNotifications } from "react-icons/md";
+import { BsArrowBarRight } from "react-icons/bs";
 /* <___________ JSX _________________ */
 export default function Nav() {
   /* <- TRACKING SCROLL POSITION -> */
@@ -42,6 +54,33 @@ export default function Nav() {
     () => (Math.floor(scrollPosition) > 0 ? true : false),
     [scrollPosition]
   );
+
+  //<---------- FUNCTIONS-------------->
+  const useScrollDirection = () => {
+    const [scrollingDown, setScrollingDown] = React.useState(false);
+
+    React.useEffect(() => {
+      let previousScrollPosition =
+        window.pageYOffset || document.documentElement.scrollTop;
+
+      const handleScroll = () => {
+        const currentScrollPosition =
+          window.pageYOffset || document.documentElement.scrollTop;
+        setScrollingDown(currentScrollPosition > previousScrollPosition);
+        previousScrollPosition = currentScrollPosition;
+      };
+
+      const scrollListener = () => handleScroll();
+
+      window.addEventListener("scroll", scrollListener);
+
+      return () => {
+        window.removeEventListener("scroll", scrollListener);
+      };
+    }, []);
+
+    return scrollingDown;
+  };
 
   /* <----------- REACT ROUTER -------> */
   const location = useLocation();
@@ -236,7 +275,32 @@ export default function Nav() {
       </>
     );
   };
-  const Search = ({ SearchingState }) => {
+  const Works = ({ e }) => {
+    return (
+      <div
+        onClick={() => navigate(e.onClick?.to || `user/AccountAuth`)}
+        className={` group flex cursor-pointer flex-col items-center justify-center 
+        ${
+          !e
+            ? `font-[openSauce] text-[17px] text-gray-200  ${
+                ScrollDown && `text-gray-800`
+              }`
+            : `translate-y-[-2px]`
+        } ${open && `pointer-events-none opacity-0`}`}
+      >
+        <p>{e?.text || "works"}</p>
+        <IoIosArrowDown
+          style={{
+            transition: `opacity 150ms , transform 150ms ease-in-out`,
+          }}
+          className={`absolute opacity-0 group-hover:translate-y-[17px] group-hover:opacity-[1]`}
+        />
+      </div>
+    );
+  };
+
+  /* LOGED */
+  const Search = React.memo(({ SearchingState }) => {
     const [SearchingQuery, setSearchingQuery] = React.useState("");
     const { isSearching, setIsSearching } = SearchingState;
     const handleSearching = (e) => {
@@ -267,19 +331,13 @@ export default function Nav() {
           className={`h-[47px] w-full rounded-full border border-none   px-[20px] font-[OpenSauceReg]  text-[15px] outline-none placeholder:text-gray-600 ${
             ScrollDown
               ? `  bg-gray-300 bg-opacity-[0.8] text-gray-800 backdrop-blur-lg`
-              : `bg-transparent bg-gradient-to-tl from-neutral-900 to-gray-900 text-gray-400 `
+              : `bg-transparent bg-gradient-to-l from-neutral-900 to-gray-800 text-gray-400 `
           }`}
         />
 
-        <div
-          style={
-            {
-              //TODO: add the scrolling category functionality
-              /* bottom : 30 + '%', */
-            }
-          }
+        <div 
           onScroll={CategorySelect}
-          className={`absolute right-[30px] h-[300%] w-[40px] `}
+          className={`absolute right-[30px] h-[300%] w-[40px] flex flex-col  `}
         >
           {[
             { icon: GoSearch },
@@ -294,78 +352,26 @@ export default function Nav() {
         </div>
       </div>
     );
-  };
-  const UserProfile = ({ Avatar, menuState, AddingState }) => {
-    const { ProfileMenu, setProfileMenu } = menuState;
-    const { Adding, setAdding } = AddingState;
+  });
+  const UserProfile = ({ Avatar, Menu }) => {
+    const { NavMenu, setNavMenu } = Menu;
     return (
       /* TODO: match the menu bg color with the user avatar */
       <div
         onClick={() => {
-          setProfileMenu((c) => (c = !c));
-          setAdding(false);
+          setNavMenu((c) => ({
+            ...c,
+            IndexSelected: NavMenu.IndexSelected === 3 ? false : 3,
+          }));
         }}
-        className={`flex h-full w-full items-center  justify-center overflow-hidden p-[15px]  `}
+        className={`group flex h-full w-full  items-center justify-center overflow-hidden  p-[15px]`}
       >
         <img
           src={Avatar}
-          className={`h-auto w-[110%] max-w-[100px] rounded-full lg:w-[60%]`}
+          className={`h-auto w-auto cursor-pointer rounded-full border group-hover:opacity-60 lg:scale-[0.9]`}
         />
       </div>
     );
-  };
-
-  const Works = ({ e }) => {
-    return (
-      <div
-        onClick={() => navigate(e.onClick?.to || `user/AccountAuth`)}
-        className={` group flex cursor-pointer flex-col items-center justify-center 
-        ${
-          !e
-            ? `font-[openSauce] text-[17px] text-gray-200  ${
-                ScrollDown && `text-gray-800`
-              }`
-            : `translate-y-[-2px]`
-        } ${open && `pointer-events-none opacity-0`}`}
-      >
-        <p>{e?.text || "works"}</p>
-        <IoIosArrowDown
-          style={{
-            transition: `opacity 150ms , transform 150ms ease-in-out`,
-          }}
-          className={`absolute opacity-0 group-hover:translate-y-[17px] group-hover:opacity-[1]`}
-        />
-      </div>
-    );
-  };
-  if (localStorage?.user) {
-  }
-
-  //<---------- FUNCTIONS-------------->
-  const useScrollDirection = () => {
-    const [scrollingDown, setScrollingDown] = React.useState(false);
-
-    React.useEffect(() => {
-      let previousScrollPosition =
-        window.pageYOffset || document.documentElement.scrollTop;
-
-      const handleScroll = () => {
-        const currentScrollPosition =
-          window.pageYOffset || document.documentElement.scrollTop;
-        setScrollingDown(currentScrollPosition > previousScrollPosition);
-        previousScrollPosition = currentScrollPosition;
-      };
-
-      const scrollListener = () => handleScroll();
-
-      window.addEventListener("scroll", scrollListener);
-
-      return () => {
-        window.removeEventListener("scroll", scrollListener);
-      };
-    }, []);
-
-    return scrollingDown;
   };
 
   /* IF NO NAV BAR DISPLAY  */
@@ -396,7 +402,7 @@ export default function Nav() {
       style={{
         transition: `height 100ms ease-in-out`,
       }}
-      className={`navBar z-[15]  m-auto mb-[15px] flex h-[100px] flex-col items-center justify-center ${
+      className={`navBar z-[15]  m-auto  mb-[15px] flex h-[100px] flex-col items-center justify-center ${
         HideAt.Nav.some((x) => x === location.pathname)
           ? `pointer-events-none opacity-0`
           : `pointer-events-auto opacity-[1]`
@@ -406,7 +412,7 @@ export default function Nav() {
       <WhiteBgNavBar />
 
       <div
-        className={`flex h-full w-full items-center justify-between  lg:w-[95%]`}
+        className={`flex h-full w-full items-center justify-between  px-[15px] lg:w-[95%]`}
       >
         {/* <--------- LOGO ---------> */}
         <Link
@@ -551,7 +557,7 @@ export default function Nav() {
           </>
         )}
 
-        {/* LOGEDIN USER NAVBAR */}
+        {/* <---------------------- LOGEDIN USER NAVBAR ----------------------> */}
         {loged &&
           (() => {
             const {
@@ -565,31 +571,103 @@ export default function Nav() {
               admin,
             } = JSON.parse(localStorage?.user);
 
-            const [Adding, setAdding] = React.useState(false);
-            const [ProfileMenu, setProfileMenu] = React.useState(false);
-            /* const [MenuHovering, setMenuHovering] = React.useState(false); */
+            const [NavMenu, setNavMenu] = React.useState({
+              IndexSelected: false,
+              Render: [
+                {
+                  header: {
+                    icon: CgNotifications,
+                    title: null,
+                    text: "check out your notificaitons",
+                  },
+                  content: [],
+                  style: {
+                    bg: "yellow",
+                  },
+                },
+                {
+                  header: {
+                    icon: null,
+                    title: "Create",
+                    text: "tell me more",
+                  },
+                  content: [
+                    {
+                      icon: GrAdd,
+                      title: "tribe",
+                      details: {
+                        price: 0,
+                        remining: BiInfinite,
+                        about: "best for meeting new peoples and getting help ",
+                      },
+                    },
+                    {
+                      icon: GrAdd,
+                      title: "Community",
+                      details: {
+                        price: 5,
+                        remining: BiInfinite,
+                        about:
+                          "best for contributing in what you value the most  ",
+                      },
+                    },
+                  ],
+                  style: {
+                    bg: "green",
+                  },
+                },
+                {
+                  header: {
+                    icon: null,
+                    title: `${userName} ${LastName}`,
+                    text: "",
+                  },
+                  content: [
+                    {
+                      icon: CgArrowLeft,
+                      title: "profile",
+                    },
+                    {
+                      icon: CgArrowLeft,
+                      title: "settings",
+                    },
+                    {
+                      icon: CgArrowLeft,
+                      title: "Channels",
+                    },
+                  ],
+                  style: {
+                    bg: "blue",
+                  },
+                },
+              ],
+            });
+
+            const [MenuHovering, setMenuHovering] = React.useState(false);
             const [isSearching, setIsSearching] = React.useState(false);
+
             /* Closing the Menu on Outside click */
-            /* React.useEffect(() => {
+            React.useEffect(() => {
               const closeOnOutSideClick = () => {
                 if (!MenuHovering) {
-                  setProfileMenu(false);
-                  setAdding(false);
+                  setNavMenu((c) => ({ ...c, IndexSelected: false }));
                 }
               };
               window.addEventListener("click", closeOnOutSideClick);
               return () => removeEventListener("click", closeOnOutSideClick);
-            }, [MenuHovering]); */
+            }, [MenuHovering]);
+
+            const MenuTransitionInMS = "350ms";
 
             return (
               <div
-                /* onMouseEnter={() => setMenuHovering(true)}
-                onMouseLeave={() => setMenuHovering(false)} */
-                className={`flex h-[85%] w-[480px] items-center justify-between border border-red-500 md:w-[570px] lg:w-[70%] `}
+                onMouseEnter={() => setMenuHovering(true)}
+                onMouseLeave={() => setMenuHovering(false)}
+                className={`relative flex h-[85%] w-[510px] items-center justify-between  md:w-[570px] lg:w-[60%] `}
               >
                 {/* _____SEARCH_____ */}
                 <div
-                  className={`md:transalte-x-0 relative flex h-full w-[50%] max-w-[600px]  items-center justify-center border md:w-[60%] lg:w-[50%] `}
+                  className={`md:transalte-x-0 relative flex h-full w-[50%] max-w-[600px]  items-center justify-center  md:w-[60%] lg:w-[60%] `}
                 >
                   <Search SearchingState={{ isSearching, setIsSearching }} />
                   <div
@@ -608,65 +686,185 @@ export default function Nav() {
 
                 {/* ____NOTIFICATION ADD CHANNEL BUTTON____ */}
                 <div
-                  className={`flex h-full w-[30%] max-w-[200px] items-center justify-around border border-yellow-300 md:pointer-events-auto md:w-[22%] md:translate-x-0 md:opacity-[1]`}
+                  className={`flex h-full w-[30%]  max-w-[200px] items-center justify-around  md:pointer-events-auto md:w-[20%] md:translate-x-0 md:opacity-[1]`}
                 >
                   {[{ icon: RiNotification3Line }, { icon: AddChannel }].map(
                     (Icon, index) => (
                       <div
+                        onClick={() =>
+                          !index
+                            ? setNavMenu((c) => ({
+                                ...c,
+                                IndexSelected:
+                                  NavMenu.IndexSelected === 1 ? false : 1,
+                              }))
+                            : ""
+                        }
                         key={`NavIcons${index}`}
-                        className={`group flex w-[45%]  items-center justify-center `}
+                        className={`group flex w-[45%]  items-center justify-center  cursor-pointer`}
                       >
                         <Icon.icon
-                          AddingState={{ Adding, setAdding }}
-                          menuState={{ ProfileMenu, setProfileMenu }}
                           className={`z-10 h-[25px] w-auto text-white`}
                           ScrollingDown={ScrollDown}
+                          Menu={{ NavMenu, setNavMenu }}
                         />
                       </div>
                     )
                   )}
-                  {/* MENU */}
-                  {(Adding || ProfileMenu) && (
-                    <div
-                      style={{
-                        transition: `transform 300ms ease `,
-                      }}
-                      className={`absolute right-[25px] top-full min-h-[150px] w-[250px] translate-x-[20px] overflow-hidden rounded-sm border border-white bg-gray-200 bg-opacity-[0.5] backdrop-blur-md ${
-                        ProfileMenu
-                          ? `lg:translate-x-[220px] `
-                          : `lg:translate-x-[20px]`
-                      }`}
-                    >
-                      <div
-                        style={{
-                          transition: `transform 300ms ease-in-out`,
-                        }}
-                        className={`absolute  flex h-full w-[200%] ${
-                          !ProfileMenu ? `translate-x-[50%] ` : `translate-x-0`
-                        } `}
-                      >
-                        {[{ mapOver: [] }, { mapOver: [] }].map((menu) => (
-                          <div className={`h-full w-1/2 bg-black`}>
-                            {menu.mapOver?.map((x) => {
-                              x;
-                            })}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
 
-                {/* USER PROFILE */}
-                <div
-                  className={`z-10 h-full w-[20%] border border-red-500 md:w-[15%]`}
-                >
-                  <UserProfile
-                    Avatar={Avatar}
-                    AddingState={{ Adding, setAdding }}
-                    menuState={{ ProfileMenu, setProfileMenu }}
-                  />
+                {/*  ____USER PROFILE____  */}
+                <div className={`z-10 h-full w-[18%] md:w-[15%]`}>
+                  <UserProfile Avatar={Avatar} Menu={{ NavMenu, setNavMenu }} />
                 </div>
+
+
+
+                {/*<------- MENU -------> */}
+                {NavMenu.IndexSelected && (
+                  <div
+                    style={{
+                      right: `${30 - (NavMenu.IndexSelected - 1) * 15}%`,
+                      transition: `right ${MenuTransitionInMS} ease `,
+                    }}
+                    className={`absolute  right-0 top-full flex h-max max-h-[365px] min-h-[180px] w-[300px] translate-y-[5px] items-center overflow-hidden  overflow-x-hidden  rounded-md  bg-gradient-to-tl from-gray-300 to-slate-100 bg-opacity-[0.8] backdrop-blur-lg`}
+                  >
+                    {/* THE THREE ITEMS CONTAINER  */}
+
+                    <div
+                      style={{
+                        translate: `-${
+                          (NavMenu.IndexSelected - 1) *
+                          (100 / NavMenu.Render.length)
+                        }% 0`,
+                        transition: `translate ${MenuTransitionInMS} ease `,
+                      }}
+                      className={`absolute flex h-full w-[300%]  `}
+                    >
+                      {/* THE THREE ITEMS MAPPING */}
+                      {NavMenu.Render.map((item, itemIndex) => (
+                        <div
+                          className={`flex w-1/3 flex-col items-center justify-center px-[12px] bg-${item.style.bg}-200 overflow-y-scroll MenuScrollBar bg-opacity-[0.4]`}
+                        >
+                          {/* THE HEADER OF EACH MENU ITEM */}
+                          <div
+                            className={`relative flex h-[30%] w-full items-center justify-between  `}
+                          >
+                            <div
+                              style={{
+                                width:
+                                  100 /
+                                    [...Object.values(item.header)].filter(
+                                      Boolean
+                                    ).length +
+                                  "%",
+                                transition: `opacity 150ms , transform 150ms ease-in-out`,
+                                transitionDelay: MenuTransitionInMS,
+                              }}
+                              className={` w-[40%] font-[garet] font-semibold text-[25px] ${
+                                NavMenu.IndexSelected - 1 != itemIndex
+                                  ? `translate-y-[15px] opacity-0`
+                                  : `opacity-1 translate-y-0`
+                              } `}
+                            >
+                              {item.header.title && (
+                                <h2>{item.header.title}</h2>
+                              )}
+                              {item.header.icon && <item.header.icon />}
+                            </div>
+                            {item.header.text && (
+                              <p
+                                style={{
+                                  width: (!item.header.title ? 100 : 30) + "%",
+                                  transition: `opacity 150ms , transform 150ms ease-in-out`,
+                                  transitionDelay:
+                                    +MenuTransitionInMS.replace("ms", "") +
+                                    150 +
+                                    "ms",
+                                }}
+                                className={`font-[OpenSauceReg] text-[12px]  ${
+                                  NavMenu.IndexSelected - 1 != itemIndex
+                                    ? `translate-y-[15px] opacity-0`
+                                    : `opacity-1 translate-y-0`
+                                }  `}
+                              >
+                                {item.header.text}
+                              </p>
+                            )}
+                          </div>
+
+                          <div
+                            className={`relative flex h-[70%] w-full flex-col items-center justify-between`}
+                          >
+                            {item.content.map((opt, optIndex) => (
+                              <div
+                                style={{
+                                  height: 100 / item.content.length - 2 + "%",
+                                  transition: `opacity 450ms , transform 350ms ease-in-out`,
+                                  transitionDelay: (optIndex + 1) * 200 + "ms",
+                                }}
+                                className={`group my-[2px] flex w-full items-center justify-start gap-x-[15px] overflow-hidden  cursor-pointer  px-[25px] font-[OpenSauceReg] ${
+                                  itemIndex === 1 ? 'border border-black ' : optIndex   != 2 ? 'border-b border-black border-opacity-30' : ''
+                                } ${
+                                  NavMenu.IndexSelected - 1 === itemIndex
+                                    ? `translate-y-0 opacity-[1] `
+                                    : `translate-y-[150px] opacity-0`
+                                }`}
+                              >
+                                {opt?.icon && (
+                                  <opt.icon
+                                    style={{
+                                      transition: `opacity 550ms , transform 150ms ease-in`,
+                                    }}
+                                    className={`${
+                                      itemIndex != 1 &&
+                                      "absolute opacity-0 group-hover:translate-x-[-5px] group-hover:opacity-100"
+                                    } `}
+                                  />
+                                )}
+                                <p
+                                  style={{
+                                    transition: ` transform 150ms ease-in`,
+                                  }}
+                                  className={` w-[50%]  ${
+                                    itemIndex != 1
+                                      ? " group-hover:translate-x-[18px]"
+                                      : `group-hover:translate-x-full group-hover:scale-[0.8] group-hover:opacity-[0.5]`
+                                  }  `}
+                                >
+                                  {opt?.title}
+                                </p>
+
+                                {/* PRICES LABEL */}
+                                {itemIndex === 1 && (
+                                  <div
+                                    style={{
+                                      transition: `transform 250ms ease `,
+                                    }}
+                                    className={`absolute right-0 flex h-full w-[60%]  translate-x-full items-center justify-around bg-blue-300 group-hover:translate-x-0 `}
+                                  >
+                                    <h2 className="flex w-[35%] items-center justify-center text-[2.2rem] font-semibold text-gray-700">
+                                      {opt?.details?.price}
+                                      <b className="scale-[0.5]">$</b>
+                                    </h2>
+                                    <div className="h-[65%] w-[1px] bg-gray-800 opacity-[0.3]" />
+                                    <div className="flex w-[50%] flex-col items-center justify-center ">
+                                      <p
+                                        className={`text-[10px] leading-none  `}
+                                      >
+                                        {opt?.details?.about}
+                                      </p>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })()}
