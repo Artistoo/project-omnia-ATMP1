@@ -9,25 +9,31 @@ import LogoBlack from "../../public/JollyBlabLogoV2Black.png";
 import LogoWhite from "../../public/JollyBlabLogoV2White.png";
 import Logo from "../assets/icons/Logo";
 import AddChannel from "../assets/icons/AddChannel.jsx";
+import CommunityArt from "../assets/img/CreateCommunity.png";
+import TribeArt from "../assets/img/CreateTribe.png";
 
 // ________________ DATA _________________
 import { NavContent, MenuContent, HideAt } from "../../data";
 
 // ________________ COMPONENTS _________________
 import MenuIcon from "../assets/icons/menuIcon";
+import Search from "./Search";
+import Card from "./ChannelCard";
+
+// ________________ ICONS _________________
+
 import { IoIosArrowDown } from "react-icons/io";
 import {
+  CgAdd,
   CgArrowDown,
   CgArrowLeft,
   CgCommunity,
   CgNotifications,
 } from "react-icons/cg";
-import { TbArrowDownBar, TbBuildingCommunity } from "react-icons/tb";
 import { RiNotification3Line } from "react-icons/ri";
-import { GoSearch } from "react-icons/go";
-import { BsPeople } from "react-icons/bs";
 import { GrAdd } from "react-icons/gr";
 import {
+  BiAddToQueue,
   BiArrowFromLeft,
   BiArrowFromRight,
   BiInfinite,
@@ -61,7 +67,7 @@ export default function Nav() {
   );
 
   const [NavMenu, setNavMenu] = React.useState({
-    IndexSelected: 2,
+    IndexSelected: 3,
     Render: [
       {
         header: {
@@ -85,6 +91,8 @@ export default function Nav() {
             icon: GrAdd,
             title: "tribe",
             HandleClick: () => "",
+            art: TribeArt,
+
             details: {
               price: 0,
               remining: BiInfinite,
@@ -95,7 +103,7 @@ export default function Nav() {
             icon: GrAdd,
             title: "Community",
             HandleClick: () => "",
-
+            art: CommunityArt,
             details: {
               price: 5,
               remining: BiInfinite,
@@ -107,6 +115,7 @@ export default function Nav() {
           bg: "green",
         },
       },
+
       {
         header: {
           icon: null,
@@ -171,7 +180,6 @@ export default function Nav() {
 
   // <------------------ STATES ------------------------>
   const [open, setOpen] = React.useState(true);
-  const [showTutorial, setshowTutorial] = React.useState(false);
 
   //<-------------------CONTEXT------------------------->
   const { userState } = React.useContext(userStateContext);
@@ -304,29 +312,7 @@ export default function Nav() {
           (() => {
             const { IndexSelected } = NavMenu;
             const RenderLen = NavMenu.Render.length;
-
-            const Card = ({ data }) => (
-              <div
-                style={{
-                  height:
-                    100 / NavMenu.Render[IndexSelected - 1].content?.length -
-                    1 +
-                    "%",
-                }}
-                className={`flex w-full items-center justify-around`}
-              >
-                {
-                  data?.icon && <data.icon />
-                }
-                {data.title && (
-                  <h2
-                    className={`flex w-[30%] items-center justify-start border`}
-                  >
-                    {data.title}
-                  </h2>
-                )}
-              </div>
-            );
+            const [AddingMenuOpen, setAddingMenuOpen] = React.useState(0);
 
             return (
               <div
@@ -380,6 +366,8 @@ export default function Nav() {
                             </p>
                           )}
                         </div>
+
+                        {/* CONTENT */}
                         <div className={`flex h-[80%] w-full flex-col `}>
                           {(() => {
                             switch (index) {
@@ -388,15 +376,68 @@ export default function Nav() {
                               case 1:
                                 return (
                                   <div
-                                    className={`flex h-full w-full flex-col items-center justify-center`}
+                                    className={`flex h-full w-full flex-col items-center justify-center gap-y-[5px]`}
                                   >
-                                    {item.content.map((opt) => {
-                                      return <Card data={opt} />;
+                                    {item.content.map((opt, i) => {
+                                      return (
+                                        <Card
+                                          AddingCard={{
+                                            AddingMenuOpen,
+                                            setAddingMenuOpen,
+                                          }}
+                                          NavBar={true}
+                                          Menu={NavMenu}
+                                          data={opt}
+                                          index={i}
+                                        />
+                                      );
                                     })}
                                   </div>
                                 );
                               case 2:
-                                return <div></div>;
+                                return (
+                                  <div
+                                    className={` mt-[15px] flex h-[50%] w-full flex-col   items-center justify-center`}
+                                  >
+                                    {item.content.map((link, index) => {
+                                      return (
+                                        <div
+                                          onClick={() => {
+                                            link?.HandleClick;
+                                            /* TODO:remove it and make sure the open menu is set to false on every page load */
+                                            setOpen(false);
+                                          }}
+                                          style={{
+                                            height: 100 / 3 + "%",
+                                          }}
+                                          className={`group flex w-full cursor-pointer items-center justify-start border px-[15px] font-[OpenSauceReg] text-[20px]`}
+                                        >
+                                          <CgArrowLeft
+                                            style={{
+                                              transition: `transform 150ms , opacity 250ms ease `,
+                                            }}
+                                            className={`absolute translate-x-[20px] opacity-0 group-hover:translate-x-0 group-hover:opacity-100`}
+                                          />
+                                          <p
+                                            style={{
+                                              transition: `transform 150ms , opacity 250ms ease `,
+                                            }}
+                                            className={`group-hover:translate-x-[30px]`}
+                                          >
+                                            {link.title}
+                                          </p>
+                                        </div>
+                                      );
+                                    })}
+                                    <button
+                                      className={`absolute bottom-[15px] m-auto w-[500px] rounded-md  border bg-black py-[10px] text-[18px] text-white hover:border-red-500 hover:bg-transparent hover:text-black`}
+                                    >
+                                      log out
+                                      {/* TODO:make sure the user want to logout before logging him out */}
+                                      <div></div>
+                                    </button>
+                                  </div>
+                                );
                             }
                           })()}
                         </div>
@@ -468,7 +509,6 @@ export default function Nav() {
       </>
     );
   };
-
   const Works = ({ e }) => {
     return (
       <div
@@ -494,89 +534,6 @@ export default function Nav() {
   };
 
   /* LOGED */
-  const Search = ({ SearchingState }) => {
-    const { isSearching, setIsSearching } = SearchingState;
-    const [SearchParameter, setSearchParameter] = React.useState(0);
-    function handleChange(e) {}
-
-    return (
-      <div
-        className={`flex h-full w-full items-center justify-center border border-red-500 `}
-      >
-        <div className={`relative h-[43px] w-full overflow-hidden px-[12px] `}>
-          <div
-            className={`absolute right-0 h-full w-[120px] rounded-full bg-gradient-to-l to-transparent md:hidden
-        ${
-          ScrollDown
-            ? isSearching
-              ? `from-white opacity-30 blur-lg`
-              : `opacity-0`
-            : `from-black`
-        }
-        `}
-          />
-
-          <input
-            onInput={handleChange}
-            style={{
-              transition: `opacity 250ms 2500ms , border 150ms  ease `,
-            }}
-            onBlur={() => setIsSearching(false)}
-            placeholder={`search through ${1500} community today`}
-            className={` empty: flex h-full w-full rounded-full  border border-transparent  bg-gradient-to-l px-[20px] font-[openSauceReg]  outline-none placeholder:opacity-60 focus:border-gray-600  md:opacity-[1]
-            ${
-              ScrollDown
-                ? `from-zinc-100 to-gray-300 text-gray-900 placeholder:text-gray-800 `
-                : `from-gray-800 to-zinc-800 text-gray-50`
-            }
-
-            ${isSearching ? `opacity-[1]` : `opacity-[0]  `}`}
-          />
-
-          <Slider
-            style={{ transition: `scale 1500ms , transform 1500ms ease-in` }}
-            dots={false}
-            slidesToShow={0.8}
-            arrows={false}
-            wheel={true}
-            infinite={true}
-            className={`absolute right-[20px] top-0 flex h-full w-[30px] cursor-pointer  flex-col justify-center overflow-visible md:translate-x-0 md:scale-[1] ${
-              isSearching
-                ? `translate-x-[10px] scale-[0.7]`
-                : `translate-x-0 scale-[1]`
-            } `}
-          >
-            {[BiSearch, BsPeople, CgCommunity].map(
-              (Category, categoryIndex) => (
-                <div
-                  onClick={() => {
-                    setIsSearching(true);
-                    setSearchParameter(categoryIndex);
-                  }}
-                  className={`flex h-full w-full translate-y-[15%] items-center justify-center self-center `}
-                >
-                  <Category
-                    style={{
-                      transition: `scale 150ms ease`,
-                    }}
-                    size={20}
-                    className={`flex  items-center justify-center 
-                    ${ScrollDown ? `text-gray-800` : `text-gray-50 `}
-                    
-                    ${
-                      SearchParameter === categoryIndex
-                        ? `scale-[1.2]`
-                        : `scale-[1]`
-                    }`}
-                  />
-                </div>
-              )
-            )}
-          </Slider>
-        </div>
-      </div>
-    );
-  };
   const UserProfile = ({ Avatar, Menu, menuState }) => {
     const { NavMenu, setNavMenu } = Menu;
     const { open, setOpen } = menuState;
@@ -606,6 +563,7 @@ export default function Nav() {
       </div>
     );
   };
+
   /* IF NO NAV BAR DISPLAY  */
   if (HideAt.Nav.some((x) => x === location.pathname)) {
     return (
@@ -829,7 +787,10 @@ export default function Nav() {
                   
                   `}
                 >
-                  <Search SearchingState={{ isSearching, setIsSearching }} />
+                  <Search
+                    SearchingState={{ isSearching, setIsSearching }}
+                    isScrollDown={ScrollDown}
+                  />
                 </div>
 
                 {/* ____NOTIFICATION ADD CHANNEL BUTTON____ */}
