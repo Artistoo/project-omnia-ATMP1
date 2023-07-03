@@ -141,7 +141,11 @@ export default function EmailVarification({ Error, form, location }) {
               Notify({ ip: location.query })
                 .then((res) => {
                   if (res.data) {
-                    localStorage.setItem("user", JSON.stringify(res.data));
+                    try {
+                      localStorage.setItem("user", JSON.stringify(res.data));
+                    } catch {
+                      setFormData(`please enable cookies to continue`);
+                    }
                     navigate("/Dashboard");
                   } else {
                     setFormError(

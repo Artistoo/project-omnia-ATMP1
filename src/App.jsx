@@ -1,10 +1,5 @@
 import React, { useContext } from "react";
-import {
-  NavLink,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom";
+import { NavLink, Route, Routes, Navigate } from "react-router-dom";
 import { debounce, throttle } from "lodash";
 //__________________CONTEXT_____________________
 import { userStateContext } from "./context/userState";
@@ -29,7 +24,7 @@ import NoPageFound from "./pages/NotFound/NoPageFound";
 //___________________JSX component______________________
 function App() {
   //<-------------CONTEXT----------->
-  const { userState } = React.useContext(userStateContext);
+  const { userState, CookiesEnabled } = React.useContext(userStateContext);
   /* <------------------ STATE HOOK ------------------> */
   const [pageLoading, setPageLoading] = React.useState(true);
 
@@ -37,28 +32,31 @@ function App() {
     <div>
       {/* _________________<<<NAVBAR>>>____________________ */}
       <Nav />
+      {CookiesEnabled ? (
+        <Routes>
+          <Route index element={<Landing />} />
 
+          <Route path={`/settings`} element={<Settings />} />
+
+          <Route path="/details" element={<Details />} />
+
+          <Route path="/user">
+            <Route path="AccountAuth" element={<LoginRegister />} />
+            <Route path="GetReady" element={<GetReady />} />
+          </Route>
+
+          <Route path="/contactUs" element={<ContactForm />} />
+
+          <Route path="*" element={<NoPageFound />} />
+          {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
+
+          <Route path="user/:userId" element={<Profile />} />
+          <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
+        </Routes>
+      ) : (
+        <div> please enable cookies to continue using the Jolly Bravo </div>
+      )}
       {/* __________________<<<ROUTES>>>___________________ */}
-      <Routes>
-        <Route index element={<Landing />} />
-
-        <Route path={`/settings`} element={<Settings />} />
-
-        <Route path="/details" element={<Details />} />
-
-        <Route path="/user">
-          <Route path="AccountAuth" element={<LoginRegister />} />
-          <Route path="GetReady" element={<GetReady />} />
-        </Route>
-
-        <Route path="/contactUs" element={<ContactForm />} />
-
-        <Route path="*" element={<NoPageFound />} />
-        {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
-
-        <Route path="user/:userId" element={<Profile />} />
-        <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
-      </Routes>
 
       {/* _________________<<<FOOTER>>>>___________________ */}
       <Footer />

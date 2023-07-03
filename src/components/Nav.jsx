@@ -451,6 +451,7 @@ export default function Nav() {
       </div>
     );
   };
+
   const WhiteBgNavBar = () => {
     const [openBGS, setOpenBGS] = React.useState(false);
     const [smallScreen, setsmallScreen] = React.useState(false);
@@ -464,23 +465,15 @@ export default function Nav() {
       }
     }, [open]);
     React.useEffect(() => {
-      const handleResize = () => {
-        if (window.innerWidth <= 760) {
-          setsmallScreen(true);
-        } else {
-          setsmallScreen(false);
-          setOpenBGS(false);
-          setOpen(false);
-          document.body.style.overflow = "auto";
-        }
-      };
-
-      window.addEventListener("resize", handleResize);
-
-      return () => {
-        window.removeEventListener("resize", handleResize);
-      };
-    }, []);
+      if (window.innerWidth <= 760) {
+        setsmallScreen(true);
+      } else {
+        setsmallScreen(false);
+        setOpenBGS(false);
+        setOpen(false);
+        document.body.style.overflow = "auto";
+      }
+    }, [window.innerWidth]);
 
     return (
       <>

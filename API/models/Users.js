@@ -44,7 +44,11 @@ const UserSchema = new mongoose.Schema({
     require: false,
     default: false,
   },
+  settings: {
+    type: mongoose.Types.ObjectId,
+    ref: "Settings",
+  },
 });
 
-const User = mongoose.model("User", UserSchema);
-export default User;
+const UserModel = mongoose.model("User", UserSchema);
+export default UserModel;

@@ -362,7 +362,11 @@ export default function AuthenticateForm({
                   setformData(data);
                 } else {
                   navigate(`/`);
-                  localStorage.setItem("user", JSON.stringify(res.data));
+                  try {
+                    localStorage.setItem("user", JSON.stringify(res.data));
+                  } catch {
+                    setFormError(`please enable cookies to sign in`);
+                  }
                 }
               } else if (res.error) {
                 setFormError(res.error.data);
@@ -377,6 +381,7 @@ export default function AuthenticateForm({
     }
   };
 
+  if (!navigator.cookieEnabled) setFormError(`please enable cookies `);
   return (
     <div
       className={`flex h-[500px] min-h-[470px] w-[80%]   min-w-[450px] max-w-[600px]
