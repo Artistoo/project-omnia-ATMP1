@@ -2,11 +2,8 @@ import React from "react";
 import { userStateContext } from "../context/userState";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { debounce } from "lodash";
-import { Slider, Slide } from "infinite-react-carousel";
 
 //________________________ASSETS________________________
-import LogoBlack from "../../public/JollyBlabLogoV2Black.png";
-import LogoWhite from "../../public/JollyBlabLogoV2White.png";
 import Logo from "../assets/icons/Logo";
 import AddChannel from "../assets/icons/AddChannel.jsx";
 import CommunityArt from "../assets/img/CreateCommunity.png";
@@ -18,54 +15,19 @@ import { NavContent, MenuContent, HideAt } from "../../data";
 // ________________ COMPONENTS _________________
 import MenuIcon from "../assets/icons/menuIcon";
 import Search from "./Search";
-import Card from "./ChannelCard";
+import MenuOpen from "./MenuOpen";
 
 // ________________ ICONS _________________
-
 import { IoIosArrowDown } from "react-icons/io";
-import {
-  CgAdd,
-  CgArrowDown,
-  CgArrowLeft,
-  CgCommunity,
-  CgNotifications,
-} from "react-icons/cg";
+import { CgArrowDown, CgArrowLeft, CgNotifications } from "react-icons/cg";
 import { RiNotification3Line } from "react-icons/ri";
 import { GrAdd } from "react-icons/gr";
-import {
-  BiAddToQueue,
-  BiArrowFromLeft,
-  BiArrowFromRight,
-  BiInfinite,
-  BiMenu,
-  BiNotification,
-  BiSearch,
-} from "react-icons/bi";
-import { GiSettingsKnobs } from "react-icons/gi";
-import { MdNotifications } from "react-icons/md";
-import { BsArrowBarRight } from "react-icons/bs";
+import { BiInfinite } from "react-icons/bi";
+
 /* <___________ JSX _________________ */
 export default function Nav() {
-  /* <- TRACKING SCROLL POSITION -> */
-  const [scrollPosition, setScrollPosition] = React.useState(0);
-
-  //<----------------EFFECT HOOK --------------------->
-  React.useEffect(() => {
-    const handleScrolling = debounce(() => {
-      setScrollPosition(window.scrollY);
-    }, 200);
-
-    window.addEventListener("scroll", handleScrolling);
-    return () => {
-      removeEventListener("scroll", handleScrolling);
-    };
-  }, []);
-  //<--------VARIABLES ----------->
-  const ScrollDown = React.useMemo(
-    () => (Math.floor(scrollPosition) > 0 ? true : false),
-    [scrollPosition]
-  );
-
+  // <------------------ STATES ------------------------>
+  const [open, setOpen] = React.useState(true);
   const [NavMenu, setNavMenu] = React.useState({
     IndexSelected: 3,
     Render: [
@@ -147,6 +109,13 @@ export default function Nav() {
       },
     ],
   });
+  const [scrollPosition, setScrollPosition] = React.useState(0);
+
+  //<--------VARIABLES ----------->
+  const ScrollDown = React.useMemo(
+    () => (Math.floor(scrollPosition) > 0 ? true : false),
+    [scrollPosition]
+  );
 
   //<---------- FUNCTIONS-------------->
   const useScrollDirection = () => {
@@ -174,284 +143,38 @@ export default function Nav() {
 
     return scrollingDown;
   };
+
   /* <----------- REACT ROUTER -------> */
   const location = useLocation();
   const navigate = useNavigate();
 
-  // <------------------ STATES ------------------------>
-  const [open, setOpen] = React.useState(true);
-
   //<-------------------CONTEXT------------------------->
-  const { userState } = React.useContext(userStateContext);
-  const { admin, loged } = userState;
+  const { admin, loged } = React.useContext(userStateContext).userState;
+
+  //<-----------CONDITIONS--------------->
+  /* IF NO NAV BAR DISPLAY  */
+  if (HideAt.Nav.some((x) => x === location.pathname)) {
+    return (
+      <Logo
+        ScrollingDown={useScrollDirection()}
+        scale={ScrollDown ? 1.4 : 1.2}
+        Menu={true}
+        color={
+          ScrollDown || open
+            ? {
+                main: "black",
+                colors: [`black`, `black`, `black`],
+              }
+            : {
+                main: "white",
+                colors: [`white`, `white`, `white`],
+              }
+        }
+      />
+    );
+  }
 
   //<-----------COMPONENTS--------------->
-  const MenuOpen = ({ openBGS }) => {
-    return (
-      <div
-        className={` absolute  bottom-0    flex h-[90%] w-full max-w-full flex-col items-center justify-center px-[18px] font-[OpenSauce] text-[21px]  font-thin`}
-      >
-        {/* TWO PARTS */}
-        {!loged &&
-          MenuContent?.notLoged.map((item, index) => (
-            <div
-              key={`menuOpenSmallDisplayPart${index}`}
-              className={`mb-[12px] flex h-[37%] w-full  flex-col items-start justify-center  pt-[20px]`}
-            >
-              {/* BLAB JOLLY  */}
-              {!!index && (
-                <div
-                  className={`pointer-events-none relative mb-[10px] flex   h-[40px] w-full translate-y-[-25px] select-none items-center justify-center gap-x-[25px] font-[OpenSauce] text-[40px]  font-semibold leading-[15px] text-black`}
-                >
-                  <p
-                    style={{
-                      transition: `all 1500ms ease-in`,
-                    }}
-                    className={` transition-transform delay-[${
-                      index * 500
-                    }ms] ${openBGS ? `translate-y-0` : `translate-y-[300%]`}`}
-                  >
-                    JOLLY{" "}
-                  </p>
-                  <p
-                    className={`${
-                      openBGS ? `translate-y-0` : `translate-y-[-300%]`
-                    }`}
-                  >
-                    BLOB{" "}
-                  </p>
-                </div>
-              )}
-
-              {/* <----  ITEMS ----> */}
-              {item.map((link) => (
-                <div
-                  onClick={() => {
-                    !link.content && navigate(link?.to);
-                    setOpen(false);
-                  }}
-                  style={{
-                    transition: `transform 250ms , opacity 200ms ease-in-out `,
-                  }}
-                  className={`flex  w-full flex-col  items-center  justify-center   px-[5px] py-[5px] ${
-                    openBGS
-                      ? "translate-y-[0px] opacity-[1]"
-                      : "translate-y-[60px] opacity-[0]"
-                  } ${link?.content && `min-h-[70%]`}`}
-                >
-                  {/*<----------- TEXT AND ICON ---------> */}
-                  <div
-                    className={`group flex w-full cursor-pointer items-center justify-start self-start overflow-hidden  rounded-full py-[10px] leading-[20px]
-                    ${link?.content && `translate-y-[-30px] `}`}
-                  >
-                    <p
-                      className={`transition-transform duration-[200ms] group-hover:translate-x-[40px]`}
-                    >
-                      {link.title}
-                    </p>
-                    {!link?.content && (
-                      <>
-                        <IoIosArrowDown
-                          size={25}
-                          className={`absolute right-[40px] rotate-[-90deg] transition-transform duration-[200ms] group-hover:translate-x-[80px]`}
-                        />{" "}
-                        <IoIosArrowDown
-                          size={25}
-                          className={`absolute left-[-40px] rotate-[-90deg] transition-transform duration-[200ms] group-hover:translate-x-[55px] group-hover:text-green-900 group-hover:delay-[200ms]`}
-                        />{" "}
-                      </>
-                    )}
-                  </div>
-
-                  {/* BUTTONS */}
-                  {link?.content && (
-                    <div
-                      className={`flex w-[80%] flex-col items-center justify-end gap-y-[10px] `}
-                    >
-                      {link?.content.map((btn) => (
-                        <div
-                          onClick={() => {
-                            navigate(btn?.to);
-                            setOpen(false);
-                          }}
-                          style={{
-                            transition: `background 200ms , border 300ms ease-in-out`,
-                          }}
-                          className={`flex w-[70%] cursor-pointer  items-center justify-center rounded-full border border-black bg-opacity-[0.5] py-[6px] text-[15px] text-gray-700 hover:border-white hover:bg-black hover:text-gray-200`}
-                        >
-                          {btn.title}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
-        {!loged && (
-          <>
-            {/* THE SOCIAL MEDIA AND CONTACT LINKS */}
-            <div className="mt-[10px] flex w-[80%] translate-y-[25px]  items-center justify-center gap-x-[52px] border font-[brandinkLight] lowercase">
-              {[
-                { media: "instagram" },
-                { media: "twitter" },
-                { media: "github" },
-              ].map((med, index) => (
-                <span
-                  className={`flex w-[17%] cursor-pointer items-center justify-center border text-[15px] text-gray-600 transition-transform hover:translate-y-[-7px] hover:text-black`}
-                  key={`mediaMenuOpen${med.media} `}
-                >
-                  {med.media}
-                </span>
-              ))}
-            </div>
-          </>
-        )}
-
-        {loged &&
-          (() => {
-            const { IndexSelected } = NavMenu;
-            const RenderLen = NavMenu.Render.length;
-            const [AddingMenuOpen, setAddingMenuOpen] = React.useState(0);
-
-            return (
-              <div
-                className={`relative flex h-[80%] w-full items-center  overflow-hidden `}
-              >
-                <div
-                  style={{
-                    transition: `transform 1500ms ease `,
-                    translate: `-${(100 / RenderLen) * (IndexSelected - 1)}% 0`,
-                  }}
-                  className={`absolute top-0 flex h-full  w-[300%] `}
-                >
-                  {NavMenu.Render.map((item, index) => {
-                    return (
-                      /* SECTION */
-                      <div
-                        key={JSON.stringify(item.content)}
-                        style={{
-                          width: 100 / NavMenu.Render.length + "%",
-                        }}
-                        className={` h-full border border-red-300`}
-                      >
-                        {/* HEADER */}
-                        <div
-                          className={`flex h-[20%] w-full items-center justify-around gap-x-[15px] border`}
-                        >
-                          <div
-                            className={`flex h-full   w-max items-center  border`}
-                          >
-                            {item?.header?.icon && (
-                              <item.header.icon size={25} />
-                            )}
-                            {item?.header?.title && (
-                              <h2
-                                className={`font-[openSauce] text-[40px] text-gray-900  `}
-                              >
-                                {item?.header?.title}
-                              </h2>
-                            )}
-                          </div>
-
-                          {item?.header?.text && (
-                            <p
-                              className={`font-[brandinkLight] text-[15px] font-semibold tracking-wide text-blue-500 ${
-                                index === 1
-                                  ? "pointer-events-none opacity-0"
-                                  : ""
-                              }`}
-                            >
-                              {item?.header?.text}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* CONTENT */}
-                        <div className={`flex h-[80%] w-full flex-col `}>
-                          {(() => {
-                            switch (index) {
-                              case 0:
-                                return;
-                              case 1:
-                                return (
-                                  <div
-                                    className={`flex h-full w-full flex-col items-center justify-center gap-y-[5px]`}
-                                  >
-                                    {item.content.map((opt, i) => {
-                                      return (
-                                        <Card
-                                          AddingCard={{
-                                            AddingMenuOpen,
-                                            setAddingMenuOpen,
-                                          }}
-                                          NavBar={true}
-                                          Menu={NavMenu}
-                                          data={opt}
-                                          index={i}
-                                        />
-                                      );
-                                    })}
-                                  </div>
-                                );
-                              case 2:
-                                return (
-                                  <div
-                                    className={` mt-[15px] flex h-[50%] w-full flex-col   items-center justify-center`}
-                                  >
-                                    {item.content.map((link, index) => {
-                                      return (
-                                        <div
-                                          onClick={() => {
-                                            link?.HandleClick;
-                                            /* TODO:remove it and make sure the open menu is set to false on every page load */
-                                            setOpen(false);
-                                          }}
-                                          style={{
-                                            height: 100 / 3 + "%",
-                                          }}
-                                          className={`group flex w-full cursor-pointer items-center justify-start border px-[15px] font-[OpenSauceReg] text-[20px]`}
-                                        >
-                                          <CgArrowLeft
-                                            style={{
-                                              transition: `transform 150ms , opacity 250ms ease `,
-                                            }}
-                                            className={`absolute translate-x-[20px] opacity-0 group-hover:translate-x-0 group-hover:opacity-100`}
-                                          />
-                                          <p
-                                            style={{
-                                              transition: `transform 150ms , opacity 250ms ease `,
-                                            }}
-                                            className={`group-hover:translate-x-[30px]`}
-                                          >
-                                            {link.title}
-                                          </p>
-                                        </div>
-                                      );
-                                    })}
-                                    <button
-                                      className={`absolute bottom-[15px] m-auto w-[500px] rounded-md  border bg-black py-[10px] text-[18px] text-white hover:border-red-500 hover:bg-transparent hover:text-black`}
-                                    >
-                                      log out
-                                      {/* TODO:make sure the user want to logout before logging him out */}
-                                      <div></div>
-                                    </button>
-                                  </div>
-                                );
-                            }
-                          })()}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })()}
-      </div>
-    );
-  };
-
   const WhiteBgNavBar = () => {
     const [openBGS, setOpenBGS] = React.useState(false);
     const [smallScreen, setsmallScreen] = React.useState(false);
@@ -496,7 +219,11 @@ export default function Nav() {
                 : `translate-y-[-100%] opacity-[0]`
             } absolute right-0 top-0 h-[680px] w-full bg-white bg-gradient-to-br from-blue-50 to-gray-200 md:hidden`}
           >
-            <MenuOpen openBGS />
+            <MenuOpen
+              openBGS={openBGS}
+              MenuContent={MenuContent}
+              NavMenu={NavMenu}
+            />
           </div>
         )}
       </>
@@ -526,7 +253,7 @@ export default function Nav() {
     );
   };
 
-  /* LOGED */
+  /* user loged components */
   const UserProfile = ({ Avatar, Menu, menuState }) => {
     const { NavMenu, setNavMenu } = Menu;
     const { open, setOpen } = menuState;
@@ -557,29 +284,28 @@ export default function Nav() {
     );
   };
 
-  /* IF NO NAV BAR DISPLAY  */
-  if (HideAt.Nav.some((x) => x === location.pathname)) {
-    return (
-      <Logo
-        ScrollingDown={useScrollDirection()}
-        scale={ScrollDown ? 1.4 : 1.2}
-        Menu={true}
-        color={
-          ScrollDown || open
-            ? {
-                main: "black",
-                colors: [`black`, `black`, `black`],
-              }
-            : {
-                main: "white",
-                colors: [`white`, `white`, `white`],
-              }
-        }
-      />
-    );
-  }
+  //<----------------EFFECT HOOK --------------------->
+  /* updating the tracking position when the user scroll */
+  React.useEffect(() => {
+    const handleScrolling = debounce(() => {
+      setScrollPosition(window.scrollY);
+    }, 200);
 
-  /* IF NAV BAR DISPLAY  */
+    window.addEventListener("scroll", handleScrolling);
+    return () => {
+      removeEventListener("scroll", handleScrolling);
+    };
+  }, []);
+  /* closing the menu when the render change */
+  React.useEffect(() => {
+    setNavMenu((c) => ({
+      ...c,
+      IndexSelected: false,
+    }));
+    setOpen(false);
+  }, [location?.pathname]);
+
+  /* NAV BAR DISPLAY */
   return (
     <nav
       style={{
@@ -621,7 +347,7 @@ export default function Nav() {
           />
         </Link>
 
-        {/* LOGEDOUT USER NAVBAR */}
+        {/* <---------------------- LOGEDOUT USER NAVBAR ----------------------> */}
         {!loged && (
           <>
             <div
@@ -756,17 +482,37 @@ export default function Nav() {
             } = JSON.parse(localStorage?.user);
 
             const [isSearching, setIsSearching] = React.useState(false);
+            const [IsHovering, setIsHovering] = React.useState(false);
 
             React.useEffect(() => {
               if (open) setIsSearching(false);
             }, [open]);
 
-            /* Closing the Menu on Outside click */
-
-            //<----VARIABLES----->
             const MenuTransitionInMS = "350ms";
+
+            /* Closing the Menu on Outside click */
+            React.useEffect(() => {
+              const closeMenu = () => {
+                setNavMenu((c) => ({
+                  ...c,
+                  IndexSelected: false,
+                }));
+              };
+              if (!IsHovering) {
+                window.addEventListener("click", closeMenu);
+              } else {
+                window.removeEventListener("click", closeMenu);
+              }
+              return () => {
+                window.removeEventListener("click", closeMenu);
+              };
+            }, [IsHovering]);
+
             return (
               <div
+                onMouseOver={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                id={`mdMenuContainer`}
                 className={`relative flex h-[85%] w-[400px] items-center justify-end border   md:w-[570px] md:justify-around lg:w-[60%] `}
               >
                 {/* _____SEARCH_____ */}
@@ -860,6 +606,7 @@ export default function Nav() {
                 {/*<------- MENU -------> */}
                 {NavMenu.IndexSelected && (
                   <div
+                    id={"mdMenuBox"}
                     style={{
                       right: `${30 - (NavMenu.IndexSelected - 1) * 15}%`,
                       transition: `right ${MenuTransitionInMS} ease `,
@@ -897,7 +644,7 @@ export default function Nav() {
                                 transition: `opacity 150ms , transform 150ms ease-in-out`,
                                 transitionDelay: MenuTransitionInMS,
                               }}
-                              className={` w-[40%] font-[garet] text-[25px] font-semibold ${
+                              className={` w-[40%]  font-[garet] text-[25px] font-semibold ${
                                 NavMenu.IndexSelected - 1 != itemIndex
                                   ? `translate-y-[15px] opacity-0`
                                   : `opacity-1 translate-y-0`
@@ -930,16 +677,17 @@ export default function Nav() {
                           </div>
 
                           <div
-                            className={`relative flex h-[70%] w-full flex-col items-center justify-between`}
+                            className={`relative flex h-[70%] w-full flex-col items-center justify-between `}
                           >
                             {item.content.map((opt, optIndex) => (
                               <div
+                                onClick={() => opt?.HandleClick()}
                                 style={{
                                   height: 100 / item.content.length - 2 + "%",
                                   transition: `opacity 450ms , transform 350ms ease-in-out`,
                                   transitionDelay: (optIndex + 1) * 200 + "ms",
                                 }}
-                                className={`group my-[2px] flex w-full cursor-pointer items-center justify-start gap-x-[15px]  overflow-hidden  px-[25px] font-[OpenSauceReg] ${
+                                className={`group my-[2px]  flex w-full cursor-pointer items-center justify-start gap-x-[15px]  overflow-hidden  px-[25px] font-[OpenSauceReg] ${
                                   itemIndex === 1
                                     ? "border border-black "
                                     : optIndex != 2

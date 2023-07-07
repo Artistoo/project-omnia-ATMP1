@@ -32,30 +32,28 @@ function App() {
     <div>
       {/* _________________<<<NAVBAR>>>____________________ */}
       <Nav />
-      {CookiesEnabled ? (
-        <Routes>
-          <Route index element={<Landing />} />
 
-          <Route path={`/settings`} element={<Settings />} />
+      <Routes>
+        <Route index element={<Landing />} />
 
-          <Route path="/details" element={<Details />} />
+        <Route path={`/settings`} element={<Settings />} />
 
-          <Route path="/user">
-            <Route path="AccountAuth" element={<LoginRegister />} />
-            <Route path="GetReady" element={<GetReady />} />
-          </Route>
+        <Route path="/details" element={<Details />} />
 
-          <Route path="/contactUs" element={<ContactForm />} />
+        <Route path="/user">
+          <Route path="AccountAuth" element={<LoginRegister />} />
+          <Route path="GetReady" element={<GetReady />} />
+        </Route>
 
-          <Route path="*" element={<NoPageFound />} />
-          {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
+        <Route path="/contactUs" element={<ContactForm />} />
 
-          <Route path="user/:userId" element={<Profile />} />
-          <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
-        </Routes>
-      ) : (
-        <div> please enable cookies to continue using the Jolly Bravo </div>
-      )}
+        <Route path="*" element={<NoPageFound />} />
+        {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
+
+        <Route path="user/:userId" element={<Profile />} />
+        <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
+      </Routes>
+
       {/* __________________<<<ROUTES>>>___________________ */}
 
       {/* _________________<<<FOOTER>>>>___________________ */}

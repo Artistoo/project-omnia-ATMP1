@@ -37,7 +37,7 @@ export default function Settings() {
         Icon: Personal,
         match: 0,
         style: { bg: `bg-green-300` },
-        ref: React.createRef,
+        ref: React.createRef(),
 
         Settings: [
           {
@@ -58,7 +58,7 @@ export default function Settings() {
         Icon: Secuirty,
         match: 0,
         style: { bg: `bg-pink-300` },
-        ref: React.createRef,
+        ref: React.createRef(),
 
         Settings: [
           {
@@ -80,18 +80,18 @@ export default function Settings() {
         Icon: Apperance,
         match: 0,
         style: { bg: `bg-yellow-200` },
-        ref: React.createRef,
+        ref: React.createRef(),
 
         Settings: [
           {
-            param: "change password",
-            type: String,
+            param: "edit your profile cover theme",
+            type: "Picker",
             value: "",
           },
           {
-            param: "enable email verification",
-            type: Boolean,
-            value: JSON.parse(localStorage?.user)?.Verify || "",
+            param: "make the text on your profile larget or smaller",
+            type: "enum",
+            value: [1, 2, , 3, 4],
           },
         ],
       },
@@ -101,7 +101,7 @@ export default function Settings() {
         Icon: Privacy,
         match: 0,
         style: { bg: `bg-purple-500` },
-        ref: React.createRef,
+        ref: React.createRef(),
         Settings: [
           {
             param: "who can find me ?",
@@ -109,7 +109,7 @@ export default function Settings() {
             choise: ["my friends", "my friends friends", "no noe", "every one"],
           },
           {
-            param: "what kind of emails do i wanna see",
+            param: "i wanna recevie email about",
             type: "enum",
             choise: [
               "updates and new features",
@@ -126,8 +126,44 @@ export default function Settings() {
 
   /* EVENT HANDLER  */
   const handleChange = (e) => {
+    const { value } = e.target;
     /* the settings icons rotate on typing effect */
     setRotateOnTyping((c) => (c = e.target.value?.length * 45));
+
+    const matchParameter = Parameter.ParameterCategories.map((category) => {
+      return category?.Settings.map((x) => x.param).filter((x) =>
+        x.includes(value)
+      ).length;
+    });
+
+    setParameter((c) => {
+      const update = { ...c };
+      update.ParameterCategories = update.ParameterCategories.map(
+        (category, index) => ({
+          ...category,
+          match: value ? matchParameter[index] : 0,
+        })
+      );
+
+      return update;
+    });
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.target.value) {
+      if (e.key === "Enter") {
+        setParameter((c) => {
+          const update = { ...c };
+          update.currentlySelected =
+            update.ParameterCategories.findIndex(
+              (c) =>
+                c.match ===
+                Math.max(...update.ParameterCategories.map((x) => x.match))
+            ) + 1;
+          return update;
+        });
+      }
+    }
   };
 
   return (
@@ -148,9 +184,10 @@ export default function Settings() {
           {/* SEARCH SETTING INPUT */}
           <input
             id={`searchSettings`}
+            onKeyDown={handleKeyDown}
             onChange={handleChange}
             placeholder={`search settings `}
-            className={`  h-[40px] w-full rounded-full border border-transparent bg-gradient-to-l from-gray-800 to-zinc-900 px-[20px] font-[OpenSauceReg] text-[16px] text-gray-200 outline-none  placeholder:opacity-40 focus:border-gray-800 focus:placeholder:opacity-100 md:h-[45px] md:border-gray-800`}
+            className={`h-[40px] w-full rounded-full border border-transparent bg-gradient-to-l from-gray-800 to-zinc-900 px-[20px] font-[OpenSauceReg] text-[16px] text-gray-200 outline-none  placeholder:opacity-40 focus:border-gray-800 focus:placeholder:opacity-100 md:h-[45px] md:border-gray-800`}
           />
           {/* THE SETTINGS ICON AND BG */}
           <div
@@ -166,10 +203,10 @@ export default function Settings() {
 
       {/* THE SETTINGS CONTAINER */}
       <div
-        className={`min-h-[650px] w-full rounded-sm  bg-gradient-to-tl from-black to-gray-900 py-[15px]`}
+        className={`min-h-[650px] w-full rounded-sm border border-green-500  bg-gradient-to-tl from-black to-gray-900 py-[15px]`}
       >
         <div
-          className={`relative  flex min-h-[350px] w-full flex-wrap items-center justify-center  p-[12px] py-[15px]`}
+          className={`relative  flex h-[450px]   w-full flex-wrap items-center justify-center p-[12px] py-[15px]  md:h-[350px] md:min-h-[300px]`}
         >
           {/* SETTINGS BOXS CONTAINER */}
           <div
@@ -196,23 +233,19 @@ export default function Settings() {
               style={{
                 transition:
                   Parameter.currentlySelected > 0 &&
-                  `transform 150ms , opacity 150ms , background 550ms 5550ms ease-in-out`,
+                  `transform 150ms , opacity 650ms , background 550ms 5550ms ease-in-out`,
                 transitionDelay:
                   Parameter.currentlySelected > 0 &&
                   150 * Parameter.ParameterCategories.length + "ms",
               }}
-              className={`CostumeScroller absolute flex h-full w-full origin-top flex-col items-center justify-center  overflow-y-scroll rounded-md border border-white   bg-opacity-60 backdrop-blur-lg
+              className={`CostumeScroller absolute flex h-full w-full origin-top flex-col items-center justify-center  gap-y-[15px] overflow-y-scroll rounded-md border border-white bg-opacity-60 bg-gradient-to-tl from-gray-900  to-gray-800 backdrop-blur-lg
+
               ${Parameter.currentlySelected && "z-10"}
               
               ${
-                Parameter.currentlySelected &&
-                Parameter.ParameterCategories[Parameter.currentlySelected - 1]
-                  .style.bg
-              } 
-              ${
                 Parameter.currentlySelected
-                  ? `scale-y-100  opacity-100`
-                  : `scale-y-0 bg-black opacity-0`
+                  ? `  opacity-100`
+                  : ` bg-black opacity-0`
               }`}
             >
               {(() => {
@@ -223,49 +256,46 @@ export default function Settings() {
 
                 React.useEffect(() => {
                   Parameter.ParameterCategories.forEach((item) => {
-                    if (item.ref.current) {
-                      item.ref.current.style.animation =
-                        "fadeDown 150ms 150ms ease";
+                    if (item?.ref?.current) {
                     }
                   });
-
-                  return () => {
-                    Parameter.ParameterCategories.forEach((item) => {
-                      if (item.ref.current) {
-                        item.ref.current.classList.remove("fadeDown");
-                      }
-                    });
-                  };
                 }, [Parameter.currentlySelected]);
 
                 return (
                   <>
+                    {/* the Header */}
                     <div
-                      className={`sticky top-0 z-10 flex h-[25%] min-h-max w-full flex-wrap  items-center  justify-around border border-red-500 px-[12px] md:h-[30%] ${
+                      style={{
+                        transition: `height 150ms ease`,
+                      }}
+                      className={`sticky top-0 z-10 flex min-h-max  w-full origin-top flex-wrap  items-center  justify-around border border-red-500 px-[12px]    ${
                         SettingScrolling
-                          ? `bg-black bg-opacity-80 backdrop-blur-lg`
-                          : `bg-transparent`
-                      }`}
+                          ? `h-[18%] bg-white bg-opacity-80 backdrop-blur-[20px] md:h-[20%] `
+                          : ` h-[25%] bg-transparent md:h-[30%]`
+                      }
+                     
+                      
+                      `}
                     >
                       {/* Title of Category and Current Category Icon */}
                       <div
                         onClick={() =>
                           setParameter((c) => ({ ...c, currentlySelected: 0 }))
                         }
-                        className={`group flex h-full w-1/2 cursor-pointer flex-wrap items-center justify-start gap-x-[15px] border `}
+                        className={`group flex h-full w-1/2 cursor-pointer flex-wrap items-center justify-start gap-x-[15px] border text-gray-100`}
                       >
                         <BiArrowBack
                           style={{
                             transition: `transform 150ms  , opacity 150ms  , scale 150ms  ease-in-out`,
                             transitionDelay: `150ms`,
                           }}
-                          className={`absolute left-[10px] text-white opacity-0 group-hover:translate-y-0 group-hover:scale-[1.3] group-hover:opacity-100`}
+                          className={`absolute left-[10px]  opacity-0 group-hover:translate-y-0 group-hover:scale-[1.3] group-hover:opacity-100`}
                         />
                         <h2
                           style={{
                             transition: `transform 150ms  ease-in-out`,
                           }}
-                          className={` font-[garet] text-[26px] text-white group-hover:translate-x-[20px]`}
+                          className={` font-[garet] text-[26px]  group-hover:translate-x-[20px]`}
                         >
                           {Title}
                         </h2>
@@ -274,7 +304,11 @@ export default function Settings() {
                           style={{
                             transition: `transform 150ms  ease-in-out`,
                           }}
-                          className={`group-hover:aspcet-square  flex aspect-[1/2]  w-[25px] items-center justify-center rounded-full bg-green-300 text-black group-hover:translate-x-[20px]`}
+                          className={`group-hover:aspcet-square  flex   items-center justify-center rounded-full border bg-green-300 text-black group-hover:translate-x-[20px] ${
+                            SettingScrolling
+                              ? `aspect-[1/1] w-[30px]`
+                              : `aspect-[1/2] w-[25px]`
+                          }`}
                         >
                           {Parameter.currentlySelected && (
                             <Icon size={18} className={`scale-[1.2] `} />
@@ -302,7 +336,11 @@ export default function Settings() {
                                   ).filter(Boolean)[0],
                               }))
                             }
-                            className={` group flex aspect-[1/2] w-[30px] cursor-pointer items-center justify-center rounded-full border-white bg-white hover:border hover:bg-transparent`}
+                            className={` group flex  cursor-pointer items-center justify-center rounded-full border-white bg-white hover:border hover:bg-transparent ${
+                              SettingScrolling
+                                ? `aspect-[1/1] w-[30px]`
+                                : `aspect-[1/2] w-[25px]`
+                            }`}
                           >
                             <Icon.Icon
                               style={{
@@ -316,12 +354,55 @@ export default function Settings() {
                       </div>
                     </div>
 
+                    {/* the Content */}
                     <div
                       className={`itmes-center flex h-[70%] w-full justify-center `}
                     >
                       <div
-                        className={`absolute flex h-max w-full items-center justify-center overflow-y-scroll border`}
-                      ></div>
+                        className={`hideScroller absolute flex h-max w-full items-center justify-center overflow-y-scroll `}
+                      >
+                        {(() => {
+                          const target =
+                            Parameter.ParameterCategories[
+                              Parameter.currentlySelected || 0
+                            ];
+
+                          const DefaultStringInputStyling = `bg-transparent border-none placeholder:text-gray-200 font-[brandinkLight] placeholder:opacity-50 border-bottom border-white  outline-none text-white focus:border border-white  `;
+
+                          const StringInput = (input) => {
+                            return (
+                              <div>
+                                <input
+                                  placeholder={input?.param}
+                                  className={`border-bottom  border border-transparent border-b-white bg-transparent px-[12px] font-[brandinkLight]  text-white outline-none placeholder:text-gray-200 placeholder:opacity-50  `}
+                                />
+                              </div>
+                            );
+                          };
+                          const EnumInput = () => {
+                            return <input />;
+                          };
+                          const BooleanInput = () => {
+                            return <input />;
+                          };
+                          const PickerInput = () => {
+                            return <input />;
+                          };
+
+                          return target?.Settings?.map((input, index) => {
+                            switch (input?.type) {
+                              case String:
+                                return StringInput(input, index);
+                              case "enum":
+                                return BooleanInput(input, index);
+                              case Boolean:
+                                return BooleanInput(input, index);
+                              case "Picker":
+                                return PickerInput(input, index);
+                            }
+                          });
+                        })()}
+                      </div>
                     </div>
                   </>
                 );
