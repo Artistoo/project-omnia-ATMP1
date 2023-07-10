@@ -482,38 +482,42 @@ export default function Nav() {
             } = JSON.parse(localStorage?.user);
 
             const [isSearching, setIsSearching] = React.useState(false);
-            const [IsHovering, setIsHovering] = React.useState(false);
-
             React.useEffect(() => {
               if (open) setIsSearching(false);
             }, [open]);
 
             const MenuTransitionInMS = "350ms";
 
-            /* Closing the Menu on Outside click */
-            React.useEffect(() => {
-              const closeMenu = () => {
-                setNavMenu((c) => ({
-                  ...c,
-                  IndexSelected: false,
-                }));
-              };
-              if (!IsHovering) {
-                window.addEventListener("click", closeMenu);
-              } else {
-                window.removeEventListener("click", closeMenu);
-              }
-              return () => {
-                window.removeEventListener("click", closeMenu);
-              };
-            }, [IsHovering]);
+            /* TODO : Closing the Menu on Outside click */
+            /* (function CloseNavMenu() {
+              const MenuContainer = document.getElementById(`mdMenuBox`);
+              const [MouseOver, setMouseOver] = React.useState(false);
 
+              if (MenuContainer) {
+                const Over = () => setMouseOver(true);
+                const Leave = () => setMouseOver(false);
+                const closeMenu = () =>
+                  !MouseOver &&
+                  setNavMenu((c) => ({
+                    ...c,
+                    IndexSelected: false,
+                  }));
+                //changing the mouse state on hover
+                MenuContainer.addEventListener("mouseover", Over);
+                MenuContainer.addEventListener("mouseleave", Leave);
+                window.addEventListener("click", closeMenu);
+
+                return () => {
+                  window.removeEventListener("click", closeMenu);
+                  MenuContainer.removeEventListener("mouseover", Over);
+                  MenuContainer.removeEventListener("mouseleave", Leave);
+                };
+              }
+            })();
+ */
             return (
               <div
-                onMouseOver={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-                id={`mdMenuContainer`}
-                className={`relative flex h-[85%] w-[400px] items-center justify-end border   md:w-[570px] md:justify-around lg:w-[60%] `}
+                className={`NavLogedUserContainer relative flex h-[85%] w-[400px] items-center justify-end   border md:w-[570px] md:justify-around lg:w-[60%]`}
               >
                 {/* _____SEARCH_____ */}
                 <div
@@ -677,7 +681,7 @@ export default function Nav() {
                           </div>
 
                           <div
-                            className={`relative flex h-[70%] w-full flex-col items-center justify-between `}
+                            className={`relative flex h-[70%] w-full flex-col items-center justify-between border `}
                           >
                             {item.content.map((opt, optIndex) => (
                               <div
