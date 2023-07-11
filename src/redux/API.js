@@ -61,6 +61,13 @@ export const ServerSideApiPost = createApi({
         body: user,
       }),
     }),
+    ConfirmPassword: builder.mutation({
+      query: (userPassword) => ({
+        url: `authZ/confirmPassword`,
+        method: `POST`,
+        body: userPassword,
+      }),
+    }),
     Notify: builder.mutation({
       query: (ip) => ({
         url: "",
@@ -75,5 +82,6 @@ export const {
   useCreateUserMutation,
   useVerifyAccountMutation,
   useLoginMutation,
-  useNotifyMutation
+  useNotifyMutation,
+  useConfirmPasswordMutation,
 } = ServerSideApiPost;

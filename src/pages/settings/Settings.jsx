@@ -10,11 +10,12 @@ import {
   IoMdColorWand as Apperance,
   IoIosFingerPrint as Privacy,
 } from "react-icons/io";
-import { BsPersonGear as Personal } from "react-icons/bs";
+import { BsArrowRight, BsPersonGear as Personal } from "react-icons/bs";
 import { MdSecurity as Secuirty } from "react-icons/md";
-import { BiArrowBack, BiCheck, BiCheckCircle } from "react-icons/bi";
+import { BiArrowBack, BiCheck, BiCheckCircle, BiError } from "react-icons/bi";
 import { AiOutlineStar } from "react-icons/ai";
 import { GrRadialSelected } from "react-icons/gr";
+import { useConfirmPasswordMutation } from "../../redux/API";
 
 /* ___________ THE JSX FOR THE SETTINGS PAGE ____________  */
 export default function Settings() {
@@ -72,7 +73,10 @@ export default function Settings() {
           {
             param: "change password",
             placeholder: `select a new password`,
-            valid: (strength) => strength > 1,
+            valid: (val, confirmed, strength) =>
+              [val?.length ? [confirmed ? strength > 1 : true] : true]
+                .flat()
+                .every(Boolean),
             inputType: "password",
             type: String,
             value: "",
@@ -108,7 +112,7 @@ export default function Settings() {
             param: "make the text on your profile larget or smaller",
             type: "enum",
             valid: () => true,
-            value: "",
+            value: [],
             choise: [1, 2, , 3, 4],
           },
         ],
@@ -125,7 +129,7 @@ export default function Settings() {
             param: "who can find me ?",
             type: "enum",
             valid: () => true,
-            value: "",
+            value: [],
 
             choise: ["my friends", "my friends friends", "no noe", "every one"],
           },
@@ -133,7 +137,7 @@ export default function Settings() {
             param: "i wanna recevie email about",
             type: "enum",
             valid: () => true,
-            value: "",
+            value: [],
             choise: [
               "updates and new features",
               "when someone join my channel",
@@ -144,6 +148,9 @@ export default function Settings() {
       },
     ],
   });
+
+  const target =
+    Parameter.ParameterCategories[Parameter.currentlySelected - 1 || 0];
 
   const [SettingScrolling, setSettingScrolling] = React.useState(false);
 
@@ -229,7 +236,7 @@ export default function Settings() {
         className={`min-h-[650px] w-full rounded-sm border border-green-500  bg-gradient-to-tl from-black to-gray-900 py-[15px]`}
       >
         <div
-          className={`relative  flex h-[450px]   w-full flex-wrap items-center justify-center p-[12px] py-[15px]  md:h-[350px] md:min-h-[300px]`}
+          className={`relative  flex h-[550px]   w-full flex-wrap items-center justify-center p-[12px] py-[15px]  md:h-[400px] md:min-h-[300px]`}
         >
           {/* <------- SETTINGS BOXS CONTAINER  ------> */}
           <div
@@ -261,7 +268,7 @@ export default function Settings() {
                   Parameter.currentlySelected > 0 &&
                   150 * Parameter.ParameterCategories.length + "ms",
               }}
-              className={`CostumeScroller absolute flex h-full w-[90%] origin-top flex-col items-start justify-center  gap-y-[15px] overflow-y-scroll rounded-md border border-white bg-opacity-60 bg-gradient-to-tl from-gray-900  to-gray-950 backdrop-blur-lg
+              className={`absolute flex h-full w-[90%] origin-top flex-col items-start justify-center  gap-y-[15px] overflow-y-scroll rounded-md border border-white bg-opacity-60 bg-gradient-to-tl from-gray-900  to-gray-950 backdrop-blur-lg
               ${Parameter.currentlySelected && "z-10"}
               ${
                 Parameter.currentlySelected
@@ -279,6 +286,16 @@ export default function Settings() {
                   left: 0,
                   top: 0,
                 });
+
+                const [
+                  confirmPassword,
+                  {
+                    error: confirmPasswordError,
+                    isLoading: isConfirmingPassword,
+                    status: confirmingPasswordStatus,
+                    data: confirmPasswordResponce,
+                  },
+                ] = useConfirmPasswordMutation();
 
                 const [passwordConfirmed, setPasswordConfirmed] =
                   React.useState(false);
@@ -304,7 +321,7 @@ export default function Settings() {
                         }
                         className={`group flex h-full w-1/2 cursor-pointer flex-wrap items-center justify-start gap-x-[15px] border text-gray-100`}
                       >
-                        {/* Icon of current Category */}
+                        {/* The Arrow Back To the main Menu */}
                         <BiArrowBack
                           style={{
                             transition: `transform 150ms  , opacity 150ms  , scale 150ms  ease-in-out`,
@@ -322,6 +339,7 @@ export default function Settings() {
                           {Title}
                         </h2>
 
+                        {/* THE ICON OF THE CURRENT CATEGORY */}
                         <div
                           style={{
                             transition: `transform 150ms  ease-in-out`,
@@ -346,9 +364,6 @@ export default function Settings() {
                           (x, i) => i + 1 != Parameter.currentlySelected
                         )?.map((Icon, i) => (
                           <div
-                            style={{
-                              "--FadeSpeed": `${i * 500}`,
-                            }}
                             onClick={() =>
                               setParameter((c) => ({
                                 ...c,
@@ -358,7 +373,7 @@ export default function Settings() {
                                   ).filter(Boolean)[0],
                               }))
                             }
-                            className={` group flex  cursor-pointer items-center justify-center rounded-full border-white bg-white hover:border hover:bg-transparent 
+                            className={` group relative  flex cursor-pointer items-center justify-center rounded-full border-white bg-white hover:border hover:bg-transparent
                               ${
                                 SettingScrolling
                                   ? `aspect-[1/1] w-[30px]`
@@ -377,6 +392,25 @@ export default function Settings() {
                                     : `translate-y-[-25px] opacity-0`
                                 }`}
                             />
+
+                            {/* Changes made in each section */}
+
+                            <div
+                              style={{
+                                transition: `transform 250ms , opacity 250ms ease-in-out`,
+                              }}
+                              title={`change made`}
+                              className={`absolute bottom-[-5px] right-[-11px] flex  h-[15px] w-[15px] items-center justify-center rounded-full font-[openSauceReg] text-[10px] text-gray-100 ${
+                                Icon.Settings.filter((x) => x.value.length)
+                                  .length
+                                  ? `translate-y-0 opacity-100`
+                                  : `translate-y-[22px] opacity-0`
+                              }`}
+                            >
+                              <p>
+                                {Icon.Settings.filter((x) => x.value).length}
+                              </p>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -384,22 +418,16 @@ export default function Settings() {
 
                     {/* the Content */}
                     <div
-                      className={`itmes-center flex h-[65%] w-full justify-center `}
+                      className={`relative flex h-[60%] w-full items-center justify-center `}
                     >
                       <div
-                        className={`hideScroller absolute flex h-max w-full flex-wrap items-center justify-center gap-x-[25px] gap-y-[30px] overflow-y-scroll py-[15px]`}
+                        className={`hideScroller absolute flex h-full w-full flex-wrap items-start justify-center gap-x-[25px] gap-y-[30px] overflow-y-scroll py-[15px] pt-[35px]`}
                       >
                         {(() => {
-                          const target =
-                            Parameter.ParameterCategories[
-                              Parameter.currentlySelected - 1 || 0
-                            ];
-
                           const DefaultStringInputStyling = `bg-transparent border-none placeholder:text-gray-200 font-[brandinkLight] placeholder:opacity-50 border-bottom border-white  outline-none text-white focus:border border-white  
                           `;
 
-                          /* FUNCTIONS */
-
+                          /*<-------------- FUNCTIONS ------------> */
                           const handleSettingInputChange = (e, input, i) => {
                             setParameter((prevState) => {
                               const updatedCategories = [
@@ -419,18 +447,7 @@ export default function Settings() {
                                 value: e.target.value,
                               };
 
-                              if (
-                                currentSetting.valid &&
-                                currentSetting.valid instanceof Function
-                              ) {
-                                const calcValidity = currentSetting.valid(
-                                  e.target.value
-                                );
-                                currentSetting = {
-                                  ...currentSetting,
-                                  valid: calcValidity,
-                                };
-                              }
+                              //TODO : check and add the validity when the user input change
 
                               return {
                                 ...prevState,
@@ -438,17 +455,49 @@ export default function Settings() {
                               };
                             });
                           };
+                          const handleEnum = (e, isIn, EnumI, inputI) => {
+                            setParameter((p) => {
+                              const update = { ...p };
+                              let currentInput =
+                                update.ParameterCategories[
+                                  update.currentlySelected - 1
+                                ].Settings[inputI];
+                              if (currentInput.type === "enum") {
+                                currentInput.value = currentInput.value || [];
+                                isIn
+                                  ? currentInput.value.splice(
+                                      currentInput.value.indexOf(
+                                        currentInput.choise[EnumI]
+                                      ),
+                                      1
+                                    )
+                                  : currentInput.value.push(
+                                      currentInput.choise[EnumI]
+                                    );
+                              }
 
-                          /* INPUT STYLINGS AND FUNCTIONALITY */
+                              return update;
+                            });
+                          };
+
+                          /* <-------- INPUT STYLINGS AND FUNCTIONALITY -------> */
                           const StringInput = (input, index) => {
                             return (
                               <>
-                                {" "}
+                                {/* Parameter Title , The first part is for simple display the second is for Password Confirmation */}
                                 {input?.inputType != "password" ? (
                                   <p className={`w-[35%]`}>{input?.param}</p>
                                 ) : (
                                   /* making sure the user has the password before he can change it  */
                                   <div
+                                    onClick={() =>
+                                      confirmPassword({
+                                        userEmail: JSON.parse(
+                                          localStorage?.user
+                                        )?.Email,
+                                        userPassword: input?.value,
+                                      })
+                                    }
                                     className={` relative flex h-[35px] w-[35%]  justify-center   overflow-hidden  border ${
                                       !passwordConfirmed
                                         ? `items-start`
@@ -459,18 +508,56 @@ export default function Settings() {
                                       className={` absolute h-[200%] min-h-[50px]`}
                                     >
                                       {[
-                                        `current password`,
+                                        !input?.value
+                                          ? `current password`
+                                          : `submit password`,
                                         `new password `,
-                                      ].map((pass) => (
+                                      ].map((pass, i) => (
                                         <div
-                                          className={`flex h-1/2 w-full items-center justify-center  border border-green-600 `}
+                                          key={`confirmChangePasswordN${i}`}
+                                          onClick={() => {
+                                            !passwordConfirmed
+                                              ? /* call the confirm password api */ null
+                                              : null;
+                                          }}
+                                          className={`group flex h-1/2 w-full items-center  justify-center border border-green-600 ${
+                                            !passwordConfirmed
+                                              ? `cursor-pointer`
+                                              : `cursor-auto`
+                                          }`}
                                         >
-                                          <p>{pass}</p>
+                                          {!i &&
+                                            !passwordConfirmed &&
+                                            input?.value && (
+                                              <BsArrowRight
+                                                style={{
+                                                  transition: `transform 250ms , opacity 100ms ease-in-out`,
+                                                }}
+                                                className={`absolute left-0 translate-x-[-50px] scale-[1.5] opacity-0 group-hover:translate-x-[-20px] group-hover:opacity-100`}
+                                              />
+                                            )}
+                                          <p
+                                            style={{
+                                              transition: `transform 200ms ease-in-out`,
+                                            }}
+                                            className={` leading-[15px]
+                                            ${
+                                              !i &&
+                                              !passwordConfirmed &&
+                                              input?.value
+                                                ? `group-hover:translate-x-[5px]`
+                                                : ``
+                                            }`}
+                                          >
+                                            {pass}
+                                          </p>
                                         </div>
                                       ))}
                                     </div>
                                   </div>
                                 )}
+
+                                {/* THE VALIDITY LINE */}
                                 <hr
                                   style={{
                                     transition: `height 250ms , background 250ms ease `,
@@ -483,14 +570,20 @@ export default function Settings() {
                                         ? input?.valid(input.value)
                                           ? `h-[26px] bg-green-400`
                                           : `h-[26px] bg-red-400 `
-                                        : input?.valid(
+                                        : passwordConfirmed
+                                        ? input?.valid(
+                                            input?.value,
+                                            passwordConfirmed,
                                             input.strength(input.value)
                                           )
+                                        : `h-[20px] bg-gray-500`
                                         ? `h-[26px] bg-green-400`
                                         : `h-[26px] bg-red-400 `
                                       : `h-[20px] bg-gray-500`
                                   }`}
                                 />
+
+                                {/* THE MAIN INPUT DESIGN FOR EACH STRING TYPE  */}
                                 <input
                                   value={input?.value}
                                   onInput={(event) =>
@@ -510,29 +603,72 @@ export default function Settings() {
                                   }
                                   className={`${DefaultStringInputStyling} w-[60%] `}
                                 />
-                                {/* STARTS FOR PASSWORD STRENGTH */}
-                                {input?.inputType === "password" && (
-                                  <div
-                                    className={`absolute right-0 flex items-center justify-center gap-x-[2px]`}
-                                  >
-                                    {Array(4)
-                                      .fill(AiOutlineStar)
-                                      .map((Star, index) => (
-                                        <Star
-                                          style={{
-                                            transition: `translate 250ms , opacity 250ms ease`,
-                                          }}
-                                          className={`
-                                          ${input?.strength} 
+
+                                {/* STARTS FOR PASSWORD STRENGTH  AND PASSSWORD AUTH */}
+                                {input?.inputType === "password" ? (
+                                  passwordConfirmed ? (
+                                    <div
+                                      className={`absolute right-0 flex items-center justify-center gap-x-[2px]`}
+                                    >
+                                      {Array(4)
+                                        .fill(AiOutlineStar)
+                                        .map((Star, index) => (
+                                          <Star
+                                            style={{
+                                              transition: `translate 250ms , opacity 250ms ease`,
+                                            }}
+                                            className={`
+                                          
                                           ${
                                             index + 1 <
                                             input?.strength(input?.value)
                                               ? `translate-y-0 opacity-100`
                                               : `translate-y-[25px] opacity-0`
                                           }`}
-                                        />
-                                      ))}
-                                  </div>
+                                          />
+                                        ))}
+                                    </div>
+                                  ) : (
+                                    <div
+                                      className={` absolute right-[10px] flex aspect-square w-[35px] items-center justify-center
+                                    ${
+                                      confirmPasswordError ||
+                                      /* isConfirmingPassword */ true
+                                        ? `opacity-100`
+                                        : `opacity-0`
+                                    }`}
+                                    >
+                                      {console.log(
+                                        confirmingPasswordStatus,
+                                        confirmPasswordError
+                                      )}
+                                      <BiError
+                                        style={{
+                                          transition: `transform 450ms , opacity 250ms ease-in-out`,
+                                          transitionDelay: `300ms `,
+                                        }}
+                                        title={confirmPasswordError?.data}
+                                        className={`designTitleBefore scale-[1.3] text-orange-200 ${
+                                          confirmPasswordError &&
+                                          !isConfirmingPassword &&
+                                          confirmingPasswordStatus != 200
+                                            ? `translate-y-0 opacity-100`
+                                            : `translate-y-[20px] opacity-0 `
+                                        }`}
+                                      />
+                                      <div
+                                        className={`rounded-full border border-white px-[5px] py-[2px] font-[brandinkLight] text-[10px] ${
+                                          isConfirmingPassword
+                                            ? `flex`
+                                            : `hidden`
+                                        }`}
+                                      >
+                                        <p>confirming...</p>
+                                      </div>
+                                    </div>
+                                  )
+                                ) : (
+                                  ""
                                 )}
                               </>
                             );
@@ -546,40 +682,38 @@ export default function Settings() {
                                 >
                                   {input?.param}
                                 </p>
+
                                 <div
                                   className={` flex w-full flex-wrap items-center justify-between gap-[6px]`}
                                 >
                                   {input?.choise &&
                                     input?.choise?.map((opt, i) => (
                                       <div
-                                        onClick={(e) => {
-                                          setParameter((p) => {
-                                            const update = { ...p };
-                                            const Enum =
-                                              update.ParameterCategories[
-                                                update.currentlySelected - 1
-                                              ].Settings[index];
-                                            Enum.ParameterCategories.forEach(
-                                              (indOpt) => {
-                                                indOpt.value = [];
-                                                indOpt.value.push(
-                                                  indOpt.choise[i]
-                                                );
-                                              }
-                                            );
-                                            return update;
-                                          });
-                                        }}
+                                        onClick={(e) =>
+                                          input?.value.includes(opt)
+                                            ? handleEnum(e, true, i, index)
+                                            : handleEnum(e, false, i, index)
+                                        }
                                         style={{
                                           transition: `background 150ms , color 200ms ease-in-out`,
                                         }}
-                                        className={`relative flex w-[50px] min-w-max flex-grow cursor-pointer items-center justify-center overflow-hidden rounded-full  border px-[5px] py-[2px] text-[0.8rem]  hover:bg-white hover:text-black`}
+                                        className={`relative flex w-[50px] min-w-max flex-grow cursor-pointer items-center justify-center overflow-hidden rounded-full  border px-[5px] py-[2px] text-[0.8rem]   
+                                        ${
+                                          Array.isArray(input?.value) &&
+                                          input?.value.includes(opt)
+                                            ? ` border-green-400 text-green-300 hover:border-white  hover:text-white`
+                                            : `text-white`
+                                        }`}
                                       >
                                         <p>{opt}</p>
+
                                         <BiCheckCircle
+                                          style={{
+                                            transition: `color 300ms , transform 200ms ease-in-out`,
+                                          }}
                                           className={`absolute right-[5px] ${
                                             Array.isArray(input?.value) &&
-                                            opt in input.value
+                                            input.value.includes(opt)
                                               ? `translate-y-0 text-green-300 opacity-100`
                                               : `translate-y-[20px] text-gray-500 opacity-0`
                                           }`}
@@ -592,7 +726,18 @@ export default function Settings() {
                           };
 
                           const BooleanInput = (input, index) => {
-                            return <></>;
+                            return (
+                              <>
+                                <p>{input?.param}</p>
+                                <div
+                                  className={`relative flex aspect-[2/1] w-[30px] items-center justify-center rounded-full border bg-white px-[5px] `}
+                                >
+                                  <div
+                                    className={`absolute right-0 m-[0.5px] h-full w-1/2 overflow-hidden rounded-[95%] bg-black`}
+                                  />
+                                </div>
+                              </>
+                            );
                           };
 
                           const PickerInput = () => {
@@ -636,8 +781,7 @@ export default function Settings() {
                       </div>
                     </div>
 
-                    {/* THE SAVE BUTTON */}
-
+                    {/*<--------- THE SAVE BUTTON --------->  */}
                     <div
                       onMouseMove={(e) =>
                         setBtnBgPosition((c) => ({
@@ -648,17 +792,33 @@ export default function Settings() {
                       className={`sticky top-0 m-auto mb-[5px] flex h-[10%] w-[80%] items-center justify-center self-center overflow-hidden rounded-full border`}
                     >
                       <button
-                        className={`flex h-full  w-[100%] items-center justify-center   font-[openSauceReg] text-gray-300`}
+                        className={`flex h-full w-[100%] items-center justify-center font-[openSauceReg]   text-gray-300 mix-blend-screen`}
                       >
                         save
                       </button>
 
+                      {/* THE SHINING BEAUTIFUL BACKGROUND EFFECT */}
                       <div
                         style={{
                           left: BtnBgPosition.left,
                           top: BtnBgPosition.top,
                         }}
-                        className={`absolute -z-10 aspect-square w-[15px] translate-x-[50%] translate-y-[50%] scale-[50] rounded-full bg-blue-500`}
+                        className={`absolute  -z-10 aspect-square w-[15px] translate-x-[-9000%] scale-[50] rounded-full  blur-sm md:translate-x-[-30000%] 
+                        ${
+                          target?.Settings.some((x) => x.value.length)
+                            ? target.Settings.every((x) =>
+                                x.inputType === "password"
+                                  ? x?.valid(
+                                      x?.value,
+                                      passwordConfirmed,
+                                      x?.strength(x?.value)
+                                    )
+                                  : x?.valid(x?.value)
+                              )
+                              ? `bg-green-300`
+                              : `bg-red-500`
+                            : `bg-blue-600`
+                        } `}
                       />
                     </div>
                   </>

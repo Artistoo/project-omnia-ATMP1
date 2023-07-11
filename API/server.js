@@ -4,9 +4,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import passport from "passport";
 import session from "express-session";
+
 import UserSchema from "./models/Users.js";
 import AuthRoute from "./Routes/AuthenticationRouter.js";
+import AuthZRoute from "./Routes/AuthorizationRouter.js";
 import Contact from "./Routes/EmailRouter.js";
+
 const app = express();
 const port = process.env.PORT || 5500;
 const { json } = express;
@@ -23,9 +26,7 @@ mongoose
   );
 
 //_____________MiddleWares________________
-app.use(
-  cors()
-);
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -39,8 +40,8 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 app.use("/auth", AuthRoute);
+app.use("/authZ", AuthZRoute);
 app.use("/email", Contact);
 
 //____________INITIALIZATION_____________
