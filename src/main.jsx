@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 //__________CONTEXT_______________
 import UserStateContext from "./context/userState";
 import FooterContentProvider from "./context/footerContentProvider";
-import PopUps from "./context/PopUps.jsx";
+import PopUps from "./context/Dialog.jsx";
 //___________REDUX_______________
 import store from "./redux/store.js";
 import { Provider } from "react-redux";

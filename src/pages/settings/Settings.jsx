@@ -1,9 +1,18 @@
 import React from "react";
-import { MdSettings } from "react-icons/md";
+import { MdCancel, MdChangeCircle, MdSettings } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+
+/* Components */
 import SettingsOptions from "../../components/SettingsOptions.jsx";
+import InputToggle from "../../components/InputToggle.jsx";
+
 /* <--- CONTEXT ----> */
 import user from "../../context/userState.jsx";
+import {
+  useConfirmPasswordMutation,
+  useCurrentApiQuery,
+  useLogOutQuery,
+} from "../../redux/API";
 
 /*<--- ICONS ---->  */
 import {
@@ -12,10 +21,12 @@ import {
 } from "react-icons/io";
 import { BsArrowRight, BsPersonGear as Personal } from "react-icons/bs";
 import { MdSecurity as Secuirty } from "react-icons/md";
-import { BiArrowBack, BiCheck, BiCheckCircle, BiError } from "react-icons/bi";
+import { BiArrowBack, BiCheckCircle, BiError, BiLogOut } from "react-icons/bi";
 import { AiOutlineStar } from "react-icons/ai";
-import { GrRadialSelected } from "react-icons/gr";
-import { useConfirmPasswordMutation } from "../../redux/API";
+import { GrFormClose } from "react-icons/gr";
+import { changeUserUtility } from "../../utils/changeUser";
+import { ModelContext } from "../../context/Dialog.jsx";
+import { RxArrowTopRight } from "react-icons/rx";
 
 /* ___________ THE JSX FOR THE SETTINGS PAGE ____________  */
 export default function Settings() {
@@ -29,19 +40,17 @@ export default function Settings() {
   }, [user]);
 
   const [rotateOnTyping, setRotateOnTyping] = React.useState(0);
-  const [parameterMatch, setParameterMatch] = React.useState("");
 
   const [Parameter, setParameter] = React.useState({
     currentlySelected: 0,
     ParameterCategories: [
       {
-        Title: "Personal",
+        Title: "Account",
         About: "edit your Personal information and profile display settings",
         Icon: Personal,
         match: 0,
         style: { bg: `bg-green-300` },
         ref: React.createRef(),
-
         Settings: [
           {
             param: "change user name",
@@ -56,6 +65,14 @@ export default function Settings() {
             placeholder: `select a new lastName`,
             type: String,
             valid: (value) => !/\s/g.test(value),
+            inputType: "text",
+            value: "",
+          },
+          {
+            param: "delete account",
+            placeholder: `select a new lastName`,
+            type: "BTN",
+            valid: () => true,
             inputType: "text",
             value: "",
           },
@@ -88,7 +105,7 @@ export default function Settings() {
           {
             param: "enable email verification",
             type: Boolean,
-            value: JSON.parse(localStorage?.user)?.Verify || "",
+            value: false,
             valid: () => true,
           },
         ],
@@ -130,7 +147,6 @@ export default function Settings() {
             type: "enum",
             valid: () => true,
             value: [],
-
             choise: ["my friends", "my friends friends", "no noe", "every one"],
           },
           {
@@ -143,6 +159,15 @@ export default function Settings() {
               "when someone join my channel",
               "security alerts",
             ],
+          },
+          {
+            param: "hide my Location",
+            type: Boolean,
+            valid: () => true,
+            value:
+              JSON.parse(localStorage?.user)?.Location != "blue planet"
+                ? false
+                : true,
           },
         ],
       },
@@ -195,13 +220,13 @@ export default function Settings() {
       }
     }
   };
-
+  const DeleteAccountPasswordConfirmRef = React.useRef(null);
   return (
     /* SETTINGS PAGE */
     <div
       className={`m-auto my-[50px]  min-h-[600px] w-full max-w-[1300px] border p-[15px] px-[25px]`}
     >
-      {/*SETTINGS PAGE HEADER (TITLE AND INPUT FOR SEARCH)*/}
+      {/*________ SETTINGS PAGE HEADER (TITLE AND INPUT FOR SEARCH ) ________ */}
       <div
         className={`flex h-[12%] max-h-[120px] w-full items-center justify-around border font-[Garet] text-[35px] text-white md:text-[40px]  `}
       >
@@ -231,12 +256,13 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* THE SETTINGS CONTAINER */}
+      {/* ________________  THE SETTINGS CONTAINER ________________  */}
       <div
-        className={`min-h-[650px] w-full rounded-sm border border-green-500  bg-gradient-to-tl from-black to-gray-900 py-[15px]`}
+        className={`relative flex min-h-[540px] w-full flex-col items-center justify-center gap-y-[15px] rounded-sm border border-green-500  bg-gradient-to-tl from-black to-gray-900 py-[15px]`}
       >
+        {/* <---- THE BOXS AND SETTINGS DETAILS CONTAINER ----> */}
         <div
-          className={`relative  flex h-[550px]   w-full flex-wrap items-center justify-center p-[12px] py-[15px]  md:h-[400px] md:min-h-[300px]`}
+          className={`relative  flex h-[500px]   w-full flex-wrap items-center justify-center p-[12px] py-[15px]  md:h-[400px] md:min-h-[300px]`}
         >
           {/* <------- SETTINGS BOXS CONTAINER  ------> */}
           <div
@@ -268,7 +294,7 @@ export default function Settings() {
                   Parameter.currentlySelected > 0 &&
                   150 * Parameter.ParameterCategories.length + "ms",
               }}
-              className={`absolute flex h-full w-[90%] origin-top flex-col items-start justify-center  gap-y-[15px] overflow-y-scroll rounded-md border border-white bg-opacity-60 bg-gradient-to-tl from-gray-900  to-gray-950 backdrop-blur-lg
+              className={`absolute flex h-full w-[90%] origin-top flex-col items-start justify-center  gap-y-[15px] overflow-y-scroll rounded-md border border-white bg-gray-950 bg-opacity-60   backdrop-blur-lg
               ${Parameter.currentlySelected && "z-10"}
               ${
                 Parameter.currentlySelected
@@ -286,6 +312,9 @@ export default function Settings() {
                   left: 0,
                   top: 0,
                 });
+
+                const { Model, setModel } =
+                  React.useContext(ModelContext)?.ModelConfiguration;
 
                 const [
                   confirmPassword,
@@ -421,12 +450,9 @@ export default function Settings() {
                       className={`relative flex h-[60%] w-full items-center justify-center `}
                     >
                       <div
-                        className={`hideScroller absolute flex h-full w-full flex-wrap items-start justify-center gap-x-[25px] gap-y-[30px] overflow-y-scroll py-[15px] pt-[35px]`}
+                        className={`hideScroller absolute flex h-full w-full flex-wrap items-start justify-center gap-x-[25px] overflow-y-scroll py-[15px] pt-[5px] md:gap-y-[10px] lg:justify-start  lg:pl-[75px]`}
                       >
                         {(() => {
-                          const DefaultStringInputStyling = `bg-transparent border-none placeholder:text-gray-200 font-[brandinkLight] placeholder:opacity-50 border-bottom border-white  outline-none text-white focus:border border-white  
-                          `;
-
                           /*<-------------- FUNCTIONS ------------> */
                           const handleSettingInputChange = (e, input, i) => {
                             setParameter((prevState) => {
@@ -479,7 +505,30 @@ export default function Settings() {
                               return update;
                             });
                           };
+                          const handleBooleanToggleInput = (isCheck, index) => {
+                            setParameter((p) => {
+                              const update = { ...p };
+                              let targetInput =
+                                update.ParameterCategories[
+                                  update.currentlySelected - 1
+                                ]?.Settings[index];
 
+                              console.log({
+                                update: update,
+                                target: targetInput,
+                              });
+
+                              if (targetInput) {
+                                targetInput.value = !isCheck;
+                              } else {
+                                alert("false");
+                              }
+
+                              return update;
+                            });
+                          };
+
+                          
                           /* <-------- INPUT STYLINGS AND FUNCTIONALITY -------> */
                           const StringInput = (input, index) => {
                             return (
@@ -490,14 +539,6 @@ export default function Settings() {
                                 ) : (
                                   /* making sure the user has the password before he can change it  */
                                   <div
-                                    onClick={() =>
-                                      confirmPassword({
-                                        userEmail: JSON.parse(
-                                          localStorage?.user
-                                        )?.Email,
-                                        userPassword: input?.value,
-                                      })
-                                    }
                                     className={` relative flex h-[35px] w-[35%]  justify-center   overflow-hidden  border ${
                                       !passwordConfirmed
                                         ? `items-start`
@@ -516,8 +557,13 @@ export default function Settings() {
                                         <div
                                           key={`confirmChangePasswordN${i}`}
                                           onClick={() => {
-                                            !passwordConfirmed
-                                              ? /* call the confirm password api */ null
+                                            !passwordConfirmed && !i
+                                              ? confirmPassword({
+                                                  userEmail: JSON.parse(
+                                                    localStorage?.user
+                                                  )?.Email,
+                                                  userPassword: input?.value,
+                                                })
                                               : null;
                                           }}
                                           className={`group flex h-1/2 w-full items-center  justify-center border border-green-600 ${
@@ -562,7 +608,7 @@ export default function Settings() {
                                   style={{
                                     transition: `height 250ms , background 250ms ease `,
                                   }}
-                                  className={`  w-[1px] translate-x-[-15px]
+                                  className={`  w-[1px] translate-x-[-10px] lg:translate-x-[-15px]
                                   ${
                                     input?.value
                                       ? input?.valid instanceof Function &&
@@ -601,7 +647,7 @@ export default function Settings() {
                                         : `please confirm your password`
                                       : input?.placeholder
                                   }
-                                  className={`${DefaultStringInputStyling} w-[60%] `}
+                                  className={`border-bottom w-[60%] border-none  border-white bg-transparent font-[brandinkLight]  text-white outline-none placeholder:text-gray-200 placeholder:opacity-50 focus:border `}
                                 />
 
                                 {/* STARTS FOR PASSWORD STRENGTH  AND PASSSWORD AUTH */}
@@ -638,10 +684,6 @@ export default function Settings() {
                                         : `opacity-0`
                                     }`}
                                     >
-                                      {console.log(
-                                        confirmingPasswordStatus,
-                                        confirmPasswordError
-                                      )}
                                       <BiError
                                         style={{
                                           transition: `transform 450ms , opacity 250ms ease-in-out`,
@@ -673,7 +715,6 @@ export default function Settings() {
                               </>
                             );
                           };
-
                           const EnumInput = (input, index) => {
                             return (
                               <>
@@ -724,59 +765,305 @@ export default function Settings() {
                               </>
                             );
                           };
-
                           const BooleanInput = (input, index) => {
                             return (
-                              <>
-                                <p>{input?.param}</p>
-                                <div
-                                  className={`relative flex aspect-[2/1] w-[30px] items-center justify-center rounded-full border bg-white px-[5px] `}
-                                >
-                                  <div
-                                    className={`absolute right-0 m-[0.5px] h-full w-1/2 overflow-hidden rounded-[95%] bg-black`}
-                                  />
-                                </div>
-                              </>
+                              <InputToggle
+                                isCheck={input?.value}
+                                Title={input?.param}
+                                onClick={() =>
+                                  handleBooleanToggleInput(input?.value, index)
+                                }
+                              />
                             );
                           };
-
                           const PickerInput = () => {
                             return <></>;
                           };
+                          const ButtonInput = (input, index) => {
+                            const Dialogstyle =
+                              DeleteAccountPasswordConfirmRef?.current?.style;
+                            React.useEffect(
+                              () =>
+                                DeleteAccountPasswordConfirmRef.current?.close(),
+                              [DeleteAccountPasswordConfirmRef.current]
+                            );
+
+                            const [
+                              currentUserPassword,
+                              setCurrentUserPassword,
+                            ] = React.useState();
+
+                            const [
+                              DeleteAccountFeefdback,
+                              setDeleteAccountFeefdback,
+                            ] = React.useState(false);
+
+                            if (input?.param === "delete account") {
+                              return (
+                                <>
+                                  <dialog
+                                    style={{
+                                      transition: "all 0ms ease",
+                                    }}
+                                    ref={DeleteAccountPasswordConfirmRef}
+                                    className={` pointer-events-none z-10 m-auto flex h-[260px] w-[350px] flex-col items-center justify-start bg-white opacity-0 backdrop:bg-black/20 backdrop:backdrop-brightness-50`}
+                                  >
+                                    {/* Dialog Exit & PHOTO */}
+                                    <div
+                                      onClick={() => {
+                                        /* TODO: set the confirm password to false when closing this window */
+                                        /* setPasswordConfirmed(false); */
+                                        if (
+                                          DeleteAccountPasswordConfirmRef.current &&
+                                          Dialogstyle
+                                        )
+                                          DeleteAccountPasswordConfirmRef?.current.close();
+                                        Dialogstyle.opacity = 0;
+                                        Dialogstyle.pointerEvents = "none";
+                                      }}
+                                      className={`group flex h-[22%] w-full items-center justify-center p-[5px]`}
+                                    >
+                                      {/* DIALOG EXIT ICON AND TEXT */}
+                                      <div
+                                        className={`relative  flex h-full w-[40%] translate-x-[-80%] translate-y-[60%] cursor-pointer items-center justify-between`}
+                                      >
+                                        <GrFormClose
+                                          style={{
+                                            transition: `transform 250ms    ease-in-out`,
+                                          }}
+                                          className="m-auto scale-[1.7] border border-transparent group-hover:translate-x-[-50px] group-hover:rotate-[-180deg] group-hover:scale-[1.1] group-hover:rounded-full group-hover:border-white group-hover:bg-red-500 "
+                                        />
+                                        <div
+                                          style={{
+                                            transition: `border 250ms ease-in-out`,
+                                          }}
+                                          className={`absolute flex h-[50%] w-full items-center justify-end rounded-full border  border-transparent group-hover:border-black`}
+                                        >
+                                          <p
+                                            style={{
+                                              transition: `opacity 250ms 300ms ease-in-out`,
+                                            }}
+                                            className={`w-max translate-x-[-5px] font-[Poppins] text-[10px] text-gray-800 opacity-0 group-hover:opacity-100`}
+                                          >
+                                            changed my mind
+                                          </p>
+                                        </div>
+                                      </div>
+                                      {/* Dialog CurrentAccount  */}
+                                      <img
+                                        src={
+                                          JSON.parse(localStorage?.user)?.Avatar
+                                        }
+                                        alt={`avatar image`}
+                                        className={`absolute aspect-square w-[21px] translate-y-full scale-[3] self-center rounded-full  border-[0.5px] border-white/50 object-cover `}
+                                      />
+                                    </div>
+
+                                    {/* Dialog Content  */}
+                                    <div className={`h-[70%] w-full `}>
+                                      <div
+                                        className={`hideScroller flex h-[220px] w-full flex-col items-center justify-center overflow-y-scroll`}
+                                      >
+                                        {passwordConfirmed ? (
+                                          <div
+                                            className={`flex h-full w-full items-center justify-around`}
+                                          >
+                                            {[
+                                              {
+                                                title: `tell us why`,
+                                                onClick: () => "",
+                                              },
+                                              {
+                                                title: `just delete`,
+                                                onClick: () => "",
+                                              },
+                                            ].map((Feedback, FeedbackIndex) => (
+                                              <button
+                                                key={Feedback.title}
+                                                style={{
+                                                  transition: `background 50ms , color 300ms ease-in-out`,
+                                                }}
+                                                className={`group flex w-[45%] min-w-[80px] items-center justify-center rounded-full border border-white bg-black py-[3px] text-white outline-[0.5] outline-gray-200 hover:border-black hover:bg-transparent hover:text-black`}
+                                              >
+                                                {Feedback.title}
+                                                <BiArrowBack
+                                                  style={{
+                                                    transition: `opacity 150ms , transform 250ms ease`,
+                                                  }}
+                                                  className={`absolute translate-x-[0] rotate-[180deg] ${
+                                                    !FeedbackIndex
+                                                      ? "text-green-500 "
+                                                      : `text-red-500`
+                                                  } opacity-0 group-hover:translate-x-[50px] group-hover:opacity-100`}
+                                                />
+                                              </button>
+                                            ))}
+                                          </div>
+                                        ) : (
+                                          <div
+                                            className={`flex h-full w-full flex-col items-start justify-center gap-y-[30px] border px-[12px] font-[Poppins] text-[0.8rem]`}
+                                          >
+                                            <p className={`w-full`}>
+                                              please enter your password to
+                                              continue deleting your account
+                                            </p>
+                                            <div
+                                              title={
+                                                confirmPasswordError
+                                                  ? confirmPasswordError?.data
+                                                  : ""
+                                              }
+                                              className={`flex h-[35px] w-full  items-center justify-center overflow-hidden`}
+                                            >
+                                              <input
+                                                style={{
+                                                  transition: `border 250ms ease-in-out`,
+                                                }}
+                                                onChange={({ target }) => {
+                                                  setCurrentUserPassword(
+                                                    target.value
+                                                  );
+                                                }}
+                                                type={"password"}
+                                                placeholder={`current password please `}
+                                                className={` w-full border border-transparent p-[5px] text-[0.8rem] text-gray-500 outline-none placeholder:text-black/50 ${
+                                                  !isConfirmingPassword
+                                                    ? confirmPasswordError
+                                                      ? currentUserPassword
+                                                        ? `border-b-red-500`
+                                                        : `border-b-black `
+                                                      : `border-b-black `
+                                                    : `border-b-transparent`
+                                                }`}
+                                              />
+
+                                              {/* THE PASSWORD SUBMIT BUTTON */}
+                                              <div
+                                                className={`absolute right-[5px] flex h-full w-[110px] min-w-max items-center justify-center  `}
+                                              >
+                                                <hr
+                                                  className={`h-[11px] w-[1px] items-center  bg-black/80 `}
+                                                />
+
+                                                <button
+                                                  onClick={async () => {
+                                                    const confirmUserPassword =
+                                                      await confirmPassword({
+                                                        userEmail: JSON.parse(
+                                                          localStorage?.user
+                                                        )?.Email,
+                                                        userPassword:
+                                                          currentUserPassword,
+                                                      });
+
+                                                    if (
+                                                      !confirmPasswordError &&
+                                                      isConfirmingPassword &&
+                                                      !confirmUserPassword?.error
+                                                    ) {
+                                                      setPasswordConfirmed(
+                                                        true
+                                                      );
+                                                    }
+                                                  }}
+                                                  type={"submit"}
+                                                  className={`flex h-[1/2] w-full items-center justify-center gap-x-[5px] `}
+                                                >
+                                                  <p>submit</p>
+                                                  <RxArrowTopRight />
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </dialog>
+
+                                  <div
+                                    className={`relative flex h-full w-full  items-center justify-between `}
+                                  >
+                                    <p>i want to delete my account </p>
+                                    <button
+                                      onClick={() => {
+                                        if (
+                                          DeleteAccountPasswordConfirmRef?.current &&
+                                          Dialogstyle
+                                        ) {
+                                          DeleteAccountPasswordConfirmRef?.current.showModal();
+                                          Dialogstyle.opacity = 1;
+                                          Dialogstyle.pointerEvents = "auto";
+                                        }
+                                      }}
+                                      className={`flex w-[52px] min-w-max items-center justify-center rounded-full border px-[15px] py-[3px] hover:border-red-500/50`}
+                                    >
+                                      {input?.param}
+                                    </button>
+                                  </div>
+                                </>
+                              );
+                            }
+                          };
 
                           /* <----- THE RETURN STATEMENT FOR THE DETAILS SETTINGS */
-                          return target?.Settings?.map((input, index) => {
-                            return (
-                              /* THE MAIN CONTAINER OF EACH INPUT IN THE SETTING DETAILS PAGE */
-                              <div
-                                style={{
-                                  width: 100 / target.Settings.length - 5 + "%",
-                                }}
-                                className={`relative flex min-h-[50px]  min-w-[350px] flex-wrap  items-center  justify-around gap-y-[15px] font-[brandinkLight]  text-[0.9rem] text-gray-100 lg:w-[40%] 
 
-                                ${
-                                  input?.type === String
-                                    ? `border-b border-white`
-                                    : input?.type === "enum"
-                                    ? ``
-                                    : ``
-                                }`}
-                              >
-                                {(() => {
-                                  switch (input.type) {
-                                    case String:
-                                      return StringInput(input, index);
-                                    case "enum":
-                                      return EnumInput(input, index);
-                                    case Boolean:
-                                      return BooleanInput(input, index);
-                                    case "Picker":
-                                      return PickerInput(input, index);
-                                  }
-                                })()}
-                              </div>
-                            );
-                          });
+                          return Parameter.ParameterCategories.map(
+                            (Category, Categoryindex) => {
+                              return Category.Settings.map((setting, index) => {
+                                return (
+                                  /* THE MAIN CONTAINER OF EACH INPUT IN THE SETTING DETAILS PAGE */
+                                  <div
+                                    key={index}
+                                    style={{
+                                      width:
+                                        window.innerWidth > 750
+                                          ? 100 / Category.Settings.length -
+                                            5 +
+                                            "%"
+                                          : "65%",
+                                      transition: `transform 250ms, opacity 250ms, border 250ms 250ms ,   background 150ms ease-in-out`,
+                                    }}
+                                    className={`m-[5px] flex  min-h-[50px] min-w-[55%] flex-grow flex-wrap items-center gap-y-[15px]  p-[15px] font-[brandinkLight]  text-[0.9rem] text-gray-100 hover:bg-white  hover:bg-opacity-[0.07] hover:backdrop-blur-lg md:max-w-[60%]  lg:w-[40%]
+                                    ${
+                                      Categoryindex ===
+                                      Parameter.currentlySelected - 1
+                                        ? `pointer-events-auto relative translate-y-0 opacity-100 `
+                                        : `pointer-events-none absolute translate-y-full opacity-0`
+                                    }
+                                    ${
+                                      setting?.type === String
+                                        ? `justify-start rounded-sm border-b  ${
+                                            Categoryindex ===
+                                            Parameter.currentlySelected - 1
+                                              ? `border-white`
+                                              : `border-transparent `
+                                          }`
+                                        : setting?.type === "enum"
+                                        ? `justify-start rounded-md`
+                                        : `justify-between gap-x-[60px] rounded-md`
+                                    }`}
+                                  >
+                                    {(() => {
+                                      switch (setting.type) {
+                                        case String:
+                                          return StringInput(setting, index);
+                                        case "enum":
+                                          return EnumInput(setting, index);
+                                        case Boolean:
+                                          return BooleanInput(setting, index);
+                                        case "Picker":
+                                          return PickerInput(setting, index);
+                                        case "BTN":
+                                          return ButtonInput(setting, index);
+                                        default:
+                                          return null;
+                                      }
+                                    })()}
+                                  </div>
+                                );
+                              });
+                            }
+                          );
                         })()}
                       </div>
                     </div>
@@ -789,7 +1076,7 @@ export default function Settings() {
                           top: e.clientY + "%",
                         }))
                       }
-                      className={`sticky top-0 m-auto mb-[5px] flex h-[10%] w-[80%] items-center justify-center self-center overflow-hidden rounded-full border`}
+                      className={`sticky top-0 m-auto mb-[5px] flex h-[10%] max-h-[35px] w-[80%] items-center justify-center self-center overflow-hidden rounded-full border`}
                     >
                       <button
                         className={`flex h-full w-[100%] items-center justify-center font-[openSauceReg]   text-gray-300 mix-blend-screen`}
@@ -798,7 +1085,9 @@ export default function Settings() {
                       </button>
 
                       {/* THE SHINING BEAUTIFUL BACKGROUND EFFECT */}
-                      <div
+                      {/* TODO: find a way to make the background consume less memory then add it  */}
+
+                      {/* <div
                         style={{
                           left: BtnBgPosition.left,
                           top: BtnBgPosition.top,
@@ -819,13 +1108,109 @@ export default function Settings() {
                               : `bg-red-500`
                             : `bg-blue-600`
                         } `}
-                      />
+                      /> */}
                     </div>
                   </>
                 );
               })()}
             </div>
           }
+        </div>
+
+        {/* <---- LOGOUT CHANGE USER BUTTONS CONTAINER ----> */}
+        <div
+          className={` relative my-[20px] flex min-h-[150px] w-full flex-col  items-center justify-center  gap-y-[5px] border border-red-500 p-[12px] px-[50px] md:px-[70px]`}
+        >
+          <div
+            style={{
+              transition: `color 150ms ease`,
+            }}
+            className={`group m-0 flex h-max cursor-pointer items-center justify-center gap-x-[12px] self-start  font-[Poppins] text-[0.7rem] text-white hover:text-blue-300/90`}
+          >
+            <p>learn more about how to save and change user</p>
+            <BsArrowRight
+              style={{
+                transition: `transform 150ms , opacity 150ms ease`,
+              }}
+              className={`translate-x-[-15px] opacity-0 group-hover:translate-x-[-10px] group-hover:opacity-100`}
+            />
+          </div>
+
+          <div
+            className={`  flex  min-h-[80%] w-full flex-wrap items-center justify-center border`}
+          >
+            {/* THE TWO BUTTONS (CHANGE USER ) (LOG OUT) */}
+            <div
+              className={`flex h-full w-full min-w-[420px] flex-wrap items-center justify-around gap-x-[12px] border border-purple-500 font-[brandinkLight] `}
+            >
+              {[
+                {
+                  title: `log out `,
+                  onClick: () => "",
+                  icon: BiLogOut,
+                  style: { bg: "red", border: "border-white border" },
+                },
+                {
+                  title: `change user `,
+                  onClick: () => {
+                    if (localStorage?.savedUser) changeUserUtility();
+                    if (changeUserUtility()?.navigate) {
+                      navigate(changeUserUtility()?.navigate);
+                    } else {
+                      alert("something");
+                    }
+                  },
+                  icon: MdChangeCircle,
+                  style: { bg: "purple", border: "border-white border" },
+                },
+              ].map((btn, btnIndex) => {
+                const [showBg, setShowBg] = React.useState(false);
+                return (
+                  <button
+                    onClick={() => btn?.onClick()}
+                    style={{
+                      transition: `scale 250ms ease`,
+                    }}
+                    onMouseDown={(e) => {
+                      e.target.style.scale = "0.99";
+                      setShowBg(true);
+                    }}
+                    onMouseUp={(e) => {
+                      e.target.style.scale = "1";
+                      setShowBg(false);
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.scale = "1";
+                      setShowBg(false);
+                    }}
+                    key={btn.title + btnIndex}
+                    className={`relative my-[5px] flex  w-[45%] min-w-[400px] flex-grow items-center justify-center overflow-hidden rounded-sm  bg-opacity-50 py-[10px] text-white ${btn?.style.border}`}
+                  >
+                    <p className={`pointer-events-none z-[5]`}>{btn?.title}</p>
+                    {btn.icon && (
+                      <div
+                        className={`absolute left-0 mx-[12px] flex scale-[1.1] items-center justify-center  `}
+                      >
+                        <btn.icon />
+                        <div
+                          style={{
+                            transition: `transform 650ms ,opacity 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
+                          }}
+                          className={`pointer-events-none  absolute h-[15px] w-[15px] rounded-full  bg-${
+                            btn?.style.bg
+                          }-500/50  ${
+                            showBg
+                              ? `scale-[500] opacity-100`
+                              : `scale-0 opacity-0`
+                          }`}
+                        />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>

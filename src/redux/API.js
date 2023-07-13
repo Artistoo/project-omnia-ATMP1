@@ -21,10 +21,13 @@ export const ServerSideApiGet = createApi({
     getVerificationCode: builder.query({
       query: () => "/auth/verify",
     }),
+    LogOut: builder.query({
+      query: () => "/auth/logout",
+    }),
   }),
 });
 export const { useCurrentApiQuery } = LocationApi;
-export const { useGetVerificationCodeQuery } = ServerSideApiGet;
+export const { useGetVerificationCodeQuery, useLogOutQuery } = ServerSideApiGet;
 
 //<-------------- POST REQ ----------------->
 export const ServerSideApiPost = createApi({
@@ -75,8 +78,16 @@ export const ServerSideApiPost = createApi({
         body: ip,
       }),
     }),
+    DeleteUser: builder.mutation({
+      query: (loggedAccount) => ({
+        url: `auth/deleteUser`,
+        method: `POST`,
+        body: loggedAccount,
+      }),
+    }),
   }),
 });
+
 export const {
   useSendMeEmailMutation,
   useCreateUserMutation,

@@ -20,6 +20,7 @@ import Loading from "./components/Loading";
 import FooterInfo from "./pages/Dynamic/FooterInfomation/FooterInfo";
 import Details from "./pages/Details/Details";
 import NoPageFound from "./pages/NotFound/NoPageFound";
+import SavedUsers from "./pages/savedUsers/savedUsers";
 
 //___________________JSX component______________________
 function App() {
@@ -43,6 +44,7 @@ function App() {
         <Route path="/user">
           <Route path="AccountAuth" element={<LoginRegister />} />
           <Route path="GetReady" element={<GetReady />} />
+          <Route path="savedUsers" element={<SavedUsers />} />
         </Route>
 
         <Route path="/contactUs" element={<ContactForm />} />
