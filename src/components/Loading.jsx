@@ -1,7 +1,7 @@
 import React from "react";
 import Logo from "../assets/icons/Logo";
 import Typist from "react-typist";
-export default function Loading({ loading }) {
+export default function Loading({ loading , processName }) {
   const [reloadPageStuck, setReloadPageStuck] = React.useState(false);
   React.useEffect(() => {
     window.onload = () => loading.setPageLoading(false);
@@ -20,7 +20,7 @@ export default function Loading({ loading }) {
         className={`flex h-[650px] w-full flex-col items-center justify-center `}
       >
         <Logo scale={1.4} loading={true} />
-
+        {processName && <p>{processName}</p>}
         {/* ------- IF PAGE STUCK RELOAD BUTTON --------- */}
         <div
           style={{

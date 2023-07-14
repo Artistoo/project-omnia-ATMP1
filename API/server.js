@@ -44,6 +44,8 @@ app.use("/auth", AuthRoute);
 app.use("/authZ", AuthZRoute);
 app.use("/email", Contact);
 
+
+
 app.get("/showUser", (req, res, next) => {
   res.send(req.user ? `user` : `no user`);
 });

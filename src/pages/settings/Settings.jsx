@@ -2,7 +2,7 @@ import React from "react";
 import { MdCancel, MdChangeCircle, MdSettings } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
-/* Components */
+/*<---- Components ----> */
 import SettingsOptions from "../../components/SettingsOptions.jsx";
 import InputToggle from "../../components/InputToggle.jsx";
 
@@ -11,7 +11,9 @@ import user from "../../context/userState.jsx";
 import {
   useConfirmPasswordMutation,
   useCurrentApiQuery,
+  useDeleteUserMutation,
   useLogOutQuery,
+  useSendMeEmailMutation,
 } from "../../redux/API";
 
 /*<--- ICONS ---->  */
@@ -21,12 +23,23 @@ import {
 } from "react-icons/io";
 import { BsArrowRight, BsPersonGear as Personal } from "react-icons/bs";
 import { MdSecurity as Secuirty } from "react-icons/md";
-import { BiArrowBack, BiCheckCircle, BiError, BiLogOut } from "react-icons/bi";
+import {
+  BiArrowBack,
+  BiArrowToBottom,
+  BiCheckCircle,
+  BiError,
+  BiLogOut,
+} from "react-icons/bi";
 import { AiOutlineStar } from "react-icons/ai";
 import { GrFormClose } from "react-icons/gr";
 import { changeUserUtility } from "../../utils/changeUser";
 import { ModelContext } from "../../context/Dialog.jsx";
 import { RxArrowTopRight } from "react-icons/rx";
+import { CgArrowBottomLeft } from "react-icons/cg";
+import Loading from "../../components/Loading.jsx";
+
+//<---- ASSETS ----->
+import done from "../../assets/img/Done.png";
 
 /* ___________ THE JSX FOR THE SETTINGS PAGE ____________  */
 export default function Settings() {
@@ -40,7 +53,6 @@ export default function Settings() {
   }, [user]);
 
   const [rotateOnTyping, setRotateOnTyping] = React.useState(0);
-
   const [Parameter, setParameter] = React.useState({
     currentlySelected: 0,
     ParameterCategories: [
@@ -111,7 +123,7 @@ export default function Settings() {
         ],
       },
       {
-        Title: "Apperance",
+        Title: "Payment",
         About:
           "make your profile apperance shine unique using the apperance Settings",
         Icon: Apperance,
@@ -173,13 +185,45 @@ export default function Settings() {
       },
     ],
   });
+  const [FeedbackSelect, setFeedbackSelect] = React.useState([
+    {
+      dbq: `i want to delete my account because`,
+      costume: false,
+      selected: "",
+      options: [
+        "not sure",
+        "the service is slow",
+        "i got scamed",
+        `can't recive my payments `,
+      ],
+    },
+    {
+      dbq: `how can we make our service better ?`,
+      costume: false,
+      selected: "",
+      options: [
+        "not sure",
 
+        "work on the speed",
+        "maybe add more features",
+        `change the ui`,
+      ],
+    },
+    {
+      dbq: `how was your expirence at jolly bravo`,
+      selected: "",
+      costume: false,
+      options: ["not sure", "bad", "not bad", `ok `, `good `, `perfect`],
+    },
+  ]);
+
+  /*<------ VARIABLE AND CONSTS -----> */
   const target =
     Parameter.ParameterCategories[Parameter.currentlySelected - 1 || 0];
-
+  /*<--- GLOBAL STATES ---->*/
   const [SettingScrolling, setSettingScrolling] = React.useState(false);
 
-  /* EVENT HANDLER  */
+  /*<---- EVENT HANDLER ---->  */
   const handleChange = (e) => {
     const { value } = e.target;
     /* the settings icons rotate on typing effect */
@@ -203,7 +247,6 @@ export default function Settings() {
       return update;
     });
   };
-
   const handleKeyDown = (e) => {
     if (e.target.value) {
       if (e.key === "Enter") {
@@ -220,7 +263,10 @@ export default function Settings() {
       }
     }
   };
+
+  /* <--- REFS -----> */
   const DeleteAccountPasswordConfirmRef = React.useRef(null);
+
   return (
     /* SETTINGS PAGE */
     <div
@@ -303,19 +349,27 @@ export default function Settings() {
               }`}
             >
               {(() => {
+                /* <---- EXTRACT VARIABLES ------> */
                 const { Title, About, Icon } =
                   Parameter.ParameterCategories[
                     Parameter.currentlySelected - 1
                   ] || Parameter.ParameterCategories[0];
 
+                /* <----- SETTINGS CONTAINER VARIABLES ------> */
+                /* <----- SETTINGS CONTAINER STATES ------> */
                 const [BtnBgPosition, setBtnBgPosition] = React.useState({
                   left: 0,
                   top: 0,
                 });
+                const [passwordConfirmed, setPasswordConfirmed] =
+                  React.useState(true);
+                /* ACOUNT  */
+                const [AccountDeleted, setAccountDeleted] =
+                  React.useState(false);
 
+                /* <----- SETTINGS API CALL ------> */
                 const { Model, setModel } =
                   React.useContext(ModelContext)?.ModelConfiguration;
-
                 const [
                   confirmPassword,
                   {
@@ -326,8 +380,39 @@ export default function Settings() {
                   },
                 ] = useConfirmPasswordMutation();
 
-                const [passwordConfirmed, setPasswordConfirmed] =
-                  React.useState(false);
+                const [
+                  deleteUser,
+                  {
+                    isLoading: isDeletingUser,
+                    error: ErrorDeletingUser,
+                    status: DeletingUserStatus,
+                    isSuccess: userDeleted,
+                  },
+                ] = useDeleteUserMutation();
+
+                const [
+                  submitFeedback,
+                  {
+                    isLoading: isSubmittingFeedback,
+                    error: submitFeedbackError,
+                    isSuccess: FeedbackSubmited,
+                  },
+                ] = useSendMeEmailMutation();
+
+                React.useEffect(() => {
+                  console.log(submitFeedbackError, ErrorDeletingUser);
+                  if (FeedbackSubmited && userDeleted) {
+                    setAccountDeleted(true);
+                    const RemoveUser = setTimeout(() => {
+                      navigate("/");
+                      localStorage.removeItem("user");
+                    }, 8000);
+                  }
+                }, [FeedbackSubmited, userDeleted]);
+
+                if (FeedbackSubmited || userDeleted) {
+                  return <Loading processName={"deleting user"} />;
+                }
 
                 return (
                   <>
@@ -387,7 +472,7 @@ export default function Settings() {
 
                       {/* THREE OTHER SETTING CATEGORIES ICONS*/}
                       <div
-                        className={`  flex    h-full w-[50%] items-center justify-center  gap-x-[35px] border`}
+                        className={`  relative flex h-full  w-[50%] flex-wrap items-center justify-center  gap-x-[35px] border`}
                       >
                         {Parameter.ParameterCategories.filter(
                           (x, i) => i + 1 != Parameter.currentlySelected
@@ -402,11 +487,11 @@ export default function Settings() {
                                   ).filter(Boolean)[0],
                               }))
                             }
-                            className={` group relative  flex cursor-pointer items-center justify-center rounded-full border-white bg-white hover:border hover:bg-transparent
+                            className={` group relative  flex cursor-pointer items-center justify-center rounded-full border-white bg-white py-[3px] hover:border  hover:bg-transparent
                               ${
                                 SettingScrolling
-                                  ? `aspect-[1/1] w-[30px]`
-                                  : `aspect-[1/2] w-[25px]`
+                                  ? `w-[70%] md:h-[60px] md:w-[30px] `
+                                  : `w-[70%] md:h-[60px] md:w-[25px] `
                               }`}
                           >
                             <Icon.Icon
@@ -450,7 +535,7 @@ export default function Settings() {
                       className={`relative flex h-[60%] w-full items-center justify-center `}
                     >
                       <div
-                        className={`hideScroller absolute flex h-full w-full flex-wrap items-start justify-center gap-x-[25px] overflow-y-scroll py-[15px] pt-[5px] md:gap-y-[10px] lg:justify-start  lg:pl-[75px]`}
+                        className={`hideScroller absolute flex h-full w-full flex-wrap items-start justify-center gap-x-[25px] overflow-y-scroll py-[15px] pt-[5px] md:gap-y-[10px] lg:justify-start  lg:pl-[95px]`}
                       >
                         {(() => {
                           /*<-------------- FUNCTIONS ------------> */
@@ -528,14 +613,41 @@ export default function Settings() {
                             });
                           };
 
-                          
+                          const handleDeleteUser = async () => {
+                            const DeleteUser = await deleteUser({
+                              userEmail: JSON.parse(localStorage?.user)?.Email,
+                            });
+                          };
+                          const handleSubmitFeedback = () => {
+                            submitFeedback({
+                              interest: "",
+                              email: localStorage?.user?.Email,
+                              subject: `user delete account Feedback`,
+                              message: JSON.stringify(
+                                FeedbackSelect?.map((msg) => {
+                                  let obj = {};
+                                  if (msg?.selected?.length) {
+                                    obj[msg?.dbq] = msg?.selected;
+
+                                    return obj;
+                                  } else return;
+                                }).filter(Boolean)
+                              ),
+                              from: localStorage?.user?.userName,
+                            })
+                              .then((x) => console.log(x))
+                              .catch((err) => console.log(err));
+                          };
+
                           /* <-------- INPUT STYLINGS AND FUNCTIONALITY -------> */
                           const StringInput = (input, index) => {
                             return (
                               <>
                                 {/* Parameter Title , The first part is for simple display the second is for Password Confirmation */}
                                 {input?.inputType != "password" ? (
-                                  <p className={`w-[35%]`}>{input?.param}</p>
+                                  <p className={`w-[35%] truncate`}>
+                                    {input?.param}
+                                  </p>
                                 ) : (
                                   /* making sure the user has the password before he can change it  */
                                   <div
@@ -608,7 +720,7 @@ export default function Settings() {
                                   style={{
                                     transition: `height 250ms , background 250ms ease `,
                                   }}
-                                  className={`  w-[1px] translate-x-[-10px] lg:translate-x-[-15px]
+                                  className={`  w-[1px] 
                                   ${
                                     input?.value
                                       ? input?.valid instanceof Function &&
@@ -647,7 +759,7 @@ export default function Settings() {
                                         : `please confirm your password`
                                       : input?.placeholder
                                   }
-                                  className={`border-bottom w-[60%] border-none  border-white bg-transparent font-[brandinkLight]  text-white outline-none placeholder:text-gray-200 placeholder:opacity-50 focus:border `}
+                                  className={`border-bottom w-[55%] border-none  border-white bg-transparent px-[8px]  font-[brandinkLight] text-white outline-none placeholder:text-gray-200 placeholder:opacity-50 focus:border`}
                                 />
 
                                 {/* STARTS FOR PASSWORD STRENGTH  AND PASSSWORD AUTH */}
@@ -782,11 +894,6 @@ export default function Settings() {
                           const ButtonInput = (input, index) => {
                             const Dialogstyle =
                               DeleteAccountPasswordConfirmRef?.current?.style;
-                            React.useEffect(
-                              () =>
-                                DeleteAccountPasswordConfirmRef.current?.close(),
-                              [DeleteAccountPasswordConfirmRef.current]
-                            );
 
                             const [
                               currentUserPassword,
@@ -801,18 +908,91 @@ export default function Settings() {
                             if (input?.param === "delete account") {
                               return (
                                 <>
+                                  {/* <--------------- THE DIALOG  ---------------> */}
                                   <dialog
                                     style={{
-                                      transition: "all 0ms ease",
+                                      transition:
+                                        "background 250ms , backdrop 3000ms 600ms   ease",
                                     }}
                                     ref={DeleteAccountPasswordConfirmRef}
-                                    className={` pointer-events-none z-10 m-auto flex h-[260px] w-[350px] flex-col items-center justify-start bg-white opacity-0 backdrop:bg-black/20 backdrop:backdrop-brightness-50`}
+                                    className={`${
+                                      AccountDeleted
+                                        ? ` bg-transparent backdrop:backdrop-brightness-0`
+                                        : ` bg-white backdrop:bg-black/20 backdrop:backdrop-brightness-50`
+                                    } pointer-events-none z-10  m-auto flex min-h-[400px] min-w-[420px] max-w-[600px] flex-col items-center justify-start gap-y-[20px]  self-end overflow-hidden overflow-x-hidden     max-[600px]:top-full max-[600px]:w-screen max-[600px]:-translate-y-[53%] lg:w-[400px]`}
                                   >
-                                    {/* Dialog Exit & PHOTO */}
+                                    {/* ACOUNT DELETED */}
+                                    <div
+                                      style={{
+                                        transition: `transform 250ms  , opacity 100ms  ease-in-out`,
+                                      }}
+                                      className={` absolute z-10 flex   w-full origin-center   scale-[1.1]  flex-col items-center justify-center bg-black  
+                                    ${
+                                      AccountDeleted
+                                        ? `h-[400px] translate-y-[40px] opacity-100 `
+                                        : `h-[0px]  translate-y-full opacity-0`
+                                    }`}
+                                    >
+                                      <img
+                                        style={{
+                                          transition: `opacity 250ms 380ms ease-in-out`,
+                                        }}
+                                        className={`h-[35px] w-[35px] translate-y-[-50px] scale-[5] ${
+                                          AccountDeleted
+                                            ? `opacity-100`
+                                            : `opacity-0`
+                                        }
+                                      `}
+                                        src={done}
+                                        alt={`done`}
+                                      />
+                                      <h2
+                                        style={{
+                                          transition: `opacity 250ms 300ms ease-in-out`,
+                                        }}
+                                        className={`translate-y-[15px] bg-gradient-to-tl from-yellow-400  via-purple-400 to-blue-400 bg-clip-text text-lg text-transparent ${
+                                          AccountDeleted
+                                            ? `opacity-100`
+                                            : `opacity-0`
+                                        }`}
+                                      >
+                                        GoodBye{" "}
+                                        {JSON.parse(
+                                          localStorage?.user
+                                        )?.gender.toLowerCase() === "male"
+                                          ? `mr`
+                                          : `mrs`}{" "}
+                                        {
+                                          JSON.parse(localStorage?.user)
+                                            ?.userName
+                                        }
+                                      </h2>
+                                      {DeleteAccountFeefdback && (
+                                        <p
+                                          style={{
+                                            transition: `color 250ms 400ms , transform 150ms 450ms ease-in`,
+                                          }}
+                                          className={` translate-y-[60px] text-center ${
+                                            AccountDeleted
+                                              ? `translate-y-0 text-gray-200`
+                                              : `translate-y-full text-black`
+                                          }`}
+                                        >
+                                          thank you for the feedback <br /> we
+                                          will work hard to meet your <br />
+                                          <b>expectation</b>{" "}
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    {/* DIALOG EXIT ICON AND TEXT */}
                                     <div
                                       onClick={() => {
                                         /* TODO: set the confirm password to false when closing this window */
                                         /* setPasswordConfirmed(false); */
+                                        setDeleteAccountFeefdback(
+                                          (c) => (c = false)
+                                        );
                                         if (
                                           DeleteAccountPasswordConfirmRef.current &&
                                           Dialogstyle
@@ -821,9 +1001,9 @@ export default function Settings() {
                                         Dialogstyle.opacity = 0;
                                         Dialogstyle.pointerEvents = "none";
                                       }}
-                                      className={`group flex h-[22%] w-full items-center justify-center p-[5px]`}
+                                      className={`group z-[5] flex h-[50px] w-full items-center justify-center p-[5px]`}
                                     >
-                                      {/* DIALOG EXIT ICON AND TEXT */}
+                                      {/* Cancel Deleting Account Button */}
                                       <div
                                         className={`relative  flex h-full w-[40%] translate-x-[-80%] translate-y-[60%] cursor-pointer items-center justify-between`}
                                       >
@@ -831,19 +1011,20 @@ export default function Settings() {
                                           style={{
                                             transition: `transform 250ms    ease-in-out`,
                                           }}
-                                          className="m-auto scale-[1.7] border border-transparent group-hover:translate-x-[-50px] group-hover:rotate-[-180deg] group-hover:scale-[1.1] group-hover:rounded-full group-hover:border-white group-hover:bg-red-500 "
+                                          className="m-auto  translate-x-[-50px]  scale-[1.7] border border-transparent group-hover:rotate-[-180deg] group-hover:scale-[1.1] group-hover:rounded-full group-hover:border-white group-hover:bg-red-500 md:group-hover:translate-x-[-50px] "
                                         />
+                                        {/* THE BORDER AND CHANGED MY MIND TEXT */}
                                         <div
                                           style={{
                                             transition: `border 250ms ease-in-out`,
                                           }}
-                                          className={`absolute flex h-[50%] w-full items-center justify-end rounded-full border  border-transparent group-hover:border-black`}
+                                          className={`absolute  hidden h-[50%] w-full translate-x-[5px] items-center justify-end rounded-full border border-transparent py-[10px] pr-[5px] group-hover:border-black md:flex`}
                                         >
                                           <p
                                             style={{
                                               transition: `opacity 250ms 300ms ease-in-out`,
                                             }}
-                                            className={`w-max translate-x-[-5px] font-[Poppins] text-[10px] text-gray-800 opacity-0 group-hover:opacity-100`}
+                                            className={`w-max translate-x-[-5px] font-[Poppins] text-[11px]  text-gray-800 opacity-0 group-hover:opacity-100`}
                                           >
                                             changed my mind
                                           </p>
@@ -860,45 +1041,159 @@ export default function Settings() {
                                     </div>
 
                                     {/* Dialog Content  */}
-                                    <div className={`h-[70%] w-full `}>
+                                    <div
+                                      className={`h-[300px] min-h-max w-full `}
+                                    >
                                       <div
-                                        className={`hideScroller flex h-[220px] w-full flex-col items-center justify-center overflow-y-scroll`}
+                                        className={`hideScroller flex min-h-[220px] w-full flex-col items-center justify-center overflow-y-scroll py-[10px]`}
                                       >
                                         {passwordConfirmed ? (
-                                          <div
-                                            className={`flex h-full w-full items-center justify-around`}
-                                          >
-                                            {[
-                                              {
-                                                title: `tell us why`,
-                                                onClick: () => "",
-                                              },
-                                              {
-                                                title: `just delete`,
-                                                onClick: () => "",
-                                              },
-                                            ].map((Feedback, FeedbackIndex) => (
+                                          !DeleteAccountFeefdback ? (
+                                            <div
+                                              className={`flex h-full w-full items-center justify-around`}
+                                            >
+                                              {[
+                                                {
+                                                  title: `tell us why`,
+                                                  onClick: () =>
+                                                    setDeleteAccountFeefdback(
+                                                      true
+                                                    ),
+                                                },
+                                                {
+                                                  title: `just delete`,
+                                                  onClick: () => "",
+                                                },
+                                              ].map(
+                                                (Feedback, FeedbackIndex) => (
+                                                  <button
+                                                    onClick={Feedback?.onClick()}
+                                                    key={Feedback.title}
+                                                    style={{
+                                                      transition: `background 50ms , color 300ms ease-in-out`,
+                                                    }}
+                                                    className={`group flex w-[45%] min-w-[80px] items-center justify-center rounded-full border border-white bg-black py-[3px] text-white outline-[0.5] outline-gray-200 hover:border-black hover:bg-transparent hover:text-black`}
+                                                  >
+                                                    {Feedback.title}
+                                                    <BiArrowBack
+                                                      style={{
+                                                        transition: `opacity 150ms , transform 250ms ease`,
+                                                      }}
+                                                      className={`absolute translate-x-[0] rotate-[180deg] ${
+                                                        !FeedbackIndex
+                                                          ? "text-green-500 "
+                                                          : `text-red-500`
+                                                      } opacity-0 group-hover:translate-x-[50px] group-hover:opacity-100`}
+                                                    />
+                                                  </button>
+                                                )
+                                              )}
+                                            </div>
+                                          ) : (
+                                            <div
+                                              className={`flex h-full w-full  translate-y-[30px] flex-col items-center justify-center gap-y-[12px] border `}
+                                            >
+                                              {(() => {
+                                                return (
+                                                  Array.isArray(
+                                                    FeedbackSelect
+                                                  ) &&
+                                                  FeedbackSelect?.map(
+                                                    (
+                                                      FeedBackinput,
+                                                      FeedBackInputIndex
+                                                    ) => {
+                                                      return (
+                                                        <div
+                                                          key={`FeedbackSelect${FeedBackinput.dbq}`}
+                                                          className={`flex min-h-[70px] w-[100%] max-w-[420px] flex-wrap items-center justify-center gap-y-[20px] border  px-[50px] py-[10px] font-[brandinkLight] text-[0.9rem] leading-none`}
+                                                        >
+                                                          {/*<-------------- QUESTION ----------------->  */}
+                                                          <div
+                                                            className={` flex  w-full  items-center justify-center`}
+                                                          >
+                                                            <p>
+                                                              {
+                                                                FeedBackinput.dbq
+                                                              }
+                                                            </p>
+                                                          </div>
+
+                                                          {/*<--------------  DROP DOWN SELECT -----------> */}
+                                                          <div
+                                                            className={`flex   w-full  items-center justify-center`}
+                                                          >
+                                                            <div
+                                                              className={`group/selectContainer relative flex w-full items-center justify-around`}
+                                                            >
+                                                              <select
+                                                                onChange={(
+                                                                  e
+                                                                ) => {
+                                                                  setFeedbackSelect(
+                                                                    (
+                                                                      prevFeedbackSelect
+                                                                    ) => {
+                                                                      const updatedFeedbackSelect =
+                                                                        [
+                                                                          ...prevFeedbackSelect,
+                                                                        ];
+                                                                      updatedFeedbackSelect[
+                                                                        FeedBackInputIndex
+                                                                      ].selected =
+                                                                        e.target.value;
+                                                                      return updatedFeedbackSelect;
+                                                                    }
+                                                                  );
+                                                                }}
+                                                                className={`absolute  flex w-full cursor-pointer appearance-none items-center justify-between gap-y-[5px]  rounded-sm border border-black px-[12px] py-[6px] outline-none  `}
+                                                              >
+                                                                {FeedBackinput?.options.map(
+                                                                  (
+                                                                    option,
+                                                                    optionIndex
+                                                                  ) => (
+                                                                    <>
+                                                                      <option
+                                                                        className={`w-max cursor-pointer   bg-none `}
+                                                                      >
+                                                                        <p
+                                                                          className={`absolute h-full w-full `}
+                                                                        >
+                                                                          {
+                                                                            option
+                                                                          }
+                                                                        </p>
+                                                                      </option>
+                                                                    </>
+                                                                  )
+                                                                )}
+                                                              </select>
+                                                              <BiArrowToBottom className="transition-color pointer-events-none  absolute right-[10px] z-[5] duration-[150ms] group-hover/selectContainer:text-blue-800" />
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                      );
+                                                    }
+                                                  )
+                                                );
+                                              })()}
                                               <button
-                                                key={Feedback.title}
-                                                style={{
-                                                  transition: `background 50ms , color 300ms ease-in-out`,
+                                                onClick={() => {
+                                                  handleSubmitFeedback();
+
+                                                  handleDeleteUser();
                                                 }}
-                                                className={`group flex w-[45%] min-w-[80px] items-center justify-center rounded-full border border-white bg-black py-[3px] text-white outline-[0.5] outline-gray-200 hover:border-black hover:bg-transparent hover:text-black`}
+                                                className={`my-[10px] w-[90%] border-spacing-3  rounded-full border border-gray-800 bg-black py-[4px] text-white ring-offset-lime-500 hover:bg-transparent  hover:text-black`}
                                               >
-                                                {Feedback.title}
-                                                <BiArrowBack
-                                                  style={{
-                                                    transition: `opacity 150ms , transform 250ms ease`,
-                                                  }}
-                                                  className={`absolute translate-x-[0] rotate-[180deg] ${
-                                                    !FeedbackIndex
-                                                      ? "text-green-500 "
-                                                      : `text-red-500`
-                                                  } opacity-0 group-hover:translate-x-[50px] group-hover:opacity-100`}
-                                                />
+                                                <p>submit and Delete account</p>
+                                                {isSubmittingFeedback ||
+                                                isDeletingUser
+                                                  ? `loading`
+                                                  : ``}
                                               </button>
-                                            ))}
-                                          </div>
+                                            </div>
+                                          )
                                         ) : (
                                           <div
                                             className={`flex h-full w-full flex-col items-start justify-center gap-y-[30px] border px-[12px] font-[Poppins] text-[0.8rem]`}
@@ -1015,15 +1310,9 @@ export default function Settings() {
                                   <div
                                     key={index}
                                     style={{
-                                      width:
-                                        window.innerWidth > 750
-                                          ? 100 / Category.Settings.length -
-                                            5 +
-                                            "%"
-                                          : "65%",
                                       transition: `transform 250ms, opacity 250ms, border 250ms 250ms ,   background 150ms ease-in-out`,
                                     }}
-                                    className={`m-[5px] flex  min-h-[50px] min-w-[55%] flex-grow flex-wrap items-center gap-y-[15px]  p-[15px] font-[brandinkLight]  text-[0.9rem] text-gray-100 hover:bg-white  hover:bg-opacity-[0.07] hover:backdrop-blur-lg md:max-w-[60%]  lg:w-[40%]
+                                    className={`m-[5px] flex  min-h-[50px]  w-[80%]  max-w-[80%] flex-wrap items-center  gap-y-[15px] p-[15px]  font-[brandinkLight] text-[0.9rem] text-gray-100  hover:bg-white hover:bg-opacity-[0.07] hover:backdrop-blur-lg  md:w-[60%] lg:w-[45%]
                                     ${
                                       Categoryindex ===
                                       Parameter.currentlySelected - 1
@@ -1032,7 +1321,7 @@ export default function Settings() {
                                     }
                                     ${
                                       setting?.type === String
-                                        ? `justify-start rounded-sm border-b  ${
+                                        ? `max-h-[65px] justify-start rounded-sm border-b ${
                                             Categoryindex ===
                                             Parameter.currentlySelected - 1
                                               ? `border-white`
