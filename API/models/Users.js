@@ -1,52 +1,47 @@
-import mongoose from "mongoose";
-const UserSchema = new mongoose.Schema({
+import mongoose, { Schema } from "mongoose";
+const UserSchema = new Schema({
   userName: {
     type: String,
-    require: true,
+    required: true,
     unique: false,
   },
   LastName: {
     type: String,
-    require: true,
+    required: true,
   },
   DisplayName: {
     type: String,
-    require: false,
+    required: false,
   },
   Email: {
     type: String,
-    require: true,
+    required: true,
   },
   Password: {
     type: String,
-    require: true,
+    required: true,
   },
   gender: {
     type: String,
-    require: false,
+    required: false,
     default: "male",
   },
   Avatar: {
     type: String,
-    require: true,
+    required: true,
   },
   Location: {
     type: String,
-    require: false,
-  },
-  Verify: {
-    type: Boolean,
-    require: false,
-    default: false,
+    required: false,
   },
   admin: {
     type: Boolean,
-    require: false,
+    required: false,
     default: false,
   },
   settings: {
-    type: mongoose.Types.ObjectId,
-    ref: "Settings",
+    type: Schema.Types.ObjectId,
+    ref: "Setting", // This should match the model name defined for SettingsModel
   },
 });
 

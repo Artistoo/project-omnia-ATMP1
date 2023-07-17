@@ -1,5 +1,4 @@
 import React from "react";
-import { MdCancel, MdChangeCircle, MdSettings } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 /*<---- Components ----> */
@@ -10,13 +9,14 @@ import InputToggle from "../../components/InputToggle.jsx";
 import user from "../../context/userState.jsx";
 import {
   useConfirmPasswordMutation,
-  useCurrentApiQuery,
   useDeleteUserMutation,
-  useLogOutQuery,
   useSendMeEmailMutation,
+  useAccountConfigureMutation,
+  useCurrentApiQuery,
 } from "../../redux/API";
 
 /*<--- ICONS ---->  */
+import { MdChangeCircle, MdSettings } from "react-icons/md";
 import {
   IoMdColorWand as Apperance,
   IoIosFingerPrint as Privacy,
@@ -29,14 +29,13 @@ import {
   BiCheckCircle,
   BiError,
   BiLogOut,
+  BiPlus,
 } from "react-icons/bi";
-import { AiOutlineStar } from "react-icons/ai";
+import { AiOutlineLoading, AiOutlineStar } from "react-icons/ai";
 import { GrFormClose } from "react-icons/gr";
 import { changeUserUtility } from "../../utils/changeUser";
 import { ModelContext } from "../../context/Dialog.jsx";
 import { RxArrowTopRight } from "react-icons/rx";
-import { CgArrowBottomLeft } from "react-icons/cg";
-import Loading from "../../components/Loading.jsx";
 
 //<---- ASSETS ----->
 import done from "../../assets/img/Done.png";
@@ -52,6 +51,50 @@ export default function Settings() {
     }
   }, [user]);
 
+  /* <----- SETTINGS API CALL ------> */
+  const [
+    confirmPassword,
+    {
+      error: confirmPasswordError,
+      isLoading: isConfirmingPassword,
+      status: confirmingPasswordStatus,
+      data: confirmPasswordResponce,
+      isSuccess: PasswordConfirmed,
+    },
+  ] = useConfirmPasswordMutation();
+  const [
+    deleteUser,
+    {
+      isLoading: isDeletingUser,
+      error: ErrorDeletingUser,
+      status: DeletingUserStatus,
+      isSuccess: userDeleted,
+    },
+  ] = useDeleteUserMutation();
+  const [
+    submitFeedback,
+    {
+      isLoading: isSubmittingFeedback,
+      error: submitFeedbackError,
+      isSuccess: FeedbackSubmited,
+      status: FeedbackSubmitedStatus,
+    },
+  ] = useSendMeEmailMutation();
+  const [
+    configureAccount,
+    {
+      isError: ConfigurationApiError,
+      isSuccess: AccountConfiguredSuccessfully,
+      data: ConfiguringAccountResponse,
+      isLoading: isConfiguringAccount,
+    },
+  ] = useAccountConfigureMutation();
+  const {
+    data: Location,
+    isLoading: isFetchingLocation,
+    isSuccess: LocationFetched,
+  } = useCurrentApiQuery();
+
   const [rotateOnTyping, setRotateOnTyping] = React.useState(0);
   const [Parameter, setParameter] = React.useState({
     currentlySelected: 0,
@@ -65,7 +108,9 @@ export default function Settings() {
         ref: React.createRef(),
         Settings: [
           {
+            ref: React.createRef(),
             param: "change user name",
+            apiObjKey: "userName",
             placeholder: `select a new name`,
             type: String,
             valid: (value) => !/\s/g.test(value),
@@ -73,7 +118,9 @@ export default function Settings() {
             value: "",
           },
           {
+            ref: React.createRef(),
             param: "change lastname",
+            apiObjKey: "LastName",
             placeholder: `select a new lastName`,
             type: String,
             valid: (value) => !/\s/g.test(value),
@@ -81,6 +128,7 @@ export default function Settings() {
             value: "",
           },
           {
+            ref: React.createRef(),
             param: "delete account",
             placeholder: `select a new lastName`,
             type: "BTN",
@@ -97,13 +145,14 @@ export default function Settings() {
         Icon: Secuirty,
         match: 0,
         style: { bg: `bg-pink-300` },
-        ref: React.createRef(),
         Settings: [
           {
+            ref: React.createRef(),
             param: "change password",
+            apiObjKey: "Password",
             placeholder: `select a new password`,
-            valid: (val, confirmed, strength) =>
-              [val?.length ? [confirmed ? strength > 1 : true] : true]
+            valid: (val) =>
+              [val ? [PasswordConfirmed, val.length > 5] : true]
                 .flat()
                 .every(Boolean),
             inputType: "password",
@@ -115,14 +164,18 @@ export default function Settings() {
               ).length,
           },
           {
+            ref: React.createRef(),
             param: "enable email verification",
+            apiObjKey: "Verification",
             type: Boolean,
             value: false,
             valid: () => true,
           },
         ],
       },
+
       {
+        ref: React.createRef(),
         Title: "Payment",
         About:
           "make your profile apperance shine unique using the apperance Settings",
@@ -130,22 +183,9 @@ export default function Settings() {
         match: 0,
         style: { bg: `bg-yellow-200` },
         ref: React.createRef(),
-        Settings: [
-          {
-            param: "edit your profile cover theme",
-            type: "Picker",
-            valid: () => true,
-            value: "",
-          },
-          {
-            param: "make the text on your profile larget or smaller",
-            type: "enum",
-            valid: () => true,
-            value: [],
-            choise: [1, 2, , 3, 4],
-          },
-        ],
+        Settings: [],
       },
+
       {
         Title: "Privacy",
         About: "set up your privacy settings and account parameters ",
@@ -155,16 +195,20 @@ export default function Settings() {
         ref: React.createRef(),
         Settings: [
           {
+            ref: React.createRef(),
             param: "who can find me ?",
+            apiObjKey: "whoCanFindMe",
             type: "enum",
-            valid: () => true,
+            valid: (val) => val?.length,
             value: [],
             choise: ["my friends", "my friends friends", "no noe", "every one"],
           },
           {
+            ref: React.createRef(),
             param: "i wanna recevie email about",
+            apiObjKey: "ReciveEmailAbout",
             type: "enum",
-            valid: () => true,
+            valid: (val) => val?.length,
             value: [],
             choise: [
               "updates and new features",
@@ -173,9 +217,11 @@ export default function Settings() {
             ],
           },
           {
+            ref: React.createRef(),
             param: "hide my Location",
+            apiObjKey: "HideLocation",
             type: Boolean,
-            valid: () => true,
+            valid: (val) => val?.length,
             value:
               JSON.parse(localStorage?.user)?.Location != "blue planet"
                 ? false
@@ -220,6 +266,7 @@ export default function Settings() {
   /*<------ VARIABLE AND CONSTS -----> */
   const target =
     Parameter.ParameterCategories[Parameter.currentlySelected - 1 || 0];
+
   /*<--- GLOBAL STATES ---->*/
   const [SettingScrolling, setSettingScrolling] = React.useState(false);
 
@@ -362,46 +409,27 @@ export default function Settings() {
                   top: 0,
                 });
                 const [passwordConfirmed, setPasswordConfirmed] =
-                  React.useState(true);
+                  React.useState(false);
                 /* ACOUNT  */
                 const [AccountDeleted, setAccountDeleted] =
                   React.useState(false);
-
-                /* <----- SETTINGS API CALL ------> */
+                const [DeleteAccountFeedback, setDeleteAccountFeedback] =
+                  React.useState(false);
                 const { Model, setModel } =
                   React.useContext(ModelContext)?.ModelConfiguration;
-                const [
-                  confirmPassword,
-                  {
-                    error: confirmPasswordError,
-                    isLoading: isConfirmingPassword,
-                    status: confirmingPasswordStatus,
-                    data: confirmPasswordResponce,
-                  },
-                ] = useConfirmPasswordMutation();
 
-                const [
-                  deleteUser,
-                  {
-                    isLoading: isDeletingUser,
-                    error: ErrorDeletingUser,
-                    status: DeletingUserStatus,
-                    isSuccess: userDeleted,
-                  },
-                ] = useDeleteUserMutation();
-
-                const [
-                  submitFeedback,
-                  {
-                    isLoading: isSubmittingFeedback,
-                    error: submitFeedbackError,
-                    isSuccess: FeedbackSubmited,
-                  },
-                ] = useSendMeEmailMutation();
-
+                /* SET THE PASSWORD TO CONFIRMED TO TRUE IF THE API RETURN SUCCESS*/
                 React.useEffect(() => {
-                  console.log(submitFeedbackError, ErrorDeletingUser);
-                  if (FeedbackSubmited && userDeleted) {
+                  setPasswordConfirmed(!!PasswordConfirmed);
+                }, [PasswordConfirmed]);
+
+                //deleting the user and displaying the goodbye message
+                React.useEffect(() => {
+                  if (
+                    DeleteAccountFeedback
+                      ? FeedbackSubmited && userDeleted
+                      : userDeleted
+                  ) {
                     setAccountDeleted(true);
                     const RemoveUser = setTimeout(() => {
                       navigate("/");
@@ -410,13 +438,9 @@ export default function Settings() {
                   }
                 }, [FeedbackSubmited, userDeleted]);
 
-                if (FeedbackSubmited || userDeleted) {
-                  return <Loading processName={"deleting user"} />;
-                }
-
                 return (
                   <>
-                    {/* the Header */}
+                    {/*<--------------- the Header -------------> */}
                     <div
                       style={{
                         transition: `height 150ms ease`,
@@ -530,13 +554,14 @@ export default function Settings() {
                       </div>
                     </div>
 
-                    {/* the Content */}
+                    {/* <---------------- the Content -------------->*/}
                     <div
                       className={`relative flex h-[60%] w-full items-center justify-center `}
                     >
                       <div
                         className={`hideScroller absolute flex h-full w-full flex-wrap items-start justify-center gap-x-[25px] overflow-y-scroll py-[15px] pt-[5px] md:gap-y-[10px] lg:justify-start  lg:pl-[95px]`}
                       >
+                        {/* the Settings Content Self Provocative Function  */}
                         {(() => {
                           /*<-------------- FUNCTIONS ------------> */
                           const handleSettingInputChange = (e, input, i) => {
@@ -612,7 +637,6 @@ export default function Settings() {
                               return update;
                             });
                           };
-
                           const handleDeleteUser = async () => {
                             const DeleteUser = await deleteUser({
                               userEmail: JSON.parse(localStorage?.user)?.Email,
@@ -623,20 +647,15 @@ export default function Settings() {
                               interest: "",
                               email: localStorage?.user?.Email,
                               subject: `user delete account Feedback`,
-                              message: JSON.stringify(
-                                FeedbackSelect?.map((msg) => {
-                                  let obj = {};
-                                  if (msg?.selected?.length) {
-                                    obj[msg?.dbq] = msg?.selected;
-
-                                    return obj;
-                                  } else return;
-                                }).filter(Boolean)
-                              ),
+                              message: "hello world",
                               from: localStorage?.user?.userName,
                             })
-                              .then((x) => console.log(x))
-                              .catch((err) => console.log(err));
+                              .then((response) => {
+                                console.log(response);
+                              })
+                              .catch((err) => {
+                                console.log(err); // Handle any errors that occur during the API call
+                              });
                           };
 
                           /* <-------- INPUT STYLINGS AND FUNCTIONALITY -------> */
@@ -651,14 +670,17 @@ export default function Settings() {
                                 ) : (
                                   /* making sure the user has the password before he can change it  */
                                   <div
-                                    className={` relative flex h-[35px] w-[35%]  justify-center   overflow-hidden  border ${
-                                      !passwordConfirmed
-                                        ? `items-start`
-                                        : `items-end`
-                                    }`}
+                                    className={` relative flex h-[35px] w-[35%]  justify-center   overflow-hidden  border `}
                                   >
                                     <div
-                                      className={` absolute h-[200%] min-h-[50px]`}
+                                      style={{
+                                        transition: `transform 250ms ease-in-out`,
+                                      }}
+                                      className={` absolute h-[200%] min-h-[50px] ${
+                                        !passwordConfirmed
+                                          ? `translate-y-0`
+                                          : `-translate-y-1/2`
+                                      }`}
                                     >
                                       {[
                                         !input?.value
@@ -724,21 +746,12 @@ export default function Settings() {
                                   ${
                                     input?.value
                                       ? input?.valid instanceof Function &&
-                                        input?.inputType != "password"
-                                        ? input?.valid(input.value)
-                                          ? `h-[26px] bg-green-400`
-                                          : `h-[26px] bg-red-400 `
-                                        : passwordConfirmed
-                                        ? input?.valid(
-                                            input?.value,
-                                            passwordConfirmed,
-                                            input.strength(input.value)
-                                          )
-                                        : `h-[20px] bg-gray-500`
+                                        input?.valid(input.value)
                                         ? `h-[26px] bg-green-400`
                                         : `h-[26px] bg-red-400 `
-                                      : `h-[20px] bg-gray-500`
-                                  }`}
+                                      : `h-[18px] bg-gray-200`
+                                  }
+                                  `}
                                 />
 
                                 {/* THE MAIN INPUT DESIGN FOR EACH STRING TYPE  */}
@@ -789,19 +802,16 @@ export default function Settings() {
                                   ) : (
                                     <div
                                       className={` absolute right-[10px] flex aspect-square w-[35px] items-center justify-center
-                                    ${
-                                      confirmPasswordError ||
-                                      /* isConfirmingPassword */ true
-                                        ? `opacity-100`
-                                        : `opacity-0`
-                                    }`}
+                                    `}
                                     >
                                       <BiError
                                         style={{
                                           transition: `transform 450ms , opacity 250ms ease-in-out`,
                                           transitionDelay: `300ms `,
                                         }}
-                                        title={confirmPasswordError?.data}
+                                        title={
+                                          confirmPasswordError?.data?.error
+                                        }
                                         className={`designTitleBefore scale-[1.3] text-orange-200 ${
                                           confirmPasswordError &&
                                           !isConfirmingPassword &&
@@ -810,15 +820,16 @@ export default function Settings() {
                                             : `translate-y-[20px] opacity-0 `
                                         }`}
                                       />
-                                      <div
-                                        className={`rounded-full border border-white px-[5px] py-[2px] font-[brandinkLight] text-[10px] ${
+                                      <AiOutlineLoading
+                                        style={{
+                                          transition: ` opacity 100ms ease-in-out`,
+                                        }}
+                                        className={`absolute animate-spin  ${
                                           isConfirmingPassword
-                                            ? `flex`
-                                            : `hidden`
+                                            ? `opacity-100`
+                                            : ` opacity-0 `
                                         }`}
-                                      >
-                                        <p>confirming...</p>
-                                      </div>
+                                      />
                                     </div>
                                   )
                                 ) : (
@@ -900,11 +911,6 @@ export default function Settings() {
                               setCurrentUserPassword,
                             ] = React.useState();
 
-                            const [
-                              DeleteAccountFeefdback,
-                              setDeleteAccountFeefdback,
-                            ] = React.useState(false);
-
                             if (input?.param === "delete account") {
                               return (
                                 <>
@@ -919,9 +925,9 @@ export default function Settings() {
                                       AccountDeleted
                                         ? ` bg-transparent backdrop:backdrop-brightness-0`
                                         : ` bg-white backdrop:bg-black/20 backdrop:backdrop-brightness-50`
-                                    } pointer-events-none z-10  m-auto flex min-h-[400px] min-w-[420px] max-w-[600px] flex-col items-center justify-start gap-y-[20px]  self-end overflow-hidden overflow-x-hidden     max-[600px]:top-full max-[600px]:w-screen max-[600px]:-translate-y-[53%] lg:w-[400px]`}
+                                    } pointer-events-none z-10 m-auto flex min-h-[400px] min-w-[420px] max-w-[600px] flex-col items-center justify-start gap-y-[20px] self-end  overflow-hidden overflow-x-hidden opacity-0     max-[600px]:top-full max-[600px]:w-screen max-[600px]:-translate-y-[53%] lg:w-[400px]`}
                                   >
-                                    {/* ACOUNT DELETED */}
+                                    {/* SAY GOODBYE ON ACCOUNT DELETED */}
                                     <div
                                       style={{
                                         transition: `transform 250ms  , opacity 100ms  ease-in-out`,
@@ -967,7 +973,7 @@ export default function Settings() {
                                             ?.userName
                                         }
                                       </h2>
-                                      {DeleteAccountFeefdback && (
+                                      {DeleteAccountFeedback && (
                                         <p
                                           style={{
                                             transition: `color 250ms 400ms , transform 150ms 450ms ease-in`,
@@ -990,7 +996,7 @@ export default function Settings() {
                                       onClick={() => {
                                         /* TODO: set the confirm password to false when closing this window */
                                         /* setPasswordConfirmed(false); */
-                                        setDeleteAccountFeefdback(
+                                        setDeleteAccountFeedback(
                                           (c) => (c = false)
                                         );
                                         if (
@@ -1042,173 +1048,177 @@ export default function Settings() {
 
                                     {/* Dialog Content  */}
                                     <div
-                                      className={`h-[300px] min-h-max w-full `}
+                                      className={`flex h-[280px]  w-full items-center justify-center `}
                                     >
                                       <div
-                                        className={`hideScroller flex min-h-[220px] w-full flex-col items-center justify-center overflow-y-scroll py-[10px]`}
+                                        className={`hideScroller flex  w-full flex-col items-center justify-center gap-y-[18px] overflow-y-scroll px-[12px] `}
                                       >
+                                        {/* CONDITIONAL RENDERING FOR THE DIALOG  */}
+
                                         {passwordConfirmed ? (
-                                          !DeleteAccountFeefdback ? (
-                                            <div
-                                              className={`flex h-full w-full items-center justify-around`}
-                                            >
-                                              {[
-                                                {
-                                                  title: `tell us why`,
-                                                  onClick: () =>
-                                                    setDeleteAccountFeefdback(
-                                                      true
-                                                    ),
-                                                },
-                                                {
-                                                  title: `just delete`,
-                                                  onClick: () => "",
-                                                },
-                                              ].map(
-                                                (Feedback, FeedbackIndex) => (
-                                                  <button
-                                                    onClick={Feedback?.onClick()}
-                                                    key={Feedback.title}
-                                                    style={{
-                                                      transition: `background 50ms , color 300ms ease-in-out`,
-                                                    }}
-                                                    className={`group flex w-[45%] min-w-[80px] items-center justify-center rounded-full border border-white bg-black py-[3px] text-white outline-[0.5] outline-gray-200 hover:border-black hover:bg-transparent hover:text-black`}
-                                                  >
-                                                    {Feedback.title}
-                                                    <BiArrowBack
+                                          !DeleteAccountFeedback ? (
+                                            <>
+                                              <p
+                                                className={`my-[8px] px-[15px]`}
+                                              >
+                                                would you like to submit a
+                                                feedback stating why you choose
+                                                to delete your account
+                                              </p>
+                                              <div
+                                                className={`flex w-full items-center justify-between px-[15px] `}
+                                              >
+                                                {[
+                                                  {
+                                                    title: `tell us why`,
+                                                    onClick: () =>
+                                                      setDeleteAccountFeedback(
+                                                        true
+                                                      ),
+                                                  },
+                                                  {
+                                                    title: `just delete`,
+                                                    onClick: () => "",
+                                                  },
+                                                ].map(
+                                                  (Feedback, FeedbackIndex) => (
+                                                    <button
+                                                      onClick={() =>
+                                                        Feedback?.onClick()
+                                                      }
+                                                      key={Feedback.title}
                                                       style={{
-                                                        transition: `opacity 150ms , transform 250ms ease`,
+                                                        transition: `background 50ms , color 300ms ease-in-out`,
                                                       }}
-                                                      className={`absolute translate-x-[0] rotate-[180deg] ${
-                                                        !FeedbackIndex
-                                                          ? "text-green-500 "
-                                                          : `text-red-500`
-                                                      } opacity-0 group-hover:translate-x-[50px] group-hover:opacity-100`}
-                                                    />
-                                                  </button>
-                                                )
-                                              )}
-                                            </div>
+                                                      className={`group flex w-[45%] min-w-[80px] items-center justify-center rounded-full border border-white bg-black py-[3px] text-white outline-[0.5] outline-gray-200 hover:border-black hover:bg-transparent hover:text-black`}
+                                                    >
+                                                      {Feedback.title}
+                                                      <BiArrowBack
+                                                        style={{
+                                                          transition: `opacity 150ms , transform 250ms ease`,
+                                                        }}
+                                                        className={`absolute translate-x-[0] rotate-[180deg] ${
+                                                          !FeedbackIndex
+                                                            ? "text-green-500 "
+                                                            : `text-red-500`
+                                                        } opacity-0 group-hover:translate-x-[50px] group-hover:opacity-100`}
+                                                      />
+                                                    </button>
+                                                  )
+                                                )}
+                                              </div>
+                                            </>
                                           ) : (
                                             <div
-                                              className={`flex h-full w-full  translate-y-[30px] flex-col items-center justify-center gap-y-[12px] border `}
+                                              className={`flex h-max w-full  translate-y-[30px] flex-col items-center justify-center gap-y-[12px] border `}
                                             >
                                               {(() => {
-                                                return (
-                                                  Array.isArray(
-                                                    FeedbackSelect
-                                                  ) &&
-                                                  FeedbackSelect?.map(
-                                                    (
-                                                      FeedBackinput,
-                                                      FeedBackInputIndex
-                                                    ) => {
-                                                      return (
+                                                return FeedbackSelect?.map(
+                                                  (
+                                                    FeedBackinput,
+                                                    FeedBackInputIndex
+                                                  ) => {
+                                                    return (
+                                                      <div
+                                                        key={`FeedbackSelect${FeedBackinput.dbq}`}
+                                                        className={`flex min-h-[70px] w-[100%] max-w-[420px] flex-wrap items-center justify-center gap-y-[20px] border  px-[50px] py-[10px] font-[brandinkLight] text-[0.9rem] leading-none`}
+                                                      >
+                                                        {/*<-------------- QUESTION ----------------->  */}
                                                         <div
-                                                          key={`FeedbackSelect${FeedBackinput.dbq}`}
-                                                          className={`flex min-h-[70px] w-[100%] max-w-[420px] flex-wrap items-center justify-center gap-y-[20px] border  px-[50px] py-[10px] font-[brandinkLight] text-[0.9rem] leading-none`}
+                                                          className={` flex  w-full  items-center justify-center`}
                                                         >
-                                                          {/*<-------------- QUESTION ----------------->  */}
-                                                          <div
-                                                            className={` flex  w-full  items-center justify-center`}
-                                                          >
-                                                            <p>
-                                                              {
-                                                                FeedBackinput.dbq
-                                                              }
-                                                            </p>
-                                                          </div>
+                                                          <p>
+                                                            {FeedBackinput.dbq}
+                                                          </p>
+                                                        </div>
 
-                                                          {/*<--------------  DROP DOWN SELECT -----------> */}
+                                                        {/*<--------------  DROP DOWN SELECT -----------> */}
+                                                        <div
+                                                          className={`flex   w-full  items-center justify-center`}
+                                                        >
                                                           <div
-                                                            className={`flex   w-full  items-center justify-center`}
+                                                            className={`group/selectContainer relative flex w-full items-center justify-around`}
                                                           >
-                                                            <div
-                                                              className={`group/selectContainer relative flex w-full items-center justify-around`}
-                                                            >
-                                                              <select
-                                                                onChange={(
-                                                                  e
-                                                                ) => {
-                                                                  setFeedbackSelect(
-                                                                    (
-                                                                      prevFeedbackSelect
-                                                                    ) => {
-                                                                      const updatedFeedbackSelect =
-                                                                        [
-                                                                          ...prevFeedbackSelect,
-                                                                        ];
-                                                                      updatedFeedbackSelect[
-                                                                        FeedBackInputIndex
-                                                                      ].selected =
-                                                                        e.target.value;
-                                                                      return updatedFeedbackSelect;
-                                                                    }
-                                                                  );
-                                                                }}
-                                                                className={`absolute  flex w-full cursor-pointer appearance-none items-center justify-between gap-y-[5px]  rounded-sm border border-black px-[12px] py-[6px] outline-none  `}
-                                                              >
-                                                                {FeedBackinput?.options.map(
+                                                            <select
+                                                              onChange={(e) => {
+                                                                setFeedbackSelect(
                                                                   (
-                                                                    option,
-                                                                    optionIndex
-                                                                  ) => (
-                                                                    <>
-                                                                      <option
-                                                                        className={`w-max cursor-pointer   bg-none `}
+                                                                    prevFeedbackSelect
+                                                                  ) => {
+                                                                    const updatedFeedbackSelect =
+                                                                      [
+                                                                        ...prevFeedbackSelect,
+                                                                      ];
+                                                                    updatedFeedbackSelect[
+                                                                      FeedBackInputIndex
+                                                                    ].selected =
+                                                                      e.target.value;
+                                                                    return updatedFeedbackSelect;
+                                                                  }
+                                                                );
+                                                              }}
+                                                              className={`absolute  flex w-full cursor-pointer appearance-none items-center justify-between gap-y-[5px]  rounded-sm border border-black px-[12px] py-[6px] outline-none  `}
+                                                            >
+                                                              {FeedBackinput?.options.map(
+                                                                (
+                                                                  option,
+                                                                  optionIndex
+                                                                ) => (
+                                                                  <>
+                                                                    <option
+                                                                      className={`w-max cursor-pointer   bg-none `}
+                                                                    >
+                                                                      <p
+                                                                        className={`absolute h-full w-full `}
                                                                       >
-                                                                        <p
-                                                                          className={`absolute h-full w-full `}
-                                                                        >
-                                                                          {
-                                                                            option
-                                                                          }
-                                                                        </p>
-                                                                      </option>
-                                                                    </>
-                                                                  )
-                                                                )}
-                                                              </select>
-                                                              <BiArrowToBottom className="transition-color pointer-events-none  absolute right-[10px] z-[5] duration-[150ms] group-hover/selectContainer:text-blue-800" />
-                                                            </div>
+                                                                        {option}
+                                                                      </p>
+                                                                    </option>
+                                                                  </>
+                                                                )
+                                                              )}
+                                                            </select>
+                                                            <BiArrowToBottom className="transition-color pointer-events-none  absolute right-[10px] z-[5] duration-[150ms] group-hover/selectContainer:text-blue-800" />
                                                           </div>
                                                         </div>
-                                                      );
-                                                    }
-                                                  )
+                                                      </div>
+                                                    );
+                                                  }
                                                 );
                                               })()}
                                               <button
                                                 onClick={() => {
                                                   handleSubmitFeedback();
-
                                                   handleDeleteUser();
+                                                  console.log(
+                                                    FeedbackSubmitedStatus
+                                                  );
                                                 }}
-                                                className={`my-[10px] w-[90%] border-spacing-3  rounded-full border border-gray-800 bg-black py-[4px] text-white ring-offset-lime-500 hover:bg-transparent  hover:text-black`}
+                                                className={`group relative my-[10px] flex  w-[90%] border-spacing-3  items-center justify-center overflow-hidden rounded-full  border border-gray-700 bg-black py-[4px] text-white ring-offset-lime-500 hover:bg-transparent hover:text-black`}
                                               >
                                                 <p>submit and Delete account</p>
-                                                {isSubmittingFeedback ||
-                                                isDeletingUser
-                                                  ? `loading`
-                                                  : ``}
+
+                                                <AiOutlineLoading
+                                                  style={{
+                                                    transition: `top 450ms ease-in-out`,
+                                                  }}
+                                                  className={`absolute right-[30px] animate-spin text-white duration-200 group-hover:text-black  ${
+                                                    !isSubmittingFeedback
+                                                      ? `top-[150%]`
+                                                      : `top-auto`
+                                                  }`}
+                                                />
                                               </button>
                                             </div>
                                           )
                                         ) : (
-                                          <div
-                                            className={`flex h-full w-full flex-col items-start justify-center gap-y-[30px] border px-[12px] font-[Poppins] text-[0.8rem]`}
-                                          >
+                                          <>
                                             <p className={`w-full`}>
                                               please enter your password to
                                               continue deleting your account
                                             </p>
                                             <div
-                                              title={
-                                                confirmPasswordError
-                                                  ? confirmPasswordError?.data
-                                                  : ""
-                                              }
-                                              className={`flex h-[35px] w-full  items-center justify-center overflow-hidden`}
+                                              className={`flex min-h-[35px] w-full  items-center justify-center overflow-hidden`}
                                             >
                                               <input
                                                 style={{
@@ -1220,56 +1230,81 @@ export default function Settings() {
                                                   );
                                                 }}
                                                 type={"password"}
-                                                placeholder={`current password please `}
-                                                className={` w-full border border-transparent p-[5px] text-[0.8rem] text-gray-500 outline-none placeholder:text-black/50 ${
+                                                placeholder={`${
+                                                  JSON.parse(localStorage?.user)
+                                                    ?.userName
+                                                } current password`}
+                                                className={` w-full border  p-[5px]  py-[10px] text-[14px] text-gray-950 outline-none placeholder:text-black/50  ${
                                                   !isConfirmingPassword
                                                     ? confirmPasswordError
                                                       ? currentUserPassword
-                                                        ? `border-b-red-500`
-                                                        : `border-b-black `
-                                                      : `border-b-black `
+                                                        ? ` border-b-red-500`
+                                                        : ` border-b-black`
+                                                      : `border-transparent border-b-black`
                                                     : `border-b-transparent`
                                                 }`}
                                               />
-
                                               {/* THE PASSWORD SUBMIT BUTTON */}
                                               <div
-                                                className={`absolute right-[5px] flex h-full w-[110px] min-w-max items-center justify-center  `}
+                                                className={`absolute right-[15px] flex h-[32px] w-[110px] min-w-max items-center justify-center   `}
                                               >
                                                 <hr
-                                                  className={`h-[11px] w-[1px] items-center  bg-black/80 `}
+                                                  className={`h-[11px] w-[1px]  items-center   bg-black/80 `}
                                                 />
 
-                                                <button
-                                                  onClick={async () => {
-                                                    const confirmUserPassword =
-                                                      await confirmPassword({
-                                                        userEmail: JSON.parse(
-                                                          localStorage?.user
-                                                        )?.Email,
-                                                        userPassword:
-                                                          currentUserPassword,
-                                                      });
-
-                                                    if (
-                                                      !confirmPasswordError &&
-                                                      isConfirmingPassword &&
-                                                      !confirmUserPassword?.error
-                                                    ) {
-                                                      setPasswordConfirmed(
-                                                        true
-                                                      );
-                                                    }
-                                                  }}
-                                                  type={"submit"}
-                                                  className={`flex h-[1/2] w-full items-center justify-center gap-x-[5px] `}
+                                                <div
+                                                  className={`relative flex h-full w-full flex-col items-center  justify-start  overflow-hidden   `}
                                                 >
-                                                  <p>submit</p>
-                                                  <RxArrowTopRight />
-                                                </button>
+                                                  <div
+                                                    style={{
+                                                      transition: `transform 250ms ease-in-out`,
+                                                    }}
+                                                    className={`absolute flex h-[200%] w-full flex-col items-center justify-center ${
+                                                      isConfirmingPassword
+                                                        ? `-translate-y-1/2`
+                                                        : `translate-y-0`
+                                                    }`}
+                                                  >
+                                                    <div
+                                                      className={`flex h-1/2 w-full items-center justify-center  `}
+                                                    >
+                                                      <button
+                                                        onClick={async () => {
+                                                          const confirmUserPassword =
+                                                            await confirmPassword(
+                                                              {
+                                                                userEmail:
+                                                                  JSON.parse(
+                                                                    localStorage?.user
+                                                                  )?.Email,
+                                                                userPassword:
+                                                                  currentUserPassword,
+                                                              }
+                                                            );
+                                                        }}
+                                                        className={`flex h-[1/2] w-full items-center justify-center gap-x-[5px] `}
+                                                      >
+                                                        <p>submit</p>
+                                                        <RxArrowTopRight />
+                                                      </button>
+                                                    </div>
+                                                    <div
+                                                      className={`flex h-1/2 w-full items-center justify-between px-[5px] `}
+                                                    >
+                                                      <p
+                                                        className={`text-[13px]`}
+                                                      >
+                                                        confirming
+                                                      </p>
+                                                      <AiOutlineLoading
+                                                        className={`animate-spin`}
+                                                      />
+                                                    </div>
+                                                  </div>
+                                                </div>
                                               </div>
                                             </div>
-                                          </div>
+                                          </>
                                         )}
                                       </div>
                                     </div>
@@ -1301,7 +1336,6 @@ export default function Settings() {
                           };
 
                           /* <----- THE RETURN STATEMENT FOR THE DETAILS SETTINGS */
-
                           return Parameter.ParameterCategories.map(
                             (Category, Categoryindex) => {
                               return Category.Settings.map((setting, index) => {
@@ -1357,31 +1391,81 @@ export default function Settings() {
                       </div>
                     </div>
 
-                    {/*<--------- THE SAVE BUTTON --------->  */}
+                    {/*<--------- THE SETTINGS SAVE BUTTON --------->  */}
                     <div
+                      onClick={async () => {
+                        const obj = {};
+                        Parameter.ParameterCategories.forEach((category) => {
+                          const { Title, Settings } = category;
+                          const validInputs = Settings.filter((x) =>
+                            x.valid(x.value)
+                          );
+                          const categoryObj = {};
+
+                          for (let i = 0; i < validInputs.length; i++) {
+                            categoryObj[validInputs[i].apiObjKey] =
+                              validInputs[i]?.value;
+                          }
+
+                          if (Object.keys(categoryObj).length > 0) {
+                            const FilterBoolean = Object.entries(
+                              categoryObj
+                            ).filter((x) => x.every(Boolean));
+                            obj[Title] = Object.fromEntries(FilterBoolean);
+                          }
+                        });
+                        configureAccount({
+                          UserID: JSON.parse(localStorage?.user)?._id,
+                          categories: obj,
+                        })
+                          .then((res) => {
+                            if (res.user) {
+                              localStorage.setItem(
+                                "user",
+                                JSON.stringify(res?.user)
+                              );
+                              location.reload();
+                            } else {
+                              console.log(res);
+                            }
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                          });
+                      }}
                       onMouseMove={(e) =>
                         setBtnBgPosition((c) => ({
                           left: e.clientX + "%",
                           top: e.clientY + "%",
                         }))
                       }
-                      className={`sticky top-0 m-auto mb-[5px] flex h-[10%] max-h-[35px] w-[80%] items-center justify-center self-center overflow-hidden rounded-full border`}
+                      className={`group sticky top-0 m-auto mb-[5px] flex h-[10%] max-h-[35px] w-[80%] items-center justify-center self-center overflow-hidden rounded-full border `}
                     >
                       <button
-                        className={`flex h-full w-[100%] items-center justify-center font-[openSauceReg]   text-gray-300 mix-blend-screen`}
+                        className={`flex h-full w-[100%] items-center justify-center py-[10px]   font-[openSauceReg] text-gray-300 mix-blend-screen`}
                       >
                         save
                       </button>
 
+
+                      {/* TODO: add some loading animation for when the account is being configured */}
+                      {/* <div className={`w-[800px] aspect-square bg-gradient-to-tr from-blue-600 to-purple-500 blur-md  rounded-full absolute z-[-1] animate-spin ${
+                        !isConfiguringAccount ? `flex opacity-100` : `opacity-0 hidden` 
+                      }`} /> */}
+
+                   
+
+
+
                       {/* THE SHINING BEAUTIFUL BACKGROUND EFFECT */}
                       {/* TODO: find a way to make the background consume less memory then add it  */}
 
-                      {/* <div
+                      <div
                         style={{
                           left: BtnBgPosition.left,
                           top: BtnBgPosition.top,
                         }}
-                        className={`absolute  -z-10 aspect-square w-[15px] translate-x-[-9000%] scale-[50] rounded-full  blur-sm md:translate-x-[-30000%] 
+                        className={`absolute -z-10 hidden aspect-square w-[15px] translate-x-[-9000%] scale-[50] rounded-full opacity-[0.5] blur-sm group-hover:flex md:translate-x-[-30000%] 
                         ${
                           target?.Settings.some((x) => x.value.length)
                             ? target.Settings.every((x) =>
@@ -1397,7 +1481,7 @@ export default function Settings() {
                               : `bg-red-500`
                             : `bg-blue-600`
                         } `}
-                      /> */}
+                      />
                     </div>
                   </>
                 );
@@ -1411,6 +1495,8 @@ export default function Settings() {
           className={` relative my-[20px] flex min-h-[150px] w-full flex-col  items-center justify-center  gap-y-[5px] border border-red-500 p-[12px] px-[50px] md:px-[70px]`}
         >
           <div
+            /* TODO:when you create the how to save user intruction page make sure to navigate the users to it onClick */
+            /* onClick={()=> navigate('/')} */
             style={{
               transition: `color 150ms ease`,
             }}
@@ -1434,19 +1520,21 @@ export default function Settings() {
             >
               {[
                 {
-                  title: `log out `,
+                  title: `log out`,
                   onClick: () => "",
                   icon: BiLogOut,
                   style: { bg: "red", border: "border-white border" },
                 },
                 {
-                  title: `change user `,
+                  title: `change user`,
                   onClick: () => {
-                    if (localStorage?.savedUser) changeUserUtility();
-                    if (changeUserUtility()?.navigate) {
-                      navigate(changeUserUtility()?.navigate);
-                    } else {
-                      alert("something");
+                    if (localStorage?.savedUsers) {
+                      changeUserUtility();
+                      if (changeUserUtility()?.navigate) {
+                        navigate(changeUserUtility()?.navigate);
+                      } else {
+                        return;
+                      }
                     }
                   },
                   icon: MdChangeCircle,
@@ -1473,9 +1561,23 @@ export default function Settings() {
                       setShowBg(false);
                     }}
                     key={btn.title + btnIndex}
-                    className={`relative my-[5px] flex  w-[45%] min-w-[400px] flex-grow items-center justify-center overflow-hidden rounded-sm  bg-opacity-50 py-[10px] text-white ${btn?.style.border}`}
+                    className={`group relative my-[5px]  flex w-[45%] min-w-[400px] flex-grow items-center justify-center overflow-hidden  rounded-sm bg-opacity-50 py-[10px]
+                    ${
+                      btn?.title === `change user`
+                        ? localStorage?.savedUsers
+                          ? `text-white`
+                          : `text-white/50 hover:bg-gray-300 hover:text-gray-800`
+                        : `text-white`
+                    } 
+                    ${btn?.style.border}`}
                   >
-                    <p className={`pointer-events-none z-[5]`}>{btn?.title}</p>
+                    <p className={`pointer-events-none z-[5]`}>
+                      {btnIndex === 1
+                        ? localStorage?.savedUsers
+                          ? btn.title
+                          : `no saved users`
+                        : btn.title}
+                    </p>
                     {btn.icon && (
                       <div
                         className={`absolute left-0 mx-[12px] flex scale-[1.1] items-center justify-center  `}
@@ -1487,13 +1589,63 @@ export default function Settings() {
                           }}
                           className={`pointer-events-none  absolute h-[15px] w-[15px] rounded-full  bg-${
                             btn?.style.bg
-                          }-500/50  ${
-                            showBg
-                              ? `scale-[500] opacity-100`
-                              : `scale-0 opacity-0`
-                          }`}
+                          }-500 
+                           ${
+                             showBg
+                               ? `scale-[500] opacity-100`
+                               : `scale-0 opacity-0`
+                           }`}
                         />
                       </div>
+                    )}
+                    {localStorage?.savedUsers && btnIndex ? (
+                      <div
+                        style={{
+                          transition: `transform 250ms 400ms, opacity 250ms 500ms ease-in-out`,
+                        }}
+                        className={`absolute  right-0 flex h-full w-[150px] translate-y-full items-center justify-center overflow-hidden opacity-0 group-hover:translate-y-0 group-hover:opacity-100`}
+                      >
+                        <div
+                          className={`absolute right-0 z-[5] h-full w-[40px] translate-x-[20%] bg-gradient-to-l from-black to-transparent `}
+                        />
+                        {JSON.parse(localStorage?.savedUsers)?.map(
+                          (user, userPhotoindex) => (
+                            <img
+                              style={{
+                                transition: `transform 250ms  , opacity 250ms ease-in-out`,
+                                transitionDelay: userPhotoindex * 5000 + "ms",
+                              }}
+                              src={user?.Avatar}
+                              className={`h-[35px] w-[35px] translate-y-full scale-[0.8] rounded-full object-cover opacity-0 group-hover:translate-y-0 group-hover:opacity-100`}
+                            />
+                          )
+                        )}
+                        {JSON.parse(localStorage?.savedUsers)?.slice(0, 3)
+                          ?.length > 3 && (
+                          <>
+                            <div
+                              className={`absolute right-[5px] z-[6] flex h-[15px] w-[15px] items-center justify-center rounded-full border border-white text-white`}
+                            >
+                              <BiPlus className={`scale-[1] `} />
+                            </div>
+                            <p
+                              style={{
+                                transition: `transform 250ms 500ms, opacity 250ms 600ms ease-in-out`,
+                              }}
+                              className={` absolute right-0 z-[6] translate-y-[10px]  scale-[0.7] text-white opacity-0 group-hover:translate-y-0 group-hover:opacity-100`}
+                            >
+                              {
+                                JSON.parse(localStorage?.savedUsers)?.slice(
+                                  0,
+                                  3
+                                )?.length
+                              }
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      ``
                     )}
                   </button>
                 );

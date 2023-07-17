@@ -9,7 +9,7 @@ import UserSchema from "./models/Users.js";
 import AuthRoute from "./Routes/AuthenticationRouter.js";
 import AuthZRoute from "./Routes/AuthorizationRouter.js";
 import Contact from "./Routes/EmailRouter.js";
-
+import AccountConfig from "./Routes/AccountConfig.js";
 const app = express();
 const port = process.env.PORT || 5500;
 const { json } = express;
@@ -43,8 +43,7 @@ app.use(passport.session());
 app.use("/auth", AuthRoute);
 app.use("/authZ", AuthZRoute);
 app.use("/email", Contact);
-
-
+app.use("/accountConfig", AccountConfig);
 
 app.get("/showUser", (req, res, next) => {
   res.send(req.user ? `user` : `no user`);

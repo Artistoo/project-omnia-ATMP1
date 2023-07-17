@@ -3,6 +3,9 @@ import { userStateContext } from "../context/userState";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { debounce } from "lodash";
 
+//________________________API________________________
+import { useLoginMutation, useLogoutMutation } from "../redux/API";
+
 //________________________ASSETS________________________
 import Logo from "../assets/icons/Logo";
 import AddChannel from "../assets/icons/AddChannel.jsx";
@@ -19,17 +22,26 @@ import MenuOpen from "./MenuOpen";
 
 // ________________ ICONS _________________
 import { IoIosArrowDown } from "react-icons/io";
-import { CgArrowDown, CgArrowLeft, CgNotifications } from "react-icons/cg";
+import {
+  CgArrowDown,
+  CgArrowLeft,
+  CgNotifications,
+  CgSearchLoading,
+} from "react-icons/cg";
 import { RiNotification3Line } from "react-icons/ri";
 import { GrAdd } from "react-icons/gr";
 import { BiInfinite } from "react-icons/bi";
+import { changeUserUtility } from "../utils/changeUser";
+import { FaTruckLoading } from "react-icons/fa";
+import { AiOutlineLoading } from "react-icons/ai";
 
 /* <___________ JSX _________________ */
 export default function Nav() {
   // <------------------ STATES ------------------------>
   const [open, setOpen] = React.useState(true);
+
   const [NavMenu, setNavMenu] = React.useState({
-    IndexSelected: 3,
+    IndexSelected: false,
     Render: [
       {
         header: {
@@ -81,9 +93,11 @@ export default function Nav() {
       {
         header: {
           icon: null,
-          title: `${JSON.parse(localStorage?.user)?.userName} ${
-            JSON.parse(localStorage?.user)?.LastName
-          }`,
+          title:
+            localStorage?.user &&
+            `${JSON.parse(localStorage?.user)?.userName} ${
+              JSON.parse(localStorage?.user)?.LastName
+            }`,
           text: "",
         },
         content: [
@@ -109,6 +123,7 @@ export default function Nav() {
       },
     ],
   });
+
   const [scrollPosition, setScrollPosition] = React.useState(0);
 
   //<--------VARIABLES ----------->
@@ -252,6 +267,12 @@ export default function Nav() {
       </div>
     );
   };
+
+  // <------------------- API CALL --------------------->
+  const [
+    logOut,
+    { isLoading: isLoggingOut, isSuccess: userIsLogedOut, error: LogOutError },
+  ] = useLogoutMutation();
 
   /* user loged components */
   const UserProfile = ({ Avatar, Menu, menuState }) => {
@@ -482,39 +503,13 @@ export default function Nav() {
             } = JSON.parse(localStorage?.user);
 
             const [isSearching, setIsSearching] = React.useState(false);
+            const [showLogOut, setShowLogOut] = React.useState(false);
             React.useEffect(() => {
               if (open) setIsSearching(false);
             }, [open]);
 
             const MenuTransitionInMS = "350ms";
 
-            /* TODO : Closing the Menu on Outside click */
-            /* (function CloseNavMenu() {
-              const MenuContainer = document.getElementById(`mdMenuBox`);
-              const [MouseOver, setMouseOver] = React.useState(false);
-
-              if (MenuContainer) {
-                const Over = () => setMouseOver(true);
-                const Leave = () => setMouseOver(false);
-                const closeMenu = () =>
-                  !MouseOver &&
-                  setNavMenu((c) => ({
-                    ...c,
-                    IndexSelected: false,
-                  }));
-                //changing the mouse state on hover
-                MenuContainer.addEventListener("mouseover", Over);
-                MenuContainer.addEventListener("mouseleave", Leave);
-                window.addEventListener("click", closeMenu);
-
-                return () => {
-                  window.removeEventListener("click", closeMenu);
-                  MenuContainer.removeEventListener("mouseover", Over);
-                  MenuContainer.removeEventListener("mouseleave", Leave);
-                };
-              }
-            })();
- */
             return (
               <div
                 className={`NavLogedUserContainer relative flex h-[85%] w-[400px] items-center justify-end   border md:w-[570px] md:justify-around lg:w-[60%]`}
@@ -654,8 +649,150 @@ export default function Nav() {
                                   : `opacity-1 translate-y-0`
                               } `}
                             >
-                              {item.header.title && (
+                              {item.header.title && itemIndex != 2 ? (
                                 <h2>{item.header.title}</h2>
+                              ) : (
+                                <div
+                                  style={{
+                                    transition: `transform 250ms ease-in-out`,
+                                  }}
+                                  className={`group flex h-full w-full items-center justify-center overflow-hidden px-[5px]`}
+                                >
+                                  <div
+                                    onClick={() => setShowLogOut((e) => !e)}
+                                    style={{
+                                      transition: `transform 250ms , opacity 150ms ease-in-out`,
+                                    }}
+                                    className={`z-[2] flex w-[10%] translate-x-5 items-center justify-center opacity-0 group-hover:translate-x-0 group-hover:opacity-100`}
+                                  >
+                                    <CgArrowLeft
+                                      style={{
+                                        transition: `transform 250ms ease-in-out`,
+                                      }}
+                                      className={` cursor-pointer hover:scale-[1.1] ${
+                                        showLogOut
+                                          ? `rotate-0 hover:translate-x-[-8px] `
+                                          : `rotate-[180deg] hover:translate-x-[8px]`
+                                      }`}
+                                    />
+                                  </div>
+                                  <div
+                                    className={`flex min-h-max w-[90%] items-center  overflow-hidden `}
+                                  >
+                                    <div
+                                      className={`absolute flex h-full w-[200%] items-center justify-between ${
+                                        showLogOut
+                                          ? `-translate-x-1/2`
+                                          : `translate-x-0`
+                                      }`}
+                                    >
+                                      {[
+                                        {
+                                          title: [item?.header.title],
+                                          onClick: () => "",
+                                        },
+                                        {
+                                          title: ["log out", "change user"],
+                                          onClick: async (index) => {
+                                            if (!index) {
+                                              changeUserUtility();
+                                              changeUserUtility().navigate &&
+                                                navigate(
+                                                  changeUserUtility().navigate
+                                                );
+                                            } else {
+                                              logOut()
+                                                .then((res) => console.log(res))
+                                                .catch((err) =>
+                                                  console.log(err)
+                                                );
+                                              if (LogOutError) {
+                                                console.log(LogOutError);
+                                              }
+                                              if (userIsLogedOut) {
+                                                localStorage.removeItem("user");
+                                                navigate("/");
+                                              } else if (LogOutError) {
+                                                console.log(LogOutError);
+                                              }
+                                            }
+                                          },
+                                        },
+                                      ].map((titleLogout, titleLogOutIndex) => (
+                                        <div
+                                          style={{
+                                            transition: `opacity 250ms ease-in-out`,
+                                          }}
+                                          onClick={() =>
+                                            titleLogout.onClick(
+                                              titleLogOutIndex
+                                            )
+                                          }
+                                          className={` flex h-max w-[45%]  items-center justify-between  ${
+                                            !titleLogOutIndex
+                                              ? showLogOut
+                                                ? `opacity-0`
+                                                : `opacity-100`
+                                              : showLogOut
+                                              ? `translate-x-[-21px]  opacity-100`
+                                              : `opacity-0`
+                                          }`}
+                                        >
+                                          {titleLogout?.title.map(
+                                            (Headline, HeadLineindex) => (
+                                              <div
+                                                className={`relative flex  items-center justify-center rounded-full ${
+                                                  !titleLogOutIndex
+                                                    ? ``
+                                                    : `border border-black ${
+                                                        !HeadLineindex
+                                                          ? `hover:bg-red-500 `
+                                                          : `hover:bg-black`
+                                                      } cursor-pointer py-[4px] hover:text-white`
+                                                }`}
+                                                style={{
+                                                  transition:
+                                                    "background 150ms ease-in-out",
+                                                  width:
+                                                    100 /
+                                                      titleLogout.title.length -
+                                                    4 +
+                                                    "%",
+                                                }}
+                                              >
+                                                <p
+                                                  className={`${
+                                                    !titleLogOutIndex
+                                                      ? `text-[1em]`
+                                                      : `text-[13px]`
+                                                  }`}
+                                                >
+                                                  {Headline}
+                                                </p>
+                                                {titleLogOutIndex
+                                                  ? !HeadLineindex && (
+                                                      <AiOutlineLoading
+                                                        style={{
+                                                          transition: `top 150ms , opacity 150ms ease-in-out`,
+                                                        }}
+                                                        className={`
+                                                        absolute right-[10px] h-[12px] w-[12px]
+                                                        ${
+                                                          isLoggingOut
+                                                            ? `top-auto animate-spin opacity-100`
+                                                            : `top-[150%] opacity-0`
+                                                        }`}
+                                                      />
+                                                    )
+                                                  : ``}
+                                              </div>
+                                            )
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
                               )}
                               {item.header.icon && <item.header.icon />}
                             </div>

@@ -21,13 +21,10 @@ export const ServerSideApiGet = createApi({
     getVerificationCode: builder.query({
       query: () => "/auth/verify",
     }),
-    LogOut: builder.query({
-      query: () => "/auth/logout",
-    }),
   }),
 });
 export const { useCurrentApiQuery } = LocationApi;
-export const { useGetVerificationCodeQuery, useLogOutQuery } = ServerSideApiGet;
+export const { useGetVerificationCodeQuery} = ServerSideApiGet;
 
 //<-------------- POST REQ ----------------->
 export const ServerSideApiPost = createApi({
@@ -64,6 +61,12 @@ export const ServerSideApiPost = createApi({
         body: user,
       }),
     }),
+    Logout: builder.mutation({
+      query: () => ({
+        method: "POST",
+        url: "/auth/logout",
+      }),
+    }),
     ConfirmPassword: builder.mutation({
       query: (userPassword) => ({
         url: `authZ/confirmPassword`,
@@ -85,6 +88,13 @@ export const ServerSideApiPost = createApi({
         body: loggedAccount,
       }),
     }),
+    AccountConfigure: builder.mutation({
+      query: (changes) => ({
+        url: "accountConfig/",
+        method: "POST",
+        body: changes,
+      }),
+    }),
   }),
 });
 
@@ -95,5 +105,7 @@ export const {
   useLoginMutation,
   useNotifyMutation,
   useConfirmPasswordMutation,
-  useDeleteUserMutation 
+  useDeleteUserMutation,
+  useAccountConfigureMutation,
+  useLogoutMutation
 } = ServerSideApiPost;
