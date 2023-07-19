@@ -14,8 +14,8 @@ import { Provider } from "react-redux";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <UserStateContext>
       <Provider store={store}>
+    <UserStateContext>
         <FooterContentProvider>
           <PopUps>
             <React.StrictMode>
@@ -23,7 +23,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             </React.StrictMode>
           </PopUps>
         </FooterContentProvider>
-      </Provider>
     </UserStateContext>
+      </Provider>
   </BrowserRouter>
 );

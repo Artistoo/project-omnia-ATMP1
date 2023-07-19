@@ -14,11 +14,11 @@ import Loading from "../../../components/Loading.jsx";
 import Logo from "../../../assets/icons/Logo.jsx";
 
 /* <------------- JSX --------------> */
-export default function EmailVarification({ Error, form, location }) {
+export default function EmailVarification({ Error, form, location, ErrorNav }) {
   //<------ OBJECT DECONSTRACTING ----->
   const { formError, setFormError } = Error;
   const { formData, setFormData } = form;
-
+  const { navigateOnClick, setNavigateOnClick } = ErrorNav;
   const { locationData } = location;
 
   //<---------API CALL --------->
@@ -99,6 +99,7 @@ export default function EmailVarification({ Error, form, location }) {
   //<------ VERIFYING ACCOUNT STATE UPDATE ------>
   const FetchVerificationCode = async () => {
     const VerificationRespond = await verifyAccount({ email: formData.email });
+    console.log(VerificationRespond);
     if (VerificationRespond.data) {
       console.log(VerificationRespond);
       setCurrentVerificationCode(VerificationRespond.data.verificationCode);
@@ -116,6 +117,7 @@ export default function EmailVarification({ Error, form, location }) {
       if (Object.values(formData).length > 2) {
         createUser(formData)
           .then((res) => {
+            console.log(res);
             if (res.data) {
               console.log(res.data);
               localStorage.setItem("user", JSON.stringify(res.data));
@@ -127,10 +129,14 @@ export default function EmailVarification({ Error, form, location }) {
                 }, 2000);
                 Redirected && clearTimeout(redirectTimer);
               } else {
-                setFormError((c) => (c = regersteringError.message));
+                setFormError(
+                  (c) =>
+                    (c = `${regersteringError.message} occured while registering user`)
+                );
               }
             } else if (res.error) {
-              setFormError(res.error.error);
+              
+              setFormError(`${res.error.data} `);
             }
           })
           .catch((err) => setFormError(`an error occured : ${err.message}`));

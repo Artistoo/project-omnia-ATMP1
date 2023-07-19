@@ -8,11 +8,11 @@ import { userStateContext } from "./context/userState";
 import Landing from "./pages/landing/landing";
 import Dashboard from "./pages/dashboard/dashboard";
 import Settings from "./pages/settings/Settings";
-import Profile from "./pages/Dynamic/Profile/Profile";
+import Profile from "./pages/Profile/Profile.jsx";
 import LoginRegister from "./pages/Auth/loginRegister";
 import ContactForm from "./pages/Contact/contactForm";
 import GetReady from "./pages/Auth/stages/GetReady.jsx";
-
+import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
 //___________________COMPONENTS_______________________
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
@@ -46,12 +46,19 @@ function App() {
           <Route path="GetReady" element={<GetReady />} />
           <Route path="savedUsers" element={<SavedUsers />} />
         </Route>
-
+        <Route path="Profile" element={<Profile />} />
         <Route path="/contactUs" element={<ContactForm />} />
 
         <Route path="*" element={<NoPageFound />} />
         {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
-
+        {localStorage?.Link && (
+          <Route
+            path={`forgetPassword/${
+              JSON.parse(localStorage.Link)
+            }`}
+            element={<ForgetPassword />}
+          />
+        )}
         <Route path="user/:userId" element={<Profile />} />
         <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
       </Routes>

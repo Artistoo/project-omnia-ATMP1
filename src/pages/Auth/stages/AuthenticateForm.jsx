@@ -3,7 +3,10 @@ import DOMPurify from "dompurify";
 import axios from "axios";
 import { useCurrentApiQuery } from "../../../redux/API";
 import { useCreateUserMutation, useLoginMutation } from "../../../redux/API";
-import { useNavigate } from "react-router-dom";
+import { Router, useNavigate, Route } from "react-router-dom";
+
+//_____________________API_____________________________
+import { useGenerateResetPasswordLinkMutation } from "../../../redux/API";
 //_____________________ICONS____________________
 import { CgArrowRight, CgArrowUp, CgGoogle, CgTwitter } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
@@ -47,6 +50,14 @@ export default function AuthenticateForm({
       isError: isSendingUserDataError,
     },
   ] = useLoginMutation();
+  const [
+    generateLink,
+    {
+      isLoading: isGenerating,
+      isSuccess: LinkGenerated,
+      error: GeneratingResetPasswordLinkError,
+    },
+  ] = useGenerateResetPasswordLinkMutation();
 
   /* <--------------  REACT INPUT REF -----------> */
   const Password = React.useRef(null);
@@ -63,6 +74,7 @@ export default function AuthenticateForm({
   });
 
   /* TODO : make the hide show password button work  */
+  const [ResetPasswordLink, setResetPasswordLink] = React.useState("");
   const [showHidePassword, setShowHidePassword] = React.useState(false);
   const [focused, setFocused] = React.useState(false);
   const [gender, setGender] = React.useState("male");
@@ -194,6 +206,12 @@ export default function AuthenticateForm({
     }));
   }, [formInputs.Req_Type]);
 
+  React.useEffect(() => {
+    if (ResetPasswordLink) {
+      localStorage.setItem("Link", ResetPasswordLink);
+    }
+  }, [ResetPasswordLink]);
+
   //INPUT EVENTS
   const handleBlur = (inputs, e) => {
     if (inputs.ready.error) {
@@ -302,6 +320,8 @@ export default function AuthenticateForm({
     }));
   };
 
+  const handleGenerateResetPasswordLink = async () => {};
+
   /* HANDLING FORM SUBMIT */
   const handleSubmit = async (e) => {
     const RequiredData = formInputs.inputs.filter((x) =>
@@ -376,12 +396,26 @@ export default function AuthenticateForm({
               setFormError(err.message || `an error occured while login in`);
             });
         case "fp":
-          return;
+          generateLink({ userEmail: `jasondesmond198@gmail.com` })
+            .then((data) => {
+              console.log(data);
+              if (data?.data) {
+                localStorage.setItem("Link", JSON.stringify(data?.data?.data));
+                localStorage.setItem(
+                  "userEmail",
+                  JSON.stringify(RequiredData[0]?.value)
+                );
+                console.log(data?.data);
+              } else if (data?.error) {
+                console.log(data?.error);
+                setFormError(LinkGenerated?.data?.error);
+              }
+            })
+            .catch((err) => console.log(err));
       }
     }
   };
 
-  if (!navigator.cookieEnabled) setFormError(`please enable cookies `);
   return (
     <div
       className={`flex h-[500px] min-h-[470px] w-[80%]   min-w-[450px] max-w-[600px]
@@ -738,13 +772,13 @@ export default function AuthenticateForm({
                   className={`group absolute top-[120%] flex h-[35px] w-[90%] items-center justify-start font-[brandinkLight] text-[15px] `}
                 >
                   <p
-                    onClick={() =>
+                    onClick={async () => {
                       setForminputs((current) => {
                         const updated = { ...current };
                         updated.Req_Type = "fp";
                         return updated;
-                      })
-                    }
+                      });
+                    }}
                     style={{
                       transition: `opacity 500ms , transform 200ms ease`,
                     }}
@@ -792,7 +826,7 @@ export default function AuthenticateForm({
                   transition: `transform 350ms ease`,
                 }}
                 className={`hover:fill-blackorigin-center  translate-x-[-12px]  hover:rotate-[360deg] hover:scale-[1.4] ${
-                  isLogingIn
+                  isLogingIn || isGenerating
                     ? ` Registering scale-[0.3] rounded-full border border-black bg-black p-[12px]`
                     : `scale-[1.1]`
                 }`}

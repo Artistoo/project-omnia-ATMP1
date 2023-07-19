@@ -13,7 +13,10 @@ import { Routes, Route } from "react-router-dom";
 import { userStateContext } from "../../context/userState";
 
 export default function home() {
-  const { userState } = React.useContext(userStateContext);
+  let { userState , setUserState } = React.useContext(userStateContext);
+
+
+ 
   const NotLogedRoute = () => {
     return (
       <div className={`flex max-w-full flex-col gap-y-[50px]`}>

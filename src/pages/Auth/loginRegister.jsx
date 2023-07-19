@@ -49,8 +49,9 @@ export default function loginRegister() {
   }, []);
 
   //<-----------COMPONENTS------------->
-  const FormErrorBox = ({ Error, form }) => {
+  const FormErrorBox = ({ Error, form, ErrorNav }) => {
     /* Error Component Descructering Data */
+    const { navigateOnClick, setNavigateOnClick } = ErrorNav;
     const { setFormError, formError } = Error;
     const { formData, setformData } = form;
     return (
@@ -59,7 +60,11 @@ export default function loginRegister() {
           style={{
             transition: `border 400ms 100ms , opacity 200ms , background 220ms ease`,
           }}
-          onClick={(e) => setFormError((current) => "")}
+          onClick={(e) =>
+            !ErrorNav
+              ? setFormError((current) => "")
+              : navigate(navigateOnClick)
+          }
           className={`
        bg-tranparnet group  absolute top-[100px] h-[50px] w-[80%] min-w-[350px] max-w-[600px] cursor-pointer items-center  justify-center overflow-hidden rounded-md  border  bg-opacity-[0.7] font-[brandinkLight] text-[15px] leading-[13px] text-white  backdrop-blur-[4px] md:w-[40%] ${
          Object.keys(formData)?.length ? `translate-y-[65px]` : ``
@@ -98,7 +103,7 @@ export default function loginRegister() {
 
   const RegisterRequest = () => {
     const [formError, setFormError] = React.useState();
-
+    const [navigateOnClick, setNavigateOnClick] = React.useState(false);
     const [EmailSentTo, setEmailSentTo] = React.useState(""); // the email that recieved the email of verification
     const [formData, setformData] = React.useState({}); // form data
 
@@ -119,6 +124,10 @@ export default function loginRegister() {
       location: {
         locationData,
         isLoading,
+      },
+      ErrorNav: {
+        navigateOnClick,
+        setNavigateOnClick,
       },
     };
     const [CurrentStage, setCurrentStage] = React.useState(

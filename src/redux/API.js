@@ -21,10 +21,20 @@ export const ServerSideApiGet = createApi({
     getVerificationCode: builder.query({
       query: () => "/auth/verify",
     }),
+    getUserInfo: builder.query({
+      query: (userID) => `/users/Profile/:${userID}`,
+    }),
+    getCurrentUser: builder.query({
+      query: () => "users/loggedUser",
+    }),
   }),
 });
 export const { useCurrentApiQuery } = LocationApi;
-export const { useGetVerificationCodeQuery} = ServerSideApiGet;
+export const {
+  useGetVerificationCodeQuery,
+  useLazyGetUserInfoQuery,
+  useGetCurrentUserQuery,
+} = ServerSideApiGet;
 
 //<-------------- POST REQ ----------------->
 export const ServerSideApiPost = createApi({
@@ -95,6 +105,20 @@ export const ServerSideApiPost = createApi({
         body: changes,
       }),
     }),
+    GenerateResetPasswordLink: builder.mutation({
+      query: (userEmail) => ({
+        url: "auth/ResetPasswordLink",
+        method: "POST",
+        body: userEmail,
+      }),
+    }),
+    ChangePassword: builder.mutation({
+      query: (newPassword) => ({
+        url: "auth/changePassword",
+        method: "POST",
+        body: newPassword,
+      }),
+    }),
   }),
 });
 
@@ -107,5 +131,7 @@ export const {
   useConfirmPasswordMutation,
   useDeleteUserMutation,
   useAccountConfigureMutation,
-  useLogoutMutation
+  useLogoutMutation,
+  useGenerateResetPasswordLinkMutation,
+  useChangePasswordMutation
 } = ServerSideApiPost;

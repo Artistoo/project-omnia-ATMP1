@@ -5,19 +5,26 @@ import dotenv from "dotenv";
 import passport from "passport";
 import session from "express-session";
 
+
+//_______________ROUTES _______________________
 import UserSchema from "./models/Users.js";
 import AuthRoute from "./Routes/AuthenticationRouter.js";
 import AuthZRoute from "./Routes/AuthorizationRouter.js";
 import Contact from "./Routes/EmailRouter.js";
-import AccountConfig from "./Routes/AccountConfig.js";
+import AccountConfig from "./Routes/AccountConfigRouter.js";
+import Users from "./Routes/UsersRouter.js";
 const app = express();
 const port = process.env.PORT || 5500;
+
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+});
+
 const { json } = express;
 dotenv.config();
 
 //_____________Database______________
 /* mongoose.set("strictQuery", true); */
-
 mongoose
   .connect(process.env.DB)
   .then((res) => console.log("connected"))
@@ -32,17 +39,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     secret: "MyPassword",
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
+    
   })
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 app.use("/auth", AuthRoute);
 app.use("/authZ", AuthZRoute);
 app.use("/email", Contact);
+app.use("/users", Users );
 app.use("/accountConfig", AccountConfig);
 
 app.get("/showUser", (req, res, next) => {

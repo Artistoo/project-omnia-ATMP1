@@ -31,7 +31,11 @@ import {
   BiLogOut,
   BiPlus,
 } from "react-icons/bi";
-import { AiOutlineLoading, AiOutlineStar } from "react-icons/ai";
+import {
+  AiOutlineLoading,
+  AiOutlineLoading3Quarters,
+  AiOutlineStar,
+} from "react-icons/ai";
 import { GrFormClose } from "react-icons/gr";
 import { changeUserUtility } from "../../utils/changeUser";
 import { ModelContext } from "../../context/Dialog.jsx";
@@ -317,17 +321,17 @@ export default function Settings() {
   return (
     /* SETTINGS PAGE */
     <div
-      className={`m-auto my-[50px]  min-h-[600px] w-full max-w-[1300px] border p-[15px] px-[25px]`}
+      className={`m-auto my-[50px]  min-h-[600px] w-full max-w-[1300px]  p-[15px] px-[25px]`}
     >
       {/*________ SETTINGS PAGE HEADER (TITLE AND INPUT FOR SEARCH ) ________ */}
       <div
-        className={`flex h-[12%] max-h-[120px] w-full items-center justify-around border font-[Garet] text-[35px] text-white md:text-[40px]  `}
+        className={`flex h-[12%] max-h-[120px] w-full items-center justify-around  font-[Garet] text-[35px] text-white md:text-[40px]  `}
       >
         {/* SETTINGS TEXT */}
         <h2>Settings</h2>
         {/* SETTINGS INPUT CONTAINER */}
         <div
-          className={`group relative flex h-full w-[45%] items-center justify-center overflow-hidden border px-2 `}
+          className={`group relative flex h-full w-[45%] items-center justify-center overflow-hidden  px-2 `}
         >
           {/* SEARCH SETTING INPUT */}
           <input
@@ -351,7 +355,7 @@ export default function Settings() {
 
       {/* ________________  THE SETTINGS CONTAINER ________________  */}
       <div
-        className={`relative flex min-h-[540px] w-full flex-col items-center justify-center gap-y-[15px] rounded-sm border border-green-500  bg-gradient-to-tl from-black to-gray-900 py-[15px]`}
+        className={`rounded-ms relative flex min-h-[540px] w-full flex-col items-center justify-center    gap-y-[15px] bg-gradient-to-tl from-gray-950 to-gray-900 py-[15px]`}
       >
         {/* <---- THE BOXS AND SETTINGS DETAILS CONTAINER ----> */}
         <div
@@ -445,7 +449,7 @@ export default function Settings() {
                       style={{
                         transition: `height 150ms ease`,
                       }}
-                      className={`sticky top-0 z-10 flex min-h-max  w-full origin-top flex-wrap  items-center  justify-around border border-red-500 px-[12px]    
+                      className={`sticky top-0 z-10 flex min-h-max  w-full origin-top flex-wrap  items-center  justify-around  px-[25px]    
                       ${
                         SettingScrolling
                           ? `h-[18%] bg-white bg-opacity-80 backdrop-blur-[20px] md:h-[20%] `
@@ -457,7 +461,7 @@ export default function Settings() {
                         onClick={() =>
                           setParameter((c) => ({ ...c, currentlySelected: 0 }))
                         }
-                        className={`group flex h-full w-1/2 cursor-pointer flex-wrap items-center justify-start gap-x-[15px] border text-gray-100`}
+                        className={`group flex h-full w-1/2 cursor-pointer flex-wrap items-center justify-start gap-x-[15px]  text-gray-100`}
                       >
                         {/* The Arrow Back To the main Menu */}
                         <BiArrowBack
@@ -496,7 +500,7 @@ export default function Settings() {
 
                       {/* THREE OTHER SETTING CATEGORIES ICONS*/}
                       <div
-                        className={`  relative flex h-full  w-[50%] flex-wrap items-center justify-center  gap-x-[35px] border`}
+                        className={`  relative flex h-full  w-[50%] flex-wrap items-center justify-center  gap-x-[35px] `}
                       >
                         {Parameter.ParameterCategories.filter(
                           (x, i) => i + 1 != Parameter.currentlySelected
@@ -670,7 +674,7 @@ export default function Settings() {
                                 ) : (
                                   /* making sure the user has the password before he can change it  */
                                   <div
-                                    className={` relative flex h-[35px] w-[35%]  justify-center   overflow-hidden  border `}
+                                    className={` relative flex h-[35px] w-[35%]  justify-center   overflow-hidden   `}
                                   >
                                     <div
                                       style={{
@@ -700,7 +704,7 @@ export default function Settings() {
                                                 })
                                               : null;
                                           }}
-                                          className={`group flex h-1/2 w-full items-center  justify-center border border-green-600 ${
+                                          className={`group flex h-1/2 w-full items-center  justify-center   ${
                                             !passwordConfirmed
                                               ? `cursor-pointer`
                                               : `cursor-auto`
@@ -742,7 +746,7 @@ export default function Settings() {
                                   style={{
                                     transition: `height 250ms , background 250ms ease `,
                                   }}
-                                  className={`  w-[1px] 
+                                  className={`absolute right-[64%]   w-[1px] 
                                   ${
                                     input?.value
                                       ? input?.valid instanceof Function &&
@@ -772,7 +776,7 @@ export default function Settings() {
                                         : `please confirm your password`
                                       : input?.placeholder
                                   }
-                                  className={`border-bottom w-[55%] border-none  border-white bg-transparent px-[8px]  font-[brandinkLight] text-white outline-none placeholder:text-gray-200 placeholder:opacity-50 focus:border`}
+                                  className={`border-bottom w-[55%] border-none  border-white bg-transparent px-[8px]  font-[brandinkLight] text-white outline-none placeholder:text-gray-200 placeholder:opacity-50 focus:border `}
                                 />
 
                                 {/* STARTS FOR PASSWORD STRENGTH  AND PASSSWORD AUTH */}
@@ -1419,14 +1423,14 @@ export default function Settings() {
                           categories: obj,
                         })
                           .then((res) => {
-                            if (res.user) {
+                            if (res?.data?.user) {
                               localStorage.setItem(
                                 "user",
-                                JSON.stringify(res?.user)
+                                JSON.stringify(res?.data?.user)
                               );
                               location.reload();
                             } else {
-                              console.log(res);
+                              console.log({ error: res });
                             }
                           })
                           .catch((error) => {
@@ -1442,20 +1446,17 @@ export default function Settings() {
                       className={`group sticky top-0 m-auto mb-[5px] flex h-[10%] max-h-[35px] w-[80%] items-center justify-center self-center overflow-hidden rounded-full border `}
                     >
                       <button
-                        className={`flex h-full w-[100%] items-center justify-center py-[10px]   font-[openSauceReg] text-gray-300 mix-blend-screen`}
+                        className={`relative flex h-full w-[100%] items-center justify-center   py-[10px] font-[openSauceReg] text-gray-300 mix-blend-screen`}
                       >
                         save
+                        <AiOutlineLoading3Quarters
+                          className={`absolute right-[12px] animate-spin ${
+                            isConfiguringAccount
+                              ? `top-auto opacity-100 `
+                              : `top-[120%] opacity-0`
+                          }`}
+                        />
                       </button>
-
-
-                      {/* TODO: add some loading animation for when the account is being configured */}
-                      {/* <div className={`w-[800px] aspect-square bg-gradient-to-tr from-blue-600 to-purple-500 blur-md  rounded-full absolute z-[-1] animate-spin ${
-                        !isConfiguringAccount ? `flex opacity-100` : `opacity-0 hidden` 
-                      }`} /> */}
-
-                   
-
-
 
                       {/* THE SHINING BEAUTIFUL BACKGROUND EFFECT */}
                       {/* TODO: find a way to make the background consume less memory then add it  */}
@@ -1492,7 +1493,7 @@ export default function Settings() {
 
         {/* <---- LOGOUT CHANGE USER BUTTONS CONTAINER ----> */}
         <div
-          className={` relative my-[20px] flex min-h-[150px] w-full flex-col  items-center justify-center  gap-y-[5px] border border-red-500 p-[12px] px-[50px] md:px-[70px]`}
+          className={` relative my-[20px] flex min-h-[150px] w-full flex-col  items-center justify-center  gap-y-[5px]  p-[12px] px-[50px] md:px-[70px]`}
         >
           <div
             /* TODO:when you create the how to save user intruction page make sure to navigate the users to it onClick */
@@ -1512,11 +1513,11 @@ export default function Settings() {
           </div>
 
           <div
-            className={`  flex  min-h-[80%] w-full flex-wrap items-center justify-center border`}
+            className={`  flex  min-h-[80%] w-full flex-wrap items-center justify-center `}
           >
             {/* THE TWO BUTTONS (CHANGE USER ) (LOG OUT) */}
             <div
-              className={`flex h-full w-full min-w-[420px] flex-wrap items-center justify-around gap-x-[12px] border border-purple-500 font-[brandinkLight] `}
+              className={`flex h-full w-full min-w-[420px] flex-wrap items-center justify-around gap-x-[12px]  font-[brandinkLight] `}
             >
               {[
                 {
