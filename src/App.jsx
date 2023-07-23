@@ -46,7 +46,7 @@ function App() {
           <Route path="GetReady" element={<GetReady />} />
           <Route path="savedUsers" element={<SavedUsers />} />
         </Route>
-        <Route path="Profile" element={<Profile />} />
+        <Route path="Profile/:profileID" element={<Profile />} />
         <Route path="/contactUs" element={<ContactForm />} />
 
         <Route path="*" element={<NoPageFound />} />
@@ -59,7 +59,10 @@ function App() {
             element={<ForgetPassword />}
           />
         )}
-        <Route path="user/:userId" element={<Profile />} />
+        <Route path="/user/:userId"> 
+            <Route index  element={<Profile />} />  
+            <Route path='hello'  element={<Profile />} />  
+        </Route>
         <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
       </Routes>
 

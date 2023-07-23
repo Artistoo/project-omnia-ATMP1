@@ -39,6 +39,11 @@ const UserSchema = new Schema({
     required: false,
     default: false,
   },
+  AboutMe: {
+    type: String,
+    required: false,
+    default: `im a new user from ${this?.Location}`,
+  },
   settings: {
     type: Schema.Types.ObjectId,
     ref: "Setting", // This should match the model name defined for SettingsModel

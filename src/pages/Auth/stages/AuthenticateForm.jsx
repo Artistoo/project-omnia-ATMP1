@@ -205,7 +205,6 @@ export default function AuthenticateForm({
       }),
     }));
   }, [formInputs.Req_Type]);
-
   React.useEffect(() => {
     if (ResetPasswordLink) {
       localStorage.setItem("Link", ResetPasswordLink);
@@ -354,6 +353,7 @@ export default function AuthenticateForm({
     } else {
       let data;
       switch (formInputs.Req_Type) {
+        /* <------ REGISTER REQUIEST -------> */
         case "up":
           /* <------ REGISTER REQUIEST -------> */
           data = {};
@@ -376,12 +376,10 @@ export default function AuthenticateForm({
           Login(data)
             .then((res) => {
               if (res.data) {
-                if (res.data.admin) {
-                  setformData(data);
-                } else if (res.data.Verify) {
+                if (res.data.admin || res.data.Verify) {
                   setformData(data);
                 } else {
-                  navigate(`/`);
+                  navigate(`/Profile/${res.data?._id}`);
                   try {
                     localStorage.setItem("user", JSON.stringify(res.data));
                   } catch {
@@ -395,6 +393,8 @@ export default function AuthenticateForm({
             .catch((err) => {
               setFormError(err.message || `an error occured while login in`);
             });
+
+        /* <------ RESET PASSWORD REQUIEST -------> */
         case "fp":
           generateLink({ userEmail: `jasondesmond198@gmail.com` })
             .then((data) => {

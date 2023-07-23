@@ -1,7 +1,7 @@
 import React from "react";
 import PleaseEnableCookies from "../pages/EnableCookies/PleaseEnableCookies.jsx";
 
-import { useGetCurrentUserQuery } from "../redux/API.js";
+import { useGetUserInfoQuery } from "../redux/API.js";
 
 export const userStateContext = React.createContext();
 
@@ -11,7 +11,9 @@ export default function User({ children }) {
     data: user,
     isLoading: isFetchingUser,
     error: UserError,
-  } = useGetCurrentUserQuery();
+  } = useGetUserInfoQuery(
+    localStorage?.user && JSON.parse(localStorage?.user)?._id
+  );
 
   const [userState, setUserState] = React.useState({
     loged: false,
@@ -21,7 +23,6 @@ export default function User({ children }) {
   React.useEffect(() => {
     try {
       if (currentUser?.user) {
-
         localStorage.setItem("user", JSON.stringify(currentUser.data.user));
         setUserState((c) => ({ loged: true, admit: currentUser?.admin }));
       } else if (currentUser?.error) {
@@ -45,19 +46,16 @@ export default function User({ children }) {
       console.log(error);
       setCookiesEnabled(false);
     }
-  }, [currentUser , currentUser?.user]);
-
-
-
-
-  React.useEffect(()=> {
-    if(localStorage?.user){
-      setUserState(c => ({
-         loged : true ,
-         admin : JSON.parse(localStorage?.user)?.admin
-      }))
+  }, [currentUser, currentUser?.user]);
+  React.useEffect(() => {
+    if (localStorage?.user) {
+      setUserState((c) => ({
+        loged: true,
+        admin: JSON.parse(localStorage?.user)?.admin,
+      }));
     }
-  } , [])
+  }, []);
+ 
 
   return (
     <userStateContext.Provider

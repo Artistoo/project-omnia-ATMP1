@@ -104,7 +104,8 @@ export default function Nav() {
           {
             icon: CgArrowLeft,
             title: "profile",
-            HandleClick: () => navigate(`/Profile`),
+            HandleClick: () =>
+              navigate(`/Profile/${JSON.parse(localStorage?.user)?._id}`),
           },
           {
             icon: CgArrowLeft,

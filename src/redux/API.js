@@ -19,21 +19,18 @@ export const ServerSideApiGet = createApi({
   }),
   endpoints: (builder) => ({
     getVerificationCode: builder.query({
-      query: () => "/auth/verify",
+      query: () => "auth/verify",
     }),
     getUserInfo: builder.query({
-      query: (userID) => `/users/Profile/:${userID}`,
+      query: (userID) => `users/Profile/:${userID}`,
     }),
-    getCurrentUser: builder.query({
-      query: () => "users/loggedUser",
-    }),
+    
   }),
 });
 export const { useCurrentApiQuery } = LocationApi;
 export const {
   useGetVerificationCodeQuery,
-  useLazyGetUserInfoQuery,
-  useGetCurrentUserQuery,
+  useGetUserInfoQuery,
 } = ServerSideApiGet;
 
 //<-------------- POST REQ ----------------->
