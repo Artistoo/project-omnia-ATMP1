@@ -43,6 +43,7 @@ import { RxArrowTopRight } from "react-icons/rx";
 
 //<---- ASSETS ----->
 import done from "../../assets/img/Done.png";
+import Modal from "../../components/Modal.jsx";
 
 /* ___________ THE JSX FOR THE SETTINGS PAGE ____________  */
 export default function Settings() {
@@ -421,6 +422,7 @@ export default function Settings() {
                   React.useState(false);
                 const { Model, setModel } =
                   React.useContext(ModelContext)?.ModelConfiguration;
+                const [openModal, setOpenModal] = React.useState(false);
 
                 /* SET THE PASSWORD TO CONFIRMED TO TRUE IF THE API RETURN SUCCESS*/
                 React.useEffect(() => {
@@ -661,8 +663,77 @@ export default function Settings() {
                                 console.log(err); // Handle any errors that occur during the API call
                               });
                           };
+                          const handleModalState = () => {
+                            setOpenModal((c) => (c = !c));
+                          };
 
                           /* <-------- INPUT STYLINGS AND FUNCTIONALITY -------> */
+                          const SayGoodBye = () => {
+                            return (
+                              <>
+                                {/* SAY GOODBYE ON ACCOUNT DELETED */}
+                                <div
+                                  style={{
+                                    transition: `transform 250ms  , opacity 100ms  ease-in-out`,
+                                  }}
+                                  className={` absolute z-10 flex   w-full origin-center   scale-[1.1]  flex-col items-center justify-center bg-black  
+                            ${
+                              AccountDeleted
+                                ? `h-[400px] translate-y-[40px] opacity-100 `
+                                : `h-[0px]  translate-y-full opacity-0`
+                            }`}
+                                >
+                                  <img
+                                    style={{
+                                      transition: `opacity 250ms 380ms ease-in-out`,
+                                    }}
+                                    className={`h-[35px] w-[35px] translate-y-[-50px] scale-[5] ${
+                                      AccountDeleted
+                                        ? `opacity-100`
+                                        : `opacity-0`
+                                    }
+                              `}
+                                    src={done}
+                                    alt={`done`}
+                                  />
+                                  <h2
+                                    style={{
+                                      transition: `opacity 250ms 300ms ease-in-out`,
+                                    }}
+                                    className={`translate-y-[15px] bg-gradient-to-tl from-yellow-400  via-purple-400 to-blue-400 bg-clip-text text-lg text-transparent ${
+                                      AccountDeleted
+                                        ? `opacity-100`
+                                        : `opacity-0`
+                                    }`}
+                                  >
+                                    GoodBye{" "}
+                                    {JSON.parse(
+                                      localStorage?.user
+                                    )?.gender.toLowerCase() === "male"
+                                      ? `mr`
+                                      : `mrs`}{" "}
+                                    {JSON.parse(localStorage?.user)?.userName}
+                                  </h2>
+                                  {DeleteAccountFeedback && (
+                                    <p
+                                      style={{
+                                        transition: `color 250ms 400ms , transform 150ms 450ms ease-in`,
+                                      }}
+                                      className={` translate-y-[60px] text-center ${
+                                        AccountDeleted
+                                          ? `translate-y-0 text-gray-200`
+                                          : `translate-y-full text-black`
+                                      }`}
+                                    >
+                                      thank you for the feedback <br /> we will
+                                      work hard to meet your <br />
+                                      <b>expectation</b>{" "}
+                                    </p>
+                                  )}
+                                </div>
+                              </>
+                            );
+                          };
                           const StringInput = (input, index) => {
                             return (
                               <>
@@ -907,9 +978,6 @@ export default function Settings() {
                             return <></>;
                           };
                           const ButtonInput = (input, index) => {
-                            const Dialogstyle =
-                              DeleteAccountPasswordConfirmRef?.current?.style;
-
                             const [
                               currentUserPassword,
                               setCurrentUserPassword,
@@ -918,138 +986,26 @@ export default function Settings() {
                             if (input?.param === "delete account") {
                               return (
                                 <>
-                                  {/* <--------------- THE DIALOG  ---------------> */}
-                                  <dialog
-                                    style={{
-                                      transition:
-                                        "background 250ms , backdrop 3000ms 600ms   ease",
-                                    }}
-                                    ref={DeleteAccountPasswordConfirmRef}
-                                    className={`${
-                                      AccountDeleted
-                                        ? ` bg-transparent backdrop:backdrop-brightness-0`
-                                        : ` bg-white backdrop:bg-black/20 backdrop:backdrop-brightness-50`
-                                    } pointer-events-none z-10 m-auto flex min-h-[400px] min-w-[420px] max-w-[600px] flex-col items-center justify-start gap-y-[20px] self-end  overflow-hidden overflow-x-hidden opacity-0     max-[600px]:top-full max-[600px]:w-screen max-[600px]:-translate-y-[53%] lg:w-[400px]`}
+                                  <div
+                                    className={`relative flex h-full w-full  items-center justify-between `}
                                   >
-                                    {/* SAY GOODBYE ON ACCOUNT DELETED */}
-                                    <div
-                                      style={{
-                                        transition: `transform 250ms  , opacity 100ms  ease-in-out`,
-                                      }}
-                                      className={` absolute z-10 flex   w-full origin-center   scale-[1.1]  flex-col items-center justify-center bg-black  
-                                    ${
-                                      AccountDeleted
-                                        ? `h-[400px] translate-y-[40px] opacity-100 `
-                                        : `h-[0px]  translate-y-full opacity-0`
-                                    }`}
+                                    <p>i want to delete my account </p>
+                                    <button
+                                      onClick={handleModalState}
+                                      className={`flex w-[52px] min-w-max items-center justify-center rounded-full border px-[15px] py-[3px] hover:border-red-500/50`}
                                     >
-                                      <img
-                                        style={{
-                                          transition: `opacity 250ms 380ms ease-in-out`,
-                                        }}
-                                        className={`h-[35px] w-[35px] translate-y-[-50px] scale-[5] ${
-                                          AccountDeleted
-                                            ? `opacity-100`
-                                            : `opacity-0`
-                                        }
-                                      `}
-                                        src={done}
-                                        alt={`done`}
-                                      />
-                                      <h2
-                                        style={{
-                                          transition: `opacity 250ms 300ms ease-in-out`,
-                                        }}
-                                        className={`translate-y-[15px] bg-gradient-to-tl from-yellow-400  via-purple-400 to-blue-400 bg-clip-text text-lg text-transparent ${
-                                          AccountDeleted
-                                            ? `opacity-100`
-                                            : `opacity-0`
-                                        }`}
-                                      >
-                                        GoodBye{" "}
-                                        {JSON.parse(
-                                          localStorage?.user
-                                        )?.gender.toLowerCase() === "male"
-                                          ? `mr`
-                                          : `mrs`}{" "}
-                                        {
-                                          JSON.parse(localStorage?.user)
-                                            ?.userName
-                                        }
-                                      </h2>
-                                      {DeleteAccountFeedback && (
-                                        <p
-                                          style={{
-                                            transition: `color 250ms 400ms , transform 150ms 450ms ease-in`,
-                                          }}
-                                          className={` translate-y-[60px] text-center ${
-                                            AccountDeleted
-                                              ? `translate-y-0 text-gray-200`
-                                              : `translate-y-full text-black`
-                                          }`}
-                                        >
-                                          thank you for the feedback <br /> we
-                                          will work hard to meet your <br />
-                                          <b>expectation</b>{" "}
-                                        </p>
-                                      )}
-                                    </div>
-
-                                    {/* DIALOG EXIT ICON AND TEXT */}
-                                    <div
-                                      onClick={() => {
-                                        /* TODO: set the confirm password to false when closing this window */
-                                        /* setPasswordConfirmed(false); */
-                                        setDeleteAccountFeedback(
-                                          (c) => (c = false)
-                                        );
-                                        if (
-                                          DeleteAccountPasswordConfirmRef.current &&
-                                          Dialogstyle
-                                        )
-                                          DeleteAccountPasswordConfirmRef?.current.close();
-                                        Dialogstyle.opacity = 0;
-                                        Dialogstyle.pointerEvents = "none";
-                                      }}
-                                      className={`group z-[5] flex h-[50px] w-full items-center justify-center p-[5px]`}
-                                    >
-                                      {/* Cancel Deleting Account Button */}
-                                      <div
-                                        className={`relative  flex h-full w-[40%] translate-x-[-80%] translate-y-[60%] cursor-pointer items-center justify-between`}
-                                      >
-                                        <GrFormClose
-                                          style={{
-                                            transition: `transform 250ms    ease-in-out`,
-                                          }}
-                                          className="m-auto  translate-x-[-50px]  scale-[1.7] border border-transparent group-hover:rotate-[-180deg] group-hover:scale-[1.1] group-hover:rounded-full group-hover:border-white group-hover:bg-red-500 md:group-hover:translate-x-[-50px] "
-                                        />
-                                        {/* THE BORDER AND CHANGED MY MIND TEXT */}
-                                        <div
-                                          style={{
-                                            transition: `border 250ms ease-in-out`,
-                                          }}
-                                          className={`absolute  hidden h-[50%] w-full translate-x-[5px] items-center justify-end rounded-full border border-transparent py-[10px] pr-[5px] group-hover:border-black md:flex`}
-                                        >
-                                          <p
-                                            style={{
-                                              transition: `opacity 250ms 300ms ease-in-out`,
-                                            }}
-                                            className={`w-max translate-x-[-5px] font-[Poppins] text-[11px]  text-gray-800 opacity-0 group-hover:opacity-100`}
-                                          >
-                                            changed my mind
-                                          </p>
-                                        </div>
-                                      </div>
-                                      {/* Dialog CurrentAccount  */}
-                                      <img
-                                        src={
-                                          JSON.parse(localStorage?.user)?.Avatar
-                                        }
-                                        alt={`avatar image`}
-                                        className={`absolute aspect-square w-[21px] translate-y-full scale-[3] self-center rounded-full  border-[0.5px] border-white/50 object-cover `}
-                                      />
-                                    </div>
-
+                                      {input?.param}
+                                    </button>
+                                  </div>
+                                  {/* <--------------- THE DIALOG  ---------------> */}
+                                  <Modal
+                                    closeMessage={`changed my mind`}
+                                    switchCase={AccountDeleted}
+                                    OnSwitch={SayGoodBye}
+                                    modalState={openModal}
+                                    handleModalState={handleModalState}
+                                    showAvatar={true}
+                                  >
                                     {/* Dialog Content  */}
                                     <div
                                       className={`flex h-[280px]  w-full items-center justify-center `}
@@ -1312,28 +1268,7 @@ export default function Settings() {
                                         )}
                                       </div>
                                     </div>
-                                  </dialog>
-
-                                  <div
-                                    className={`relative flex h-full w-full  items-center justify-between `}
-                                  >
-                                    <p>i want to delete my account </p>
-                                    <button
-                                      onClick={() => {
-                                        if (
-                                          DeleteAccountPasswordConfirmRef?.current &&
-                                          Dialogstyle
-                                        ) {
-                                          DeleteAccountPasswordConfirmRef?.current.showModal();
-                                          Dialogstyle.opacity = 1;
-                                          Dialogstyle.pointerEvents = "auto";
-                                        }
-                                      }}
-                                      className={`flex w-[52px] min-w-max items-center justify-center rounded-full border px-[15px] py-[3px] hover:border-red-500/50`}
-                                    >
-                                      {input?.param}
-                                    </button>
-                                  </div>
+                                  </Modal>
                                 </>
                               );
                             }
