@@ -15,12 +15,20 @@ export default function Logo({
         scale: `${scale}`,
         transition: `scale 300ms ease-in-out`,
       }}
-      className={`z-[15] m-[10px] flex max-h-full  w-max translate-y-[-5px] scale-[1.1]  select-none items-center  justify-center gap-x-[50px] ${
+      className={`z-[15] m-[10px] flex max-h-full  w-max translate-y-[-5px] scale-[1.1] select-none  items-center  justify-center gap-x-[50px] ${
         loading && `pointer-events-none`
       }`}
     >
       {/* <--------- DOTS & LETTERS ---------> */}
-      <div className="flex items-center justify-center gap-x-[0px] ">
+      <div
+        style={{
+          transition: `transform 300ms cubic-bezier(0.74, 0.14, 0.31, 1.04) , opacity 250ms cubic-bezier(0.68, 1.55, 0.27, -0.55)`,
+        }}
+        className={`flex items-center justify-center gap-x-[0px] ${
+          ScrollingDown &&
+          `-translate-x-[34px] translate-y-[2px] scale-[0.45] md:translate-x-0 md:scale-100  `
+        }`}
+      >
         {/* <--------- LETTERS ---------> */}
         <div
           style={{
@@ -67,10 +75,10 @@ export default function Logo({
             transition: `opacity 200ms , transform 250ms ease-in-out`,
             color: color.main,
           }}
-          className={`absolute flex  translate-x-[55px] translate-y-[2px] scale-[0.9] flex-col items-start justify-center  p-[5px] pt-[10px] text-start font-[PoppinsBold]  text-[15px] uppercase leading-[12px]  ${
+          className={`absolute flex  translate-y-[2px] scale-[0.9] flex-col items-start justify-center p-[5px]  pt-[10px] text-start font-[PoppinsBold] text-[15px]  uppercase leading-[12px]  ${
             ScrollingDown
-              ? `translate-x-[48px] opacity-[1] `
-              : `translate-x-[30px] opacity-[0] `
+              ? ` translate-x-[5px] opacity-[1] md:translate-x-[55px]`
+              : `translate-x-[30px] opacity-[0] md:translate-x-0 `
           }
           }
           `}

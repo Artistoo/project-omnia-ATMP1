@@ -166,7 +166,6 @@ export default function Nav() {
 
   //<-------------------CONTEXT------------------------->
   const { admin, loged } = React.useContext(userStateContext).userState;
-
   //<-----------CONDITIONS--------------->
   /* IF NO NAV BAR DISPLAY  */
   if (HideAt.Nav.some((x) => x === location.pathname)) {

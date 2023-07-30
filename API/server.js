@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import passport from "passport";
 import session from "express-session";
 
-
 //_______________ROUTES _______________________
 import UserSchema from "./models/Users.js";
 import AuthRoute from "./Routes/AuthenticationRouter.js";
@@ -13,6 +12,8 @@ import AuthZRoute from "./Routes/AuthorizationRouter.js";
 import Contact from "./Routes/EmailRouter.js";
 import AccountConfig from "./Routes/AccountConfigRouter.js";
 import Users from "./Routes/UsersRouter.js";
+import SearchRouter from "./Routes/SearchRouter.js";
+
 const app = express();
 const port = process.env.PORT || 5500;
 
@@ -41,19 +42,26 @@ app.use(
     secret: "MyPassword",
     resave: true,
     saveUninitialized: true,
-    
   })
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 app.use("/auth", AuthRoute);
 app.use("/authZ", AuthZRoute);
 app.use("/email", Contact);
-app.use("/users", Users );
+app.use("/users", Users);
 app.use("/accountConfig", AccountConfig);
+app.use("/search", SearchRouter);
+app.get("/myusers", async (req, res, next) => {
+  const user = await UserSchema.find().lean();
+  const filterUser = user.map((thisUser) => {
+    const { Password, ...user } = thisUser;
+    return user;
+  });
+  console.log(filterUser);
+});
 
 app.get("/showUser", (req, res, next) => {
   res.send(req.user ? `user` : `no user`);

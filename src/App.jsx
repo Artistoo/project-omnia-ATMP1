@@ -21,6 +21,7 @@ import FooterInfo from "./pages/Dynamic/FooterInfomation/FooterInfo";
 import Details from "./pages/Details/Details";
 import NoPageFound from "./pages/NotFound/NoPageFound";
 import SavedUsers from "./pages/savedUsers/savedUsers";
+import SearchPage from "./pages/SearchPage/SearchPage.jsx";
 
 //___________________JSX component______________________
 function App() {
@@ -49,19 +50,18 @@ function App() {
         <Route path="Profile/:profileID" element={<Profile />} />
         <Route path="/contactUs" element={<ContactForm />} />
 
+        <Route path="search/:param" element={<SearchPage />} />
         <Route path="*" element={<NoPageFound />} />
         {/* <<<<<<<------- DYNAMIC ROUTING ------->>>>>>>> */}
         {localStorage?.Link && (
           <Route
-            path={`forgetPassword/${
-              JSON.parse(localStorage.Link)
-            }`}
+            path={`forgetPassword/${JSON.parse(localStorage.Link)}`}
             element={<ForgetPassword />}
           />
         )}
-        <Route path="/user/:userId"> 
-            <Route index  element={<Profile />} />  
-            <Route path='hello'  element={<Profile />} />  
+        <Route path="/user/:userId">
+          <Route index element={<Profile />} />
+          <Route path="hello" element={<Profile />} />
         </Route>
         <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
       </Routes>

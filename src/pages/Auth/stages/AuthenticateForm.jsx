@@ -319,8 +319,6 @@ export default function AuthenticateForm({
     }));
   };
 
-  const handleGenerateResetPasswordLink = async () => {};
-
   /* HANDLING FORM SUBMIT */
   const handleSubmit = async (e) => {
     const RequiredData = formInputs.inputs.filter((x) =>

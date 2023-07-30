@@ -337,14 +337,16 @@ body {
 
 .CostumeScroller {
   &::-webkit-scrollbar {
-    background: black;
+    background: rgba(255, 255, 255, 0.12) ;
     border-radius: 50px;
-    display: none;
+    scrollbar-gutter: stable;
+    width : 13px ; 
+
   }
   &::-webkit-scrollbar-thumb {
-    background: black;
-    border-radius: 50px;
-    display: none;
+    border : solid black thin ; 
+    border-radius: 20px;
+    height : 12px ; 
   }
 }
 
@@ -361,4 +363,27 @@ body {
   &::-webkit-scrollbar-thumb {
     display: none;
   }
+}
+
+
+.Shine {
+  animation : shine 250ms ease-in-out ;
+  animation-timeline : scroll(root y) ; 
+  animation-range : entry 0% entry 100%  ;
+  
+  @keyframes shine {
+    from {
+      opacity : 0.4
+    }
+    to {
+      opacity : 0
+    }
+
+
+
+
+  }
+
+
+
 }
