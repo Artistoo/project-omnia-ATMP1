@@ -61,7 +61,7 @@ function App() {
         )}
         <Route path="/user/:userId">
           <Route index element={<Profile />} />
-          <Route path="hello" element={<Profile />} />
+       
         </Route>
         <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
       </Routes>

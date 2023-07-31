@@ -24,14 +24,11 @@ export const ServerSideApiGet = createApi({
     getUserInfo: builder.query({
       query: (userID) => `users/Profile/:${userID}`,
     }),
-    
   }),
 });
 export const { useCurrentApiQuery } = LocationApi;
-export const {
-  useGetVerificationCodeQuery,
-  useGetUserInfoQuery,
-} = ServerSideApiGet;
+export const { useGetVerificationCodeQuery, useGetUserInfoQuery } =
+  ServerSideApiGet;
 
 //<-------------- POST REQ ----------------->
 export const ServerSideApiPost = createApi({
@@ -116,6 +113,13 @@ export const ServerSideApiPost = createApi({
         body: newPassword,
       }),
     }),
+    Search: builder.mutation({
+      query: (params, Filter) => ({
+        url: `search/${params}`,
+        method: `POST`,
+        body: Filter,
+      }),
+    }),
   }),
 });
 
@@ -130,5 +134,6 @@ export const {
   useAccountConfigureMutation,
   useLogoutMutation,
   useGenerateResetPasswordLinkMutation,
-  useChangePasswordMutation
+  useChangePasswordMutation,
+  useSearchMutation,
 } = ServerSideApiPost;
