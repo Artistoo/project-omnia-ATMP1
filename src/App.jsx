@@ -59,10 +59,7 @@ function App() {
             element={<ForgetPassword />}
           />
         )}
-        <Route path="/user/:userId">
-          <Route index element={<Profile />} />
-       
-        </Route>
+
         <Route path={`/moreAbout/:about`} element={<FooterInfo />} />
       </Routes>
 

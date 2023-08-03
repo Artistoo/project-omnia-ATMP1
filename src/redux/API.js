@@ -17,18 +17,25 @@ export const ServerSideApiGet = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `http://localhost:5500/`,
   }),
+
   endpoints: (builder) => ({
     getVerificationCode: builder.query({
       query: () => "auth/verify",
     }),
     getUserInfo: builder.query({
-      query: (userID) => `users/Profile/:${userID}`,
+      query: (userID) => `users/profile/${userID}`,
+    }),
+    listOfCountries: builder.query({
+      query: () => `https://restcountries.com/v3.1/all`,
     }),
   }),
 });
 export const { useCurrentApiQuery } = LocationApi;
-export const { useGetVerificationCodeQuery, useGetUserInfoQuery } =
-  ServerSideApiGet;
+export const {
+  useGetVerificationCodeQuery,
+  useGetUserInfoQuery,
+  useListOfCountriesQuery,
+} = ServerSideApiGet;
 
 //<-------------- POST REQ ----------------->
 export const ServerSideApiPost = createApi({
@@ -114,10 +121,10 @@ export const ServerSideApiPost = createApi({
       }),
     }),
     Search: builder.mutation({
-      query: (params, Filter) => ({
-        url: `search/${params}`,
+      query: (body) => ({
+        url: `search/${body.params}`,
         method: `POST`,
-        body: Filter,
+        body: body.filter,
       }),
     }),
   }),
