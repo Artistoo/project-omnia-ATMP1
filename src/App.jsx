@@ -13,6 +13,8 @@ import LoginRegister from "./pages/Auth/loginRegister";
 import ContactForm from "./pages/Contact/contactForm";
 import GetReady from "./pages/Auth/stages/GetReady.jsx";
 import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
+import HomePage from "./pages/Home/HomePage";
+
 //___________________COMPONENTS_______________________
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
@@ -36,7 +38,20 @@ function App() {
       <Nav />
 
       <Routes>
-        <Route index element={<Landing />} />
+        <Route
+          index
+          element={
+            userState.loged ? (
+              userState.admin ? (
+                <Dashboard />
+              ) : (
+                <HomePage />
+              )
+            ) : (
+              <Landing />
+            )
+          }
+        />
 
         <Route path={`/settings`} element={<Settings />} />
 

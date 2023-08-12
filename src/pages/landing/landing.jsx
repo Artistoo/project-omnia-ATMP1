@@ -13,11 +13,7 @@ import { Routes, Route } from "react-router-dom";
 import { userStateContext } from "../../context/userState";
 
 export default function home() {
-  let { userState , setUserState } = React.useContext(userStateContext);
-
-
- 
-  const NotLogedRoute = () => {
+  const LandingPage = () => {
     return (
       <div className={`flex max-w-full flex-col gap-y-[50px]`}>
         <Hero />
@@ -31,26 +27,12 @@ export default function home() {
       </div>
     );
   };
-  const LogedRoute = () => {
-    return <></>;
-  };
-  const Admin = () => {
-    return <></>;
-  };
 
   return (
     <div
       className={` m-auto flex w-full max-w-[1400px] flex-col items-center  justify-center `}
     >
-      {userState?.loged ? (
-        !userState.admin ? (
-          <Admin />
-        ) : (
-          <LogedRoute />
-        )
-      ) : (
-        <NotLogedRoute />
-      )}
+      <LandingPage />
     </div>
   );
 }

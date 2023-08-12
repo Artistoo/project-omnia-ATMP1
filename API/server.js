@@ -42,6 +42,7 @@ app.use(
     secret: "MyPassword",
     resave: true,
     saveUninitialized: true,
+    cookie: { secure: false },
   })
 );
 
@@ -54,14 +55,7 @@ app.use("/email", Contact);
 app.use("/users", Users);
 app.use("/accountConfig", AccountConfig);
 app.use("/search", SearchRouter);
-app.get("/myusers", async (req, res, next) => {
-  const user = await UserSchema.find().lean();
-  const filterUser = user.map((thisUser) => {
-    const { Password, ...user } = thisUser;
-    return user;
-  });
-  console.log(filterUser);
-});
+app.get("/myusers", async (req, res, next) => {});
 
 app.get("/showUser", (req, res, next) => {
   res.send(req.user ? `user` : `no user`);
