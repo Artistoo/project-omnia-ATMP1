@@ -4,7 +4,9 @@ import axios from "axios";
 import { useCurrentApiQuery } from "../../../redux/API";
 import { useCreateUserMutation, useLoginMutation } from "../../../redux/API";
 import { Router, useNavigate, Route } from "react-router-dom";
-
+import { useSelector, useDispatch } from "react-redux";
+import userStateSlice, { updateUserState } from "../../../redux/userStateSlice";
+import { userStateContext } from "../../../context/Data_context.jsx";
 //_____________________API_____________________________
 import { useGenerateResetPasswordLinkMutation } from "../../../redux/API";
 //_____________________ICONS____________________
@@ -42,6 +44,9 @@ export default function AuthenticateForm({
   const { userGeoLocation, setUserGeoLocation } = useMyLocation;
   /* <---------------- CONTEXT -----------------> */
 
+  const dispatch = useDispatch();
+  const userSlice = useSelector((c) => c.userState?.current_user);
+
   const [
     Login,
     {
@@ -72,7 +77,6 @@ export default function AuthenticateForm({
     name: ["daniel", "albert", "Isac", "mark", "martin"],
     index: 0,
   });
-
   /* TODO : make the hide show password button work  */
   const [ResetPasswordLink, setResetPasswordLink] = React.useState("");
   const [showHidePassword, setShowHidePassword] = React.useState(false);
@@ -176,6 +180,9 @@ export default function AuthenticateForm({
     ],
   });
 
+  /* <------------------ CONTEXT ----------------> */
+  const userState = React.useContext(userStateContext);
+
   /* <------------------ VARIABLES ----------------> */
   const FormReqTypeText = [
     {
@@ -205,6 +212,7 @@ export default function AuthenticateForm({
       }),
     }));
   }, [formInputs.Req_Type]);
+
   React.useEffect(() => {
     if (ResetPasswordLink) {
       localStorage.setItem("Link", ResetPasswordLink);
@@ -319,12 +327,15 @@ export default function AuthenticateForm({
     }));
   };
 
+  const RequiredData = formInputs.inputs.filter((x) =>
+    x.display.includes(formInputs.Req_Type)
+  );
+
+  const RequiredDataReady = RequiredData.every((x) => x.ready.go);
+
   /* HANDLING FORM SUBMIT */
   const handleSubmit = async (e) => {
-    const RequiredData = formInputs.inputs.filter((x) =>
-      x.display.includes(formInputs.Req_Type)
-    );
-    if (!RequiredData.every((x) => x.ready.go)) {
+    if (!RequiredDataReady) {
       /* ADDING SOME FUNCTINALITY FOR THE INPUTS THAT AREN'T READY TO SUBMIT  */
       setForminputs((current) => {
         const update = [...current.inputs];
@@ -350,68 +361,64 @@ export default function AuthenticateForm({
       });
     } else {
       let data;
-      switch (formInputs.Req_Type) {
-        /* <------ REGISTER REQUIEST -------> */
-        case "up":
-          /* <------ REGISTER REQUIEST -------> */
-          data = {};
-          RequiredData.map((input) => (data[input.id] = input.value));
-          /* FORM DATA */
-          data.Avatar = userAvatar.selected
-            ? URL.createObjectURL(userAvatar.selected)
-            : userAvatar.default[gender];
-          data.gender = gender;
-          data.Location = userGeoLocation.allow
-            ? locationData?.country
-            : "blue planet";
-          data.displayName = ProfileName;
-          setformData(data);
-
-        /* <------ LOGIN REQUIEST -------> */
-        case "in":
-          data = {};
-          RequiredData.map((input) => (data[input.id] = input.value));
-          Login(data)
-            .then((res) => {
-              if (res.data) {
-                if (res.data.admin || res.data.Verify) {
-                  setformData(data);
-                } else {
-                  navigate(`/Profile/${res.data?._id}`);
-                  try {
-                    localStorage.setItem("user", JSON.stringify(res.data));
-                  } catch {
-                    setFormError(`please enable cookies to sign in`);
-                  }
-                }
-              } else if (res.error) {
-                setFormError(res.error.data);
-              }
-            })
-            .catch((err) => {
-              setFormError(err.message || `an error occured while login in`);
-            });
-
-        /* <------ RESET PASSWORD REQUIEST -------> */
-        case "fp":
-          generateLink({ userEmail: `jasondesmond198@gmail.com` })
-            .then((data) => {
-              console.log(data);
-              if (data?.data) {
-                localStorage.setItem("Link", JSON.stringify(data?.data?.data));
-                localStorage.setItem(
-                  "userEmail",
-                  JSON.stringify(RequiredData[0]?.value)
-                );
-                console.log(data?.data);
-              } else if (data?.error) {
-                console.log(data?.error);
-                setFormError(LinkGenerated?.data?.error);
-              }
-            })
-            .catch((err) => console.log(err));
-      }
+      AuthenticationHandlers[formInputs.Req_Type](data);
     }
+  };
+
+  const AuthenticationHandlers = {
+    up: (data) => {
+      /* <------ REGISTER REQUIEST -------> */
+      data = {};
+      RequiredData.map((input) => (data[input.id] = input.value));
+      /* FORM DATA */
+      data.Avatar = userAvatar.selected
+        ? URL.createObjectURL(userAvatar.selected)
+        : userAvatar.default[gender];
+      data.gender = gender;
+      data.Location = userGeoLocation.allow
+        ? locationData?.country
+        : "blue planet";
+      data.displayName = ProfileName;
+      setformData(data);
+    },
+    in: (data) => {
+      try {
+        data = {};
+        RequiredData.map((input) => (data[input.id] = input.value));
+        Login(data).then((data) => {
+          console.log(data);
+          if (data?.data?.user) {
+            const { user } = data.data;
+            console.log(user);
+            localStorage.setItem("user", JSON.stringify(user));
+            navigate(`/Profile/${user?._id}`);
+          } else if (data?.error?.status === 404) {
+            setFormError(data?.error?.data?.err);
+            console.log(data?.error);
+          }
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    fp: (data) => {
+      generateLink({ userEmail: RequiredData[0]?.value })
+        .then((data) => {
+          console.log(data);
+          if (data?.data) {
+            localStorage.setItem("Link", JSON.stringify(data?.data?.data));
+            localStorage.setItem(
+              "userEmail",
+              JSON.stringify(RequiredData[0]?.value)
+            );
+            console.log(data?.data);
+          } else if (data?.error) {
+            console.log(data?.error);
+            setFormError(LinkGenerated?.data?.error);
+          }
+        })
+        .catch((err) => console.log(err));
+    },
   };
 
   return (

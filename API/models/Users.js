@@ -48,6 +48,13 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Setting", // This should match the model name defined for SettingsModel
   },
+  Financial: {
+    type: Number,
+    default: 0,
+    required: false,
+  },
+
+  Channels: { type: Schema.Types.ObjectId, ref: "channel" },
 });
 
 const UserModel = mongoose.model("User", UserSchema);

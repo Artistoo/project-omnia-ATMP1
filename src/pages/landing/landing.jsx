@@ -10,7 +10,7 @@ import Examples from "./notLogedSections/Examples";
 import Divorcity from "./notLogedSections/Divorcity";
 import FAQ from "./notLogedSections/FAQ";
 import { Routes, Route } from "react-router-dom";
-import { userStateContext } from "../../context/userState";
+import { userStateContext } from "../../context/Data_context";
 
 export default function home() {
   const LandingPage = () => {

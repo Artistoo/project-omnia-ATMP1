@@ -2,8 +2,10 @@ import React, { useContext } from "react";
 import { NavLink, Route, Routes, Navigate } from "react-router-dom";
 import { debounce, throttle } from "lodash";
 //__________________CONTEXT_____________________
-import { userStateContext } from "./context/userState";
-
+import { userStateContext } from "./context/Data_context";
+//<<-------REDUX------->>
+import { useSelector, useDispatch } from "react-redux";
+import { updateUserState } from "./redux/userStateSlice";
 //__________________PAGES_______________________
 import Landing from "./pages/landing/landing";
 import Dashboard from "./pages/dashboard/dashboard";
@@ -28,9 +30,10 @@ import SearchPage from "./pages/SearchPage/SearchPage.jsx";
 //___________________JSX component______________________
 function App() {
   //<-------------CONTEXT----------->
-  const { userState, CookiesEnabled } = React.useContext(userStateContext);
   /* <------------------ STATE HOOK ------------------> */
   const [pageLoading, setPageLoading] = React.useState(true);
+  const dispatch = useDispatch();
+  const user = localStorage?.user && JSON.parse(localStorage.user);
 
   return !pageLoading ? (
     <div>
@@ -41,15 +44,7 @@ function App() {
         <Route
           index
           element={
-            userState.loged ? (
-              userState.admin ? (
-                <Dashboard />
-              ) : (
-                <HomePage />
-              )
-            ) : (
-              <Landing />
-            )
+            user ? user?.admin ? <Dashboard /> : <HomePage /> : <Landing />
           }
         />
 

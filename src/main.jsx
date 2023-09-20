@@ -5,7 +5,7 @@ import "./styling/index.css";
 import { BrowserRouter } from "react-router-dom";
 
 //__________CONTEXT_______________
-import UserStateContext from "./context/userState";
+import UserStateContext from "./context/Data_context";
 import FooterContentProvider from "./context/footerContentProvider";
 import PopUps from "./context/Dialog.jsx";
 //___________REDUX_______________
@@ -14,8 +14,8 @@ import { Provider } from "react-redux";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-      <Provider store={store}>
-    <UserStateContext>
+    <Provider store={store}>
+      <UserStateContext>
         <FooterContentProvider>
           <PopUps>
             <React.StrictMode>
@@ -23,7 +23,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             </React.StrictMode>
           </PopUps>
         </FooterContentProvider>
-    </UserStateContext>
-      </Provider>
+      </UserStateContext>
+    </Provider>
   </BrowserRouter>
 );

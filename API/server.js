@@ -4,6 +4,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import passport from "passport";
 import session from "express-session";
+import MongoSession from "connect-mongodb-session";
+import { Server } from "socket.io";
 
 //_______________ROUTES _______________________
 import UserSchema from "./models/Users.js";
@@ -13,16 +15,33 @@ import Contact from "./Routes/EmailRouter.js";
 import AccountConfig from "./Routes/AccountConfigRouter.js";
 import Users from "./Routes/UsersRouter.js";
 import SearchRouter from "./Routes/SearchRouter.js";
-
+import PaymentRouter from "./Routes/PaymentRoute.js";
 const app = express();
 const port = process.env.PORT || 5500;
 
-process.on("uncaughtException", (err) => {
-  console.error("Uncaught Exception:", err);
+//____________INITIALIZATION_____________
+const server = app.listen(port, () =>
+  console.log(`Server running on port ${port}`)
+);
+//__________SOCKET IO CONNECTION ________
+const io = new Server(server);
+
+io.on("connection", () => {
+  console.log(`hello world`);
+  io.emit("from the server side ");
 });
 
 const { json } = express;
 dotenv.config();
+
+const MongoStore = MongoSession(session);
+
+const store = MongoStore({
+  uri: process.env.DB,
+  collection: "sessions",
+  expires: 1000 * 60 * 60 * 24 * 7,
+  connection: mongoose.connection,
+});
 
 //_____________Database______________
 /* mongoose.set("strictQuery", true); */
@@ -40,9 +59,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     secret: "MyPassword",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     cookie: { secure: false },
+    store: store,
   })
 );
 
@@ -55,13 +75,30 @@ app.use("/email", Contact);
 app.use("/users", Users);
 app.use("/accountConfig", AccountConfig);
 app.use("/search", SearchRouter);
-app.get("/myusers", async (req, res, next) => {});
-
-app.get("/showUser", (req, res, next) => {
-  res.send(req.user ? `user` : `no user`);
-});
-//____________INITIALIZATION_____________
-app.listen(port, () => console.log(`Server running on port ${port}`));
+app.use("/payment", PaymentRouter);
 
 //____________ ROUTES _______________
 app.get("/", (req, res) => res.send("main route"));
+
+//____________ TEST _______________
+
+app.get("/showUserChannels", async (req, res) => {
+  try {
+    const user = await UserSchema.findOne({
+      Email: "jasondesmond198@gmail.com",
+    });
+    if (req.session.go) {
+      delete req.session.go;
+      return res.send("done");
+    } else {
+      return res.send("none found ");
+    }
+  } catch (err) {
+    res.send(`${err.name} : ${err.message} `);
+  }
+});
+
+app.get("/myusers", async (req, res, next) => {});
+app.get("/showUser", (req, res, next) => {
+  res.send(req.user ? `user` : `no user`);
+});

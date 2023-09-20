@@ -1,7 +1,9 @@
 import React from "react";
-import { userStateContext } from "../context/userState";
+import { userStateContext } from "../context/Data_context";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { debounce } from "lodash";
+
+import { useSelector, useDispatch } from "react-redux";
 
 //________________________API________________________
 import { useLoginMutation, useLogoutMutation } from "../redux/API";
@@ -165,7 +167,12 @@ export default function Nav() {
   const navigate = useNavigate();
 
   //<-------------------CONTEXT------------------------->
-  const { admin, loged } = React.useContext(userStateContext).userState;
+  const { admin, loged } = React.useContext(userStateContext)?.userState;
+
+  const userStateMemo = React.useMemo(() => loged, [loged]);
+
+  //<-----------current User ----------->
+  const user = localStorage?.user && JSON.parse(localStorage.user);
   //<-----------CONDITIONS--------------->
   /* IF NO NAV BAR DISPLAY  */
   if (HideAt.Nav.some((x) => x === location.pathname)) {
@@ -317,6 +324,7 @@ export default function Nav() {
       removeEventListener("scroll", handleScrolling);
     };
   }, []);
+
   /* closing the menu when the render change */
   React.useEffect(() => {
     setNavMenu((c) => ({
@@ -369,7 +377,7 @@ export default function Nav() {
         </Link>
 
         {/* <---------------------- LOGEDOUT USER NAVBAR ----------------------> */}
-        {!loged && (
+        {!user && (
           <>
             <div
               className={`hidden h-full w-[75%] items-center  justify-around text-[17px]  md:flex
@@ -489,7 +497,7 @@ export default function Nav() {
         )}
 
         {/* <---------------------- LOGEDIN USER NAVBAR ----------------------> */}
-        {loged &&
+        {!!user &&
           (() => {
             const {
               userName,
@@ -500,7 +508,7 @@ export default function Nav() {
               Avatar,
               Location,
               admin,
-            } = JSON.parse(localStorage?.user);
+            } = user;
 
             const [isSearching, setIsSearching] = React.useState(false);
             const [showLogOut, setShowLogOut] = React.useState(false);
@@ -694,7 +702,7 @@ export default function Nav() {
                                         {
                                           title: ["log out", "change user"],
                                           onClick: async (index) => {
-                                            if (!index) {
+                                            if (index) {
                                               changeUserUtility();
                                               changeUserUtility().navigate &&
                                                 navigate(
@@ -707,12 +715,6 @@ export default function Nav() {
                                                   console.log(err)
                                                 );
                                               if (LogOutError) {
-                                                console.log(LogOutError);
-                                              }
-                                              if (userIsLogedOut) {
-                                                localStorage.removeItem("user");
-                                                navigate("/");
-                                              } else if (LogOutError) {
                                                 console.log(LogOutError);
                                               }
                                             }

@@ -1,17 +1,50 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { method } from "lodash";
 
+const keys = {
+  pixabay: import.meta.env.VITE_PIXABAY_API_KEY,
+};
 //<----------- GET REQ ------------------>
 export const LocationApi = createApi({
   reducerPath: `ApiInfo`,
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://ip-api.com/json/?fields=61439`,
+    baseUrl: ``,
   }),
   endpoints: (builder) => ({
     currentApi: builder.query({
-      query: () => "",
+      query: () => "http://ip-api.com/json/?fields=61439",
+    }),
+    listOfCountries: builder.query({
+      query: () => `https://restcountries.com/v3.1/all`,
     }),
   }),
 });
+
+/* export const PixabayAPI = createApi({
+  reducerPath: `pixaby`,
+  baseQuery: fetchBaseQuery({
+    baseUrl: `https://pixabay.com/api/?key=${keys.pixaby}&q=`,
+  }),
+  endpoints: (builder) => ({
+    PhotosSearch: builder.query({
+      query: (param) => `${param}`,
+    }),
+  }),
+}); */
+export const PixabayAPI = createApi({
+  reducerPath: "pixaby",
+  baseQuery: fetchBaseQuery({
+    baseUrl: "https://pixabay.com/api/",
+  }),
+  endpoints: (builder) => ({
+    PhotosSearch: builder.mutation({
+      query: (param, page, type) => ({
+        url: `videos/?key=${keys.pixabay}&q=${param}&page=${page}&per_page=20&page=${page}&safe_search=true`, // Include all parameters
+      }),
+    }),
+  }),
+});
+
 export const ServerSideApiGet = createApi({
   reducerPath: `ServerSideApiGet`,
   baseQuery: fetchBaseQuery({
@@ -25,17 +58,15 @@ export const ServerSideApiGet = createApi({
     getUserInfo: builder.query({
       query: (userID) => `users/profile/${userID}`,
     }),
-    listOfCountries: builder.query({
-      query: () => `https://restcountries.com/v3.1/all`,
-    }),
   }),
 });
-export const { useCurrentApiQuery } = LocationApi;
-export const {
-  useGetVerificationCodeQuery,
-  useGetUserInfoQuery,
-  useListOfCountriesQuery,
-} = ServerSideApiGet;
+
+//Export Get Requiests
+export const { usePhotosSearchMutation } = PixabayAPI;
+export const { useCurrentApiQuery, useListOfCountriesQuery } = LocationApi;
+
+export const { useGetVerificationCodeQuery, useGetUserInfoQuery } =
+  ServerSideApiGet;
 
 //<-------------- POST REQ ----------------->
 export const ServerSideApiPost = createApi({
@@ -127,9 +158,13 @@ export const ServerSideApiPost = createApi({
         body: body.filter,
       }),
     }),
+    UserState: builder.mutation({
+      query: () => ({ url: `auth/userState`, method: "POST" }),
+    }),
   }),
 });
 
+//Export Post Requiests
 export const {
   useSendMeEmailMutation,
   useCreateUserMutation,
@@ -143,4 +178,5 @@ export const {
   useGenerateResetPasswordLinkMutation,
   useChangePasswordMutation,
   useSearchMutation,
+  useUserStateMutation,
 } = ServerSideApiPost;

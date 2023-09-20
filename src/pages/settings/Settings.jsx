@@ -6,7 +6,7 @@ import SettingsOptions from "../../components/SettingsOptions.jsx";
 import InputToggle from "../../components/InputToggle.jsx";
 
 /* <--- CONTEXT ----> */
-import user from "../../context/userState.jsx";
+import user from "../../context/Data_context.jsx";
 import {
   useConfirmPasswordMutation,
   useDeleteUserMutation,
@@ -187,7 +187,6 @@ export default function Settings() {
         Icon: Apperance,
         match: 0,
         style: { bg: `bg-yellow-200` },
-        ref: React.createRef(),
         Settings: [],
       },
 
