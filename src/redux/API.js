@@ -20,27 +20,19 @@ export const LocationApi = createApi({
   }),
 });
 
-/* export const PixabayAPI = createApi({
-  reducerPath: `pixaby`,
-  baseQuery: fetchBaseQuery({
-    baseUrl: `https://pixabay.com/api/?key=${keys.pixaby}&q=`,
-  }),
-  endpoints: (builder) => ({
-    PhotosSearch: builder.query({
-      query: (param) => `${param}`,
-    }),
-  }),
-}); */
 export const PixabayAPI = createApi({
   reducerPath: "pixaby",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://pixabay.com/api/",
   }),
   endpoints: (builder) => ({
-    PhotosSearch: builder.mutation({
-      query: (param, page, type) => ({
-        url: `videos/?key=${keys.pixabay}&q=${param}&page=${page}&per_page=20&page=${page}&safe_search=true`, // Include all parameters
-      }),
+    PhotosSearchGet: builder.query({
+      /* param, page, type */
+      query: ({ result_type, param, page }) =>
+        `${result_type === "vid" ? `videos/` : ""}?key=${
+          keys.pixabay
+        }&q=${param}&page=${page}&per_page=20&safe_search=true`,
+      refetchOnMountOrArgChange: true,
     }),
   }),
 });
@@ -62,7 +54,7 @@ export const ServerSideApiGet = createApi({
 });
 
 //Export Get Requiests
-export const { usePhotosSearchMutation } = PixabayAPI;
+export const { usePhotosSearchGetQuery } = PixabayAPI;
 export const { useCurrentApiQuery, useListOfCountriesQuery } = LocationApi;
 
 export const { useGetVerificationCodeQuery, useGetUserInfoQuery } =
