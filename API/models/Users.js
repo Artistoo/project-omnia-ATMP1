@@ -53,8 +53,8 @@ const UserSchema = new Schema({
     default: 0,
     required: false,
   },
-
-  Channels: { type: Schema.Types.ObjectId, ref: "channel" },
+  Friends: [{ type: Schema.Types.ObjectId, ref: "Users" }],
+  Channels: [{ type: Schema.Types.ObjectId, ref: "channel" }],
 });
 
 const UserModel = mongoose.model("User", UserSchema);
