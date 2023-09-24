@@ -7,7 +7,7 @@ import session from "express-session";
 import MongoSession from "connect-mongodb-session";
 import { Server } from "socket.io";
 
-//_______________ROUTES _______________________
+//_______________RaOUTES _______________________
 import UserSchema from "./models/Users.js";
 import AuthRoute from "./Routes/AuthenticationRouter.js";
 import AuthZRoute from "./Routes/AuthorizationRouter.js";
@@ -16,6 +16,7 @@ import AccountConfig from "./Routes/AccountConfigRouter.js";
 import Users from "./Routes/UsersRouter.js";
 import SearchRouter from "./Routes/SearchRouter.js";
 import PaymentRouter from "./Routes/PaymentRoute.js";
+import ChannelsRoute from "./Routes/ChannelsRoute.js";
 const app = express();
 const port = process.env.PORT || 5500;
 
@@ -73,6 +74,7 @@ app.use("/auth", AuthRoute);
 app.use("/authZ", AuthZRoute);
 app.use("/email", Contact);
 app.use("/users", Users);
+app.use("/channels", ChannelsRoute);
 app.use("/accountConfig", AccountConfig);
 app.use("/search", SearchRouter);
 app.use("/payment", PaymentRouter);

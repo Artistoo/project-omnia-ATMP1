@@ -44,11 +44,19 @@ export const ServerSideApiGet = createApi({
   }),
 
   endpoints: (builder) => ({
+    /* AUTHENTICATION ROUTER */
     getVerificationCode: builder.query({
       query: () => "auth/verify",
     }),
+
+    /* USER ROUTER */
     getUserInfo: builder.query({
       query: (userID) => `users/profile/${userID}`,
+    }),
+
+    /* CHANNELS ROUTER */
+    checkAvailability: builder.query({
+      query: (name) => `channels/check_availibility/${name}`,
     }),
   }),
 });
@@ -57,8 +65,11 @@ export const ServerSideApiGet = createApi({
 export const { usePhotosSearchGetQuery } = PixabayAPI;
 export const { useCurrentApiQuery, useListOfCountriesQuery } = LocationApi;
 
-export const { useGetVerificationCodeQuery, useGetUserInfoQuery } =
-  ServerSideApiGet;
+export const {
+  useGetVerificationCodeQuery,
+  useGetUserInfoQuery,
+  useCheckAvailabilityQuery,
+} = ServerSideApiGet;
 
 //<-------------- POST REQ ----------------->
 export const ServerSideApiPost = createApi({
