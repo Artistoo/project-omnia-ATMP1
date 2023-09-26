@@ -164,6 +164,13 @@ export const ServerSideApiPost = createApi({
     UserState: builder.mutation({
       query: () => ({ url: `auth/userState`, method: "POST" }),
     }),
+    createChannel: builder.mutation({
+      query: (data) => ({
+        url: "channels/create_channel",
+        body: data,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -182,4 +189,5 @@ export const {
   useChangePasswordMutation,
   useSearchMutation,
   useUserStateMutation,
+  useCreateChannelMutation,
 } = ServerSideApiPost;
