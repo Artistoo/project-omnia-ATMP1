@@ -53,7 +53,6 @@ export const ServerSideApiGet = createApi({
     getUserInfo: builder.query({
       query: (userID) => `users/profile/${userID}`,
     }),
-
     /* CHANNELS ROUTER */
     checkAvailability: builder.query({
       query: (name) => `channels/check_availibility/${name}`,
@@ -171,6 +170,13 @@ export const ServerSideApiPost = createApi({
         method: "POST",
       }),
     }),
+    DeleteChannel: builder.mutation({
+      query: ({ userID, Name, Admins }) => ({
+        url: "channels/delete_channel",
+        method: `POST`,
+        body: { userID, Name, Admins },
+      }),
+    }),
   }),
 });
 
@@ -190,4 +196,5 @@ export const {
   useSearchMutation,
   useUserStateMutation,
   useCreateChannelMutation,
+  useDeleteChannelMutation,
 } = ServerSideApiPost;

@@ -84,7 +84,7 @@ app.get("/", (req, res) => res.send("main route"));
 
 //____________ TEST _______________
 
-app.get("/showUserChannels", async (req, res) => {
+/* app.get("/showUserChannels", async (req, res) => {
   try {
     const user = await UserSchema.findOne({
       Email: "jasondesmond198@gmail.com",
@@ -98,7 +98,7 @@ app.get("/showUserChannels", async (req, res) => {
   } catch (err) {
     res.send(`${err.name} : ${err.message} `);
   }
-});
+}); */
 
 app.get("/myusers", async (req, res, next) => {});
 app.get("/showUser", (req, res, next) => {
