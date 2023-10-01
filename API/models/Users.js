@@ -55,6 +55,10 @@ const UserSchema = new Schema({
   },
   Friends: [{ type: Schema.Types.ObjectId, ref: "Users" }],
   Channels: [{ type: Schema.Types.ObjectId, ref: "channel" }],
+  ChannelsLimit: {
+    type: Number,
+    defualt: 3,
+  },
 });
 
 const UserModel = mongoose.model("User", UserSchema);
