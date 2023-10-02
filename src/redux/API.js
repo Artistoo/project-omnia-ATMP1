@@ -177,6 +177,21 @@ export const ServerSideApiPost = createApi({
         body: { userID, Name, Admins },
       }),
     }),
+    PaymentForService: builder.mutation({
+      query: ({ token, service, plan }) => ({
+        url: `payment/pay/${service}`,
+        body: { token, plan },
+        method: `POST`,
+        headers: { "Content-type": "application/json" },
+      }),
+    }),
+    FetchChannels: builder.mutation({
+      query: ({ id }) => ({
+        url: `channels/fetch_dynamic_channels`,
+        method: `POST`,
+        body: { userID: id },
+      }),
+    }),
   }),
 });
 
@@ -197,4 +212,6 @@ export const {
   useUserStateMutation,
   useCreateChannelMutation,
   useDeleteChannelMutation,
+  usePaymentForServiceMutation,
+  useFetchChannelsMutation,
 } = ServerSideApiPost;

@@ -337,16 +337,15 @@ body {
 
 .CostumeScroller {
   &::-webkit-scrollbar {
-    background: rgba(255, 255, 255, 0.12) ;
+    background: rgba(255, 255, 255, 0.12);
     border-radius: 50px;
     scrollbar-gutter: stable;
-    width : 13px ; 
-
+    width: 13px;
   }
   &::-webkit-scrollbar-thumb {
-    border : solid black thin ; 
+    border: solid black thin;
     border-radius: 20px;
-    height : 12px ; 
+    height: 12px;
   }
 }
 
@@ -365,25 +364,37 @@ body {
   }
 }
 
-
 .Shine {
-  animation : shine 250ms ease-in-out ;
-  animation-timeline : scroll(root y) ; 
-  animation-range : entry 0% entry 100%  ;
-  
+  animation: shine 250ms ease-in-out;
+  animation-timeline: scroll(root y);
+  animation-range: entry 0% entry 100%;
+
   @keyframes shine {
     from {
-      opacity : 0.4
+      opacity: 0.4;
     }
     to {
-      opacity : 0
+      opacity: 0;
     }
-
-
-
-
   }
+}
+
+@keyframes channel_box_scroll_driven_Entry {
+  0% {
+    opacity: 0;
+    scale: 0;
+    background: red !important ;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    background: yellow !important ;
+  }
+}
 
 
-
+.channel_box {
+  animation: channel_box_scroll_driven_Entry 250ms linear forwards;
+  animation-timeline: scroll(root inline);
+  animation-range: entry, exit;
 }
