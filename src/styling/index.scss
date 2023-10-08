@@ -379,22 +379,47 @@ body {
   }
 }
 
-@keyframes channel_box_scroll_driven_Entry {
-  0% {
+@keyframes values_box_view {
+  from {
+    translate: 0 50px;
     opacity: 0;
-    scale: 0;
-    background: red !important ;
+    rotate: 30deg;
+    scale: 0.7;
   }
-  100% {
+  to {
+    translate: 0 0;
+    rotate: 0deg;
     opacity: 1;
     scale: 1;
-    background: yellow !important ;
   }
 }
 
+@keyframes RadialHeroSectionBGScaleDown {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 0;
+  }
+}
+@keyframes HeroSectionCircleResize {
+  from {
+    scale: 1;
+    
+  }
+  to {
+    scale: 2;
+    display : none ; 
+  }
+}
 
-.channel_box {
-  animation: channel_box_scroll_driven_Entry 250ms linear forwards;
-  animation-timeline: scroll(root inline);
-  animation-range: entry, exit;
+.valuesBox {
+  animation: values_box_view 500ms alternate;
+  animation-timeline: scroll(block nearest);
+  animation-range: 0% 34%;
+}
+.heroSectionColorfulCircle {
+  animation: HeroSectionCircleResize 500ms alternate;
+  animation-timeline: scroll(block nearest);
+  animation-range: 0% 34%;
 }

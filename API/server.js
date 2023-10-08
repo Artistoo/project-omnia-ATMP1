@@ -83,23 +83,6 @@ app.use("/payment", PaymentRouter);
 app.get("/", (req, res) => res.send("main route"));
 
 //____________ TEST _______________
-
-/* app.get("/showUserChannels", async (req, res) => {
-  try {
-    const user = await UserSchema.findOne({
-      Email: "jasondesmond198@gmail.com",
-    });
-    if (req.session.go) {
-      delete req.session.go;
-      return res.send("done");
-    } else {
-      return res.send("none found ");
-    }
-  } catch (err) {
-    res.send(`${err.name} : ${err.message} `);
-  }
-}); */
-
 app.get("/myusers", async (req, res, next) => {});
 app.get("/showUser", (req, res, next) => {
   res.send(req.user ? `user` : `no user`);
