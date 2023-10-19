@@ -17,6 +17,7 @@ import Users from "./Routes/UsersRouter.js";
 import SearchRouter from "./Routes/SearchRouter.js";
 import PaymentRouter from "./Routes/PaymentRoute.js";
 import ChannelsRoute from "./Routes/ChannelsRoute.js";
+import SocketIo_Router from "./Routes/SocketIo_Router.js";
 const app = express();
 const port = process.env.PORT || 5500;
 
@@ -24,13 +25,6 @@ const port = process.env.PORT || 5500;
 const server = app.listen(port, () =>
   console.log(`Server running on port ${port}`)
 );
-//__________SOCKET IO CONNECTION ________
-const io = new Server(server);
-
-io.on("connection", () => {
-  console.log(`hello world`);
-  io.emit("from the server side ");
-});
 
 const { json } = express;
 dotenv.config();
@@ -53,20 +47,35 @@ mongoose
     console.log(`some error occured while connecting ${error.message}`)
   );
 
+//__________SOCKET IO CONNECTION ________
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173"],
+  },
+});
+
 //_____________MiddleWares________________
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(
   session({
     secret: "MyPassword",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false },
-    store: store,
+    cookie: {
+      secure: true,
+      httpOnly: true,
+      sameSite: "None",
+    },
+    store,
   })
 );
-
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -78,12 +87,36 @@ app.use("/channels", ChannelsRoute);
 app.use("/accountConfig", AccountConfig);
 app.use("/search", SearchRouter);
 app.use("/payment", PaymentRouter);
+app.use("/socket", SocketIo_Router(io));
 
-//____________ ROUTES _______________
-app.get("/", (req, res) => res.send("main route"));
+
+
+
 
 //____________ TEST _______________
-app.get("/myusers", async (req, res, next) => {});
+
+/* TODO: find a way to recieve the cookies and save the session when loggin in  */
 app.get("/showUser", (req, res, next) => {
-  res.send(req.user ? `user` : `no user`);
+  // Note: You might need to use req.cookies['isAuth'] instead of req.cookies?.isAuth
+  if (req.cookies && req.cookies.isAuth) {
+    return res.status(200).json({ cookie_success: `Cookie exists` });
+  }
+  if (req.user) {
+    return res.status(200).json({ session_success: `Session exists` });
+  }
+  return res.status(200).json({ fail: `No session or cookie found` });
+});
+
+app.get("/createOne", (req, res) => {
+  try {
+    res.cookie("isAuth", "true", {
+      sameSite: "None",
+      secure: true,
+    });
+
+    // You might want to redirect or send a response here if needed.
+    res.status(200).json({ success: `Cookie set successfully` });
+  } catch (err) {
+    res.status(500).json({ err: `An error occurred ${err.message}` });
+  }
 });

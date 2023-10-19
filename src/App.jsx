@@ -16,6 +16,10 @@ import ContactForm from "./pages/Contact/contactForm";
 import GetReady from "./pages/Auth/stages/GetReady.jsx";
 import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
 import HomePage from "./pages/Home/HomePage";
+import MainHomePage from "./pages/Home/HomeSections/Main/MainHomePage.jsx";
+import Made_for_you from "./pages/SearchPage/SearchComponents/MadeForYou.jsx";
+import Favorite from "./pages/Home/HomeSections/Favorite/Favorite.jsx";
+import Channel from "./pages/Channel/Channel_chat_room";
 
 //___________________COMPONENTS_______________________
 import Nav from "./components/Nav";
@@ -32,21 +36,57 @@ function App() {
   //<-------------CONTEXT----------->
   /* <------------------ STATE HOOK ------------------> */
   const [pageLoading, setPageLoading] = React.useState(true);
-  const dispatch = useDispatch();
-  const user = localStorage?.user && JSON.parse(localStorage.user);
+  const [user, setUser] = React.useState(() => {
+    const storedUser = localStorage.user && JSON.parse(localStorage.user);
+    return Boolean(storedUser) ? storedUser : null;
+  });
+
+  React.useEffect(() => {
+    console.log(user);
+    const handleStorageChange = (event) => {
+      if (event.key === "user") {
+        const storedUser = localStorage.user && JSON.parse(localStorage.user);
+        setUser(Boolean(storedUser) ? storedUser : null);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [localStorage]);
+
+  /* <------------------ LAZY COMPONENTS ------------------> */
+  const MainLazy = React.lazy(() =>
+    import("./pages/Home/HomeSections/Main/MainHomePage.jsx")
+  );
+  const MadeForYouLazy = React.lazy(() =>
+    import("./pages/SearchPage/SearchComponents/MadeForYou.jsx")
+  );
+  const FavoriteLazy = React.lazy(() =>
+    import("./pages/Home/HomeSections/Favorite/Favorite.jsx")
+  );
 
   return !pageLoading ? (
-    <div>
+    <div
+      style={{
+        viewTransitionName: `LogedPagesScrollingAnimation`,
+      }}
+    >
       {/* _________________<<<NAVBAR>>>____________________ */}
       <Nav />
-
+      {/* TODO: add the admin dashboard button and layout */}
       <Routes>
-        <Route
-          index
-          element={
-            user ? user?.admin ? <Dashboard /> : <HomePage /> : <Landing />
-          }
-        />
+        {user ? (
+          <Route path={"/"} element={<HomePage />}>
+            <Route index element={<MainLazy />} />
+            <Route path={"made_for_you"} element={<MadeForYouLazy />} />
+            <Route path={"favorite"} element={<FavoriteLazy />} />
+          </Route>
+        ) : (
+          <Route index element={<Landing />} />
+        )}
 
         <Route path={`/settings`} element={<Settings />} />
 
@@ -59,6 +99,8 @@ function App() {
         </Route>
         <Route path="Profile/:profileID" element={<Profile />} />
         <Route path="/contactUs" element={<ContactForm />} />
+
+        <Route path="/channel_chat_room/:name" element={<Channel />} />
 
         <Route path="search/:param" element={<SearchPage />} />
         <Route path="*" element={<NoPageFound />} />

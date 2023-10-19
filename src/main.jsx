@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./styling/index.css";
 import { BrowserRouter } from "react-router-dom";
+import { ErrorBoundary } from "react-error-boundary";
 
 //__________CONTEXT_______________
 import UserStateContext from "./context/Data_context";

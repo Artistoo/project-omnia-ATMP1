@@ -1,5 +1,7 @@
 import React from "react";
-
+import { v4 } from "uuid";
+import { useLocation } from "react-router-dom";
+import { HideAt } from "../../../data";
 export default function Logo({
   color = { main: "white", colors: [`white`, "white", "white"] },
   size = 46,
@@ -9,15 +11,20 @@ export default function Logo({
   loading,
 }) {
   const DotsSize = size / 6;
+  const location = useLocation();
+  const chatRoomStyle = location.pathname.includes("channel_chat_room");
+  if (chatRoomStyle) {
+    scale = 1.1;
+  }
   return (
     <div
       style={{
         scale: `${scale}`,
         transition: `scale 300ms ease-in-out`,
       }}
-      className={`z-[15] m-[10px] flex max-h-full  w-max translate-y-[-5px] scale-[1.1] select-none  items-center  justify-center gap-x-[50px] ${
-        loading && `pointer-events-none`
-      }`}
+      className={`z-[15] m-[10px] flex max-h-full  w-max translate-y-[-5px] scale-[1.1] select-none items-center justify-center  gap-x-[50px]  
+        ${loading && `pointer-events-none`}
+      `}
     >
       {/* <--------- DOTS & LETTERS ---------> */}
       <div
@@ -35,7 +42,9 @@ export default function Logo({
             fontSize: size + "px",
             transition: `color 300ms ease-in-out`,
           }}
-          className={`flex  items-center justify-center  font-[PoppinsBold] text-${color.main}`}
+          className={`flex  items-center justify-center  font-[PoppinsBold] text-${
+            !chatRoomStyle ? color.main : "white"
+          }`}
         >
           <p>B</p>
           <p className="translate-x-[-13px] translate-y-[8px] ">J</p>
@@ -50,6 +59,7 @@ export default function Logo({
             { color: { original: `yellow`, genetic: "white" } },
           ].map((dot, index) => (
             <div
+              key={v4()}
               style={{
                 "--original-color": dot.color.original,
                 "--index": index,
@@ -58,7 +68,10 @@ export default function Logo({
                   index * 120
                 }ms , border-radius 200ms ease-in-out`,
 
-                background: Menu ? color.colors[index] : dot.color.genetic,
+                background:
+                  !chatRoomStyle && Menu
+                    ? color.colors[index]
+                    : dot.color.genetic,
               }}
               className={`  aspect-square ${
                 index === 1 && `translate-y-[-0.2px]`
@@ -73,9 +86,9 @@ export default function Logo({
         <div
           style={{
             transition: `opacity 200ms , transform 250ms ease-in-out`,
-            color: color.main,
+            color: chatRoomStyle ? `whitesmoke` : color.main,
           }}
-          className={`absolute flex  translate-y-[2px] scale-[0.9] flex-col items-start justify-center p-[5px]  pt-[10px] text-start font-[PoppinsBold] text-[15px]  uppercase leading-[12px]  ${
+          className={`absolute flex  translate-y-[5px] scale-[0.9] flex-col items-start justify-center p-[5px]  pt-[10px] text-start font-[PoppinsBold] text-[15px]  uppercase leading-[12px]  ${
             ScrollingDown
               ? ` translate-x-[5px] opacity-[1] md:translate-x-[55px]`
               : `translate-x-[30px] opacity-[0] md:translate-x-0 `

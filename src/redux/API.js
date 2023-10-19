@@ -57,6 +57,12 @@ export const ServerSideApiGet = createApi({
     checkAvailability: builder.query({
       query: (name) => `channels/check_availibility/${name}`,
     }),
+    searchMemebers: builder.mutation({
+      query: ({ search_param, channel_id }) => ({
+        url: `channels/channelMembersSearch/${search_param}/${channel_id}`,
+        method: `GET`,
+      }),
+    }),
   }),
 });
 
@@ -68,6 +74,7 @@ export const {
   useGetVerificationCodeQuery,
   useGetUserInfoQuery,
   useCheckAvailabilityQuery,
+  useSearchMemebersMutation,
 } = ServerSideApiGet;
 
 //<-------------- POST REQ ----------------->
@@ -75,6 +82,7 @@ export const ServerSideApiPost = createApi({
   reducerPath: `ServerSideApiPost`,
   baseQuery: fetchBaseQuery({
     baseUrl: `http://localhost:5500`,
+    credentials: "include",
   }),
   endpoints: (builder) => ({
     sendMeEmail: builder.mutation({
@@ -192,6 +200,27 @@ export const ServerSideApiPost = createApi({
         body: { userID: id },
       }),
     }),
+    ChannelInteract: builder.mutation({
+      query: (interactionData) => ({
+        method: "POST",
+        body: { ...interactionData },
+        url: "channels/channelInteract",
+      }),
+    }),
+    ReportChannel: builder.mutation({
+      query: (report_info) => ({
+        method: "POST",
+        body: report_info,
+        url: `channels/channel_report`,
+      }),
+    }),
+    ChannelJoinRequest: builder.mutation({
+      query: (channel_name) => ({
+        method: "POST",
+        body: channel_name,
+        url: `channels/channel_join`,
+      }),
+    }),
   }),
 });
 
@@ -214,4 +243,7 @@ export const {
   useDeleteChannelMutation,
   usePaymentForServiceMutation,
   useFetchChannelsMutation,
+  useChannelInteractMutation,
+  useReportChannelMutation,
+  useChannelJoinRequestMutation,
 } = ServerSideApiPost;

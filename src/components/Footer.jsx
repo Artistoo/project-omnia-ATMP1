@@ -17,6 +17,13 @@ export default function () {
   // <----------------COMPONENTS ------------------->
   const navigate = useNavigate();
   const location = useLocation();
+  //---------No Display ------->
+  if (
+    HideAt.Footer?.length &&
+    HideAt.Footer.some((path) => location.pathname.includes(path))
+  ) {
+    return;
+  }
   const FooterContent = () => {
     const { FooterContentLinks, setFooterContentLinks } =
       React.useContext(FooterContext);

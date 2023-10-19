@@ -360,78 +360,86 @@ export default function AuthenticateForm({
         };
       });
     } else {
-      let data;
-      AuthenticationHandlers[formInputs.Req_Type](data);
+      const data = await AuthenticationHandlers[formInputs.Req_Type]();
     }
   };
 
+  /* TODO : find a better way to send the user sign up data from one router to another  */
   const AuthenticationHandlers = {
-    up: (data) => {
-      /* <------ REGISTER REQUIEST -------> */
-      data = {};
-      RequiredData.map((input) => (data[input.id] = input.value));
-      /* FORM DATA */
-      data.Avatar = userAvatar.selected
-        ? URL.createObjectURL(userAvatar.selected)
-        : userAvatar.default[gender];
-      data.gender = gender;
-      data.Location = userGeoLocation.allow
-        ? locationData?.country
-        : "blue planet";
-      data.displayName = ProfileName;
-      setformData(data);
-    },
-    in: (data) => {
+    up: async () => {
       try {
+        /* <------ REGISTER REQUIEST -------> */
         data = {};
         RequiredData.map((input) => (data[input.id] = input.value));
-        Login(data).then((data) => {
-          console.log(data);
-          if (data?.data?.user) {
-            const { user } = data.data;
-            console.log(user);
-            localStorage.setItem("user", JSON.stringify(user));
-            navigate(`/Profile/${user?._id}`);
-          } else if (data?.error?.status === 404) {
-            setFormError(data?.error?.data?.err);
-            console.log(data?.error);
-          }
-        });
-      } catch (err) {
-        console.log(err);
+
+        /* FORM DATA */
+        data.Avatar = userAvatar.selected
+          ? URL.createObjectURL(userAvatar.selected)
+          : userAvatar.default[gender];
+        data.gender = gender;
+        data.Location = userGeoLocation.allow
+          ? locationData?.country
+          : "blue planet";
+        data.displayName = ProfileName;
+
+        setformData(data);
+      } catch (error) {
+        console.error(error);
+        throw error;
       }
     },
-    fp: (data) => {
-      generateLink({ userEmail: RequiredData[0]?.value })
-        .then((data) => {
-          console.log(data);
-          if (data?.data) {
-            localStorage.setItem("Link", JSON.stringify(data?.data?.data));
-            localStorage.setItem(
-              "userEmail",
-              JSON.stringify(RequiredData[0]?.value)
-            );
-            console.log(data?.data);
-          } else if (data?.error) {
-            console.log(data?.error);
-            setFormError(LinkGenerated?.data?.error);
+    in: async () => {
+      try {
+        let data = {};
+        RequiredData.map((input) => (data[input.id] = input.value));
+        const response = await Login(data);
+
+        if (response?.data?.user) {
+          const { user } = response.data;
+          localStorage.setItem("user", JSON.stringify(user));
+
+          if (localStorage?.user) {
+            navigate(`/Profile/${user?._id}`);
           }
-        })
-        .catch((err) => console.log(err));
+        } else if (response?.error?.status === 404) {
+          setFormError(response?.error?.data?.err);
+          console.log(response?.error);
+        }
+        console.log(response);
+
+        // Instead of setting state directly, return the data
+        return data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    fp: async () => {
+      try {
+        const response = await generateLink({
+          userEmail: RequiredData[0]?.value,
+        });
+
+        if (response?.data) {
+          localStorage.setItem("Link", JSON.stringify(response?.data?.data));
+          localStorage.setItem(
+            "userEmail",
+            JSON.stringify(RequiredData[0]?.value)
+          );
+          console.log(response?.data);
+        } else if (response?.error) {
+          console.log(response?.error);
+          setFormError(response?.data?.error);
+        }
+
+        // Instead of setting state directly, return the data
+        return data;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
     },
   };
 
-
-
-
-
-
-
-
-
-
-
-  
   return (
     <div
       className={`flex h-[500px] min-h-[470px] w-[80%]   min-w-[450px] max-w-[600px]

@@ -8,6 +8,10 @@
   src: url("../assets/fonts/Poppins-ExtraLight.ttf") format("truetype");
 }
 @font-face {
+  font-family: "PoppinsReg";
+  src: url("../assets/fonts/Poppins-Regular.ttf") format("truetype");
+}
+@font-face {
   font-family: "BrandinkLight";
   src: url("../assets/fonts/Poppins-ExtraLight.ttf") format("truetype");
 }
@@ -538,6 +542,40 @@ body::-webkit-scrollbar {
     display: none;
   }
 }
+.linear_border::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg, rgba(197, 196, 196, 0.685), rgba(90, 89, 89, 0.562), rgba(207, 206, 206, 0.884));
+  z-index: -1;
+  top: 0;
+  left: 0;
+  scale: 1.002;
+  border-radius: 0.35rem;
+}
+
+/* MAIN LOGED IN HOME PAGE SECTIONS VIEW TRANSITION API ANIMATION */
+@keyframes ViewTransitionAnimationSlideIn {
+  from {
+    translate: 150px 0;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0px;
+    opacity: 1;
+  }
+}
+@keyframes ViewTransitionAnimationComeUp {
+  from {
+    translate: 0 150px;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0px;
+    opacity: 1;
+  }
+}
 .valuesBox {
   animation: values_box_view 500ms alternate;
   animation-timeline: scroll(block nearest);
@@ -548,4 +586,21 @@ body::-webkit-scrollbar {
   animation: HeroSectionCircleResize 500ms alternate;
   animation-timeline: scroll(block nearest);
   animation-range: 0% 34%;
+}
+
+::view-transition-old(LogedPagesScrollingAnimation) {
+  animation: ViewTransitionAnimationComeUp 3000ms ease-in-out reverse;
+}
+
+::view-transition-new(LogedPagesScrollingAnimation) {
+  animation: ViewTransitionAnimationComeUp 3000ms ease-in-out;
+}
+
+@media only screen and (max-width: 800px) {
+  ::view-transition-old(LogedPagesScrollingAnimation) {
+    animation: ViewTransitionAnimationSlideIn 3000ms ease-in-out reverse;
+  }
+  ::view-transition-new(LogedPagesScrollingAnimation) {
+    animation: ViewTransitionAnimationSlideIn 3000ms ease-in-out;
+  }
 }/*# sourceMappingURL=index.css.map */

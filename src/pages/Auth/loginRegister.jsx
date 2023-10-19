@@ -221,19 +221,20 @@ export default function loginRegister() {
     );
   };
 
+  /* Navigating to the home page if logged */
+  React.useEffect(() => {
+    if (loged) {
+      navigate("./");
+    }
+  }, []);
+
   //-----------MAIN SECTION DISPLAY-------------
   return (
     <div
       className={`  my-[50px] flex min-h-[530px] flex-wrap items-center justify-center  `}
     >
-      {!loged ? (
-        <>
-          <RegisterArt />
-          <RegisterRequest />
-        </>
-      ) : (
-        navigate("./")
-      )}
+      <RegisterArt />
+      <RegisterRequest />
     </div>
   );
 }

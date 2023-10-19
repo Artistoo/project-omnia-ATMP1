@@ -428,6 +428,7 @@ export const categoryExamples = {
 };
 
 export const HideAt = {
-  Footer: [""],
-  Nav: [""],
+  Footer: ["channel_chat_room"],
+  Nav: ["channel"],
+  Logo: ["channel_chat_room"],
 };
