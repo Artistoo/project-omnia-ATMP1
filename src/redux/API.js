@@ -194,10 +194,10 @@ export const ServerSideApiPost = createApi({
       }),
     }),
     FetchChannels: builder.mutation({
-      query: ({ id }) => ({
+      query: (channel_required_payload) => ({
         url: `channels/fetch_dynamic_channels`,
         method: `POST`,
-        body: { userID: id },
+        body: channel_required_payload,
       }),
     }),
     ChannelInteract: builder.mutation({
@@ -219,6 +219,13 @@ export const ServerSideApiPost = createApi({
         method: "POST",
         body: channel_name,
         url: `channels/channel_join`,
+      }),
+    }),
+    JoinRequiestNotification: builder.mutation({
+      query: (notification_body) => ({
+        url: "notification/",
+        body: notification_body,
+        method: "POST",
       }),
     }),
   }),
@@ -246,4 +253,5 @@ export const {
   useChannelInteractMutation,
   useReportChannelMutation,
   useChannelJoinRequestMutation,
+  useJoinRequiestNotificationMutation,
 } = ServerSideApiPost;

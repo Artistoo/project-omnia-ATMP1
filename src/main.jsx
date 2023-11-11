@@ -9,6 +9,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import UserStateContext from "./context/Data_context";
 import FooterContentProvider from "./context/footerContentProvider";
 import PopUps from "./context/Dialog.jsx";
+import FooterVisibility from "./context/showFooter_context.jsx";
 //___________REDUX_______________
 import store from "./redux/store.js";
 import { Provider } from "react-redux";
@@ -17,13 +18,15 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Provider store={store}>
       <UserStateContext>
-        <FooterContentProvider>
-          <PopUps>
-            <React.StrictMode>
-              <App />
-            </React.StrictMode>
-          </PopUps>
-        </FooterContentProvider>
+        <FooterVisibility>
+          <FooterContentProvider>
+            <PopUps>
+              <React.StrictMode>
+                <App />
+              </React.StrictMode>
+            </PopUps>
+          </FooterContentProvider>
+        </FooterVisibility>
       </UserStateContext>
     </Provider>
   </BrowserRouter>

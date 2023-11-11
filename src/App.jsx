@@ -68,6 +68,13 @@ function App() {
     import("./pages/Home/HomeSections/Favorite/Favorite.jsx")
   );
 
+  const LockRouter = (element) => {
+    //TODO : edit the loget state when you fix the cookies not being saved bug
+    const Loged = localStorage?.user;
+    if (!Loged) return;
+    return element;
+  };
+
   return !pageLoading ? (
     <div
       style={{
@@ -88,7 +95,7 @@ function App() {
           <Route index element={<Landing />} />
         )}
 
-        <Route path={`/settings`} element={<Settings />} />
+        <Route path={`/settings`} element={LockRouter(<Settings />)} />
 
         <Route path="/details" element={<Details />} />
 
@@ -100,7 +107,10 @@ function App() {
         <Route path="Profile/:profileID" element={<Profile />} />
         <Route path="/contactUs" element={<ContactForm />} />
 
-        <Route path="/channel_chat_room/:name" element={<Channel />} />
+        <Route
+          path="/channel_chat_room/:name"
+          element={LockRouter(<Channel />)}
+        />
 
         <Route path="search/:param" element={<SearchPage />} />
         <Route path="*" element={<NoPageFound />} />

@@ -369,7 +369,7 @@ export default function AuthenticateForm({
     up: async () => {
       try {
         /* <------ REGISTER REQUIEST -------> */
-        data = {};
+        let data = {};
         RequiredData.map((input) => (data[input.id] = input.value));
 
         /* FORM DATA */

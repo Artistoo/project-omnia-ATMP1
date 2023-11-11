@@ -53,7 +53,22 @@ const UserSchema = new Schema({
     default: 0,
     required: false,
   },
+  Interests: {
+    type: [String],
+    require: false,
+    validate: {
+      validator: () => {
+        return Boolean(this.length > 2 && this.length < 8);
+      },
+    },
+    message: `you must select between 2 and 8 interests`,
+  },
+  Age: {
+    type: Number,
+    require: false,
+  },
   Friends: [{ type: Schema.Types.ObjectId, ref: "Users" }],
+  /* CHANNEL */
   Channels: [{ type: Schema.Types.ObjectId, ref: "channel" }],
   ChannelsLimit: {
     type: Number,

@@ -411,6 +411,7 @@ body {
     display: none;
   }
 }
+
 .linear_border {
   &::before {
     content: "";
@@ -452,16 +453,56 @@ body {
     opacity: 1;
   }
 }
+@keyframes HeaderText {
+  from {
+    translate: 0 150px;
+    opacity: 0;
+  }
+  50% {
+    color: rgb(25, 25, 102);
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+    color: rgb(196, 196, 196);
+  }
+}
+@keyframes slide_inView_animation {
+  from {
+    translate: 0 50%;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
 
 .valuesBox {
   animation: values_box_view 500ms alternate;
   animation-timeline: scroll(block nearest);
-  animation-range: 0% 34%;
+  animation-range: 0% 20%;
 }
 .heroSectionColorfulCircle {
   animation: HeroSectionCircleResize 500ms alternate;
   animation-timeline: scroll(block nearest);
   animation-range: 0% 34%;
+}
+
+.transitHeaderText {
+  animation: HeaderText 500ms alternate;
+  animation-delay: calc(var(--header_text_index) * 100ms);
+  animation-timeline: view(block nearest);
+  animation-range: 20% 0%;
+}
+.slide_inView_animation {
+  transition-property: opacity transform;
+  transition-duration: 250ms;
+  transition-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  animation: slide_inView_animation 500ms alternate;
+  animation-delay: 100ms;
+  animation-timeline: view();
+  animation-range: entry 0%, exit;
 }
 
 ::view-transition-old(LogedPagesScrollingAnimation) {

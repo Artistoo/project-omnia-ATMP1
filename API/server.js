@@ -38,6 +38,7 @@ const store = MongoStore({
   connection: mongoose.connection,
 });
 
+
 //_____________Database______________
 /* mongoose.set("strictQuery", true); */
 mongoose
@@ -89,22 +90,19 @@ app.use("/search", SearchRouter);
 app.use("/payment", PaymentRouter);
 app.use("/socket", SocketIo_Router(io));
 
-
-
-
-
 //____________ TEST _______________
 
 /* TODO: find a way to recieve the cookies and save the session when loggin in  */
 app.get("/showUser", (req, res, next) => {
-  // Note: You might need to use req.cookies['isAuth'] instead of req.cookies?.isAuth
-  if (req.cookies && req.cookies.isAuth) {
-    return res.status(200).json({ cookie_success: `Cookie exists` });
+  try{
+    if(req.user){
+      res.status(200).json({success : `cookies is set you are logged as ${req.session}`})
+      return 
+    }
+    return res.status(500).json({failed : `you have failed to set the cookies in the browser`})
+  }catch(err){
+    console.log(err)
   }
-  if (req.user) {
-    return res.status(200).json({ session_success: `Session exists` });
-  }
-  return res.status(200).json({ fail: `No session or cookie found` });
 });
 
 app.get("/createOne", (req, res) => {

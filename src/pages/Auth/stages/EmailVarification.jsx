@@ -36,6 +36,9 @@ export default function EmailVarification({ Error, form, location, ErrorNav }) {
     },
   ] = useVerifyAccountMutation();
 
+
+React.useEffect(()=> {console.log(VerificationCode)} , [])
+
   const [
     Notify,
     { error: NotifyingError, isLoading: isNotifying, data: NotificationStatus },

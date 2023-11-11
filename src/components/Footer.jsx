@@ -11,19 +11,17 @@ import { FooterContext } from "../context/footerContentProvider";
 
 // ____________DATA ______________
 import { HideAt } from "../../data";
+import { Show_Footer_Provider } from "../context/showFooter_context.jsx";
 
 // ____________MAIN SECTION JSX FUNCTION ______________
 export default function () {
   // <----------------COMPONENTS ------------------->
   const navigate = useNavigate();
   const location = useLocation();
+  const { footerVisible } = React.useContext(Show_Footer_Provider);
+
   //---------No Display ------->
-  if (
-    HideAt.Footer?.length &&
-    HideAt.Footer.some((path) => location.pathname.includes(path))
-  ) {
-    return;
-  }
+
   const FooterContent = () => {
     const { FooterContentLinks, setFooterContentLinks } =
       React.useContext(FooterContext);
@@ -216,13 +214,27 @@ export default function () {
   /* <<< ------ MAIN SECTION JSX -------->>> */
   return (
     <div
-      className={`brder relative m-auto flex min-h-[500px] max-w-[1500px] flex-col items-center justify-around py-[20px]`}
+      style={{
+        transiiton: `height 250ms ease`,
+      }}
+      className={` relative m-auto flex   max-w-[1500px] flex-col items-center justify-around overflow-hidden   ${
+        HideAt.Footer?.length &&
+        HideAt.Footer.some((path) => location.pathname.includes(path))
+          ? footerVisible
+            ? `h-auto min-h-[630px] `
+            : `h-0 `
+          : `min-h-[630px]`
+      }`}
     >
       <div
-        className={`z-10 flex max-h-[70%] min-h-[300px] w-full flex-col flex-wrap items-center justify-center gap-x-[50px] gap-y-[60px] `}
+        className={`absolute top-0 flex w-full items-center justify-center p-[10px] py-[20px]`}
       >
-        <FooterBoxs />
-        <FooterContent />
+        <div
+          className={`z-10 flex max-h-[70%] min-h-[300px] w-full flex-col flex-wrap items-center justify-center gap-x-[50px] gap-y-[60px] `}
+        >
+          <FooterBoxs />
+          <FooterContent />
+        </div>
       </div>
     </div>
   );
