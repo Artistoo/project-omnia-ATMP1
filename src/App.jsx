@@ -11,14 +11,9 @@ import Landing from "./pages/landing/landing";
 import Dashboard from "./pages/dashboard/dashboard";
 import Settings from "./pages/settings/Settings";
 import Profile from "./pages/Profile/Profile.jsx";
-import LoginRegister from "./pages/Auth/loginRegister";
+
 import ContactForm from "./pages/Contact/contactForm";
-import GetReady from "./pages/Auth/stages/GetReady.jsx";
-import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
 import HomePage from "./pages/Home/HomePage";
-import MainHomePage from "./pages/Home/HomeSections/Main/MainHomePage.jsx";
-import Made_for_you from "./pages/SearchPage/SearchComponents/MadeForYou.jsx";
-import Favorite from "./pages/Home/HomeSections/Favorite/Favorite.jsx";
 import Channel from "./pages/Channel/Channel_chat_room";
 
 //___________________COMPONENTS_______________________
@@ -29,8 +24,19 @@ import FooterInfo from "./pages/Dynamic/FooterInfomation/FooterInfo";
 import Details from "./pages/Details/Details";
 import NoPageFound from "./pages/NotFound/NoPageFound";
 import SavedUsers from "./pages/savedUsers/savedUsers";
+
+//Search
 import SearchPage from "./pages/SearchPage/SearchPage.jsx";
 
+//AUTH
+import AuthenticationFormPage from "./pages/Auth/AuthenticationFormPage";
+import AuthenticationForm from "./pages/Auth/stages/AuthenticateForm.jsx";
+import GetReady from "./pages/Auth/stages/GetReady.jsx";
+import VerifyEmail from "./pages/Auth/stages/Verify_Email.jsx";
+import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
+import User_Interests from "./pages/Auth/stages/User_interests.jsx";
+
+import QR_Verification from "./pages/Auth/stages/QR_Verificaiton.jsx";
 //___________________JSX component______________________
 function App() {
   //<-------------CONTEXT----------->
@@ -75,6 +81,7 @@ function App() {
     return element;
   };
 
+
   return !pageLoading ? (
     <div
       style={{
@@ -99,11 +106,13 @@ function App() {
 
         <Route path="/details" element={<Details />} />
 
-        <Route path="/user">
-          <Route path="AccountAuth" element={<LoginRegister />} />
-          <Route path="GetReady" element={<GetReady />} />
-          <Route path="savedUsers" element={<SavedUsers />} />
+        <Route path="/AccountAuth" element={<AuthenticationFormPage />}>
+          <Route path={`Authentication`} element={<AuthenticationForm />} />
+          <Route path={`Verification_Code`} element={<VerifyEmail />} />
+          <Route path={`select_interest`} element={<User_Interests />} />
+          <Route path={`QR_verify`} element={<QR_Verification />} />
         </Route>
+
         <Route path="Profile/:profileID" element={<Profile />} />
         <Route path="/contactUs" element={<ContactForm />} />
 

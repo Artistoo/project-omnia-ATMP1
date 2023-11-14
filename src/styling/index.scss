@@ -477,6 +477,16 @@ body {
     opacity: 1;
   }
 }
+@keyframes FadeAndScale {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    scale: 0;
+  }
+}
 
 .valuesBox {
   animation: values_box_view 500ms alternate;
@@ -503,6 +513,13 @@ body {
   animation-delay: 100ms;
   animation-timeline: view();
   animation-range: entry 0%, exit;
+}
+
+::view-transition-old(AutherizationProcessTransitionName) {
+  animation: FadeAndScale 3000ms ease-in-out;
+}
+::view-transition-new(AutherizationProcessTransitionName) {
+  animation: FadeAndScale 3000ms ease-in-out reverse;
 }
 
 ::view-transition-old(LogedPagesScrollingAnimation) {

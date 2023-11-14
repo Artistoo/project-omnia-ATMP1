@@ -1,4 +1,6 @@
 import mongoose, { Schema } from "mongoose";
+import { SettingsSchema } from "./Settings.js";
+
 const UserSchema = new Schema({
   userName: {
     type: String,
@@ -42,12 +44,62 @@ const UserSchema = new Schema({
   AboutMe: {
     type: String,
     required: false,
-    default: `im a new user from ${this?.Location}`,
+    default: function () {
+      return `I'm a new user from ${this.Location || "somewhere"}`;
+    },
   },
-  settings: {
-    type: Schema.Types.ObjectId,
-    ref: "Setting", // This should match the model name defined for SettingsModel
+
+  Settings: {
+    Security: {
+      EmailVerification: {
+        type: Boolean,
+        default: true,
+      },
+      QRTwoFactorAuth: {
+        Secret: {
+          type: String,
+          default: "",
+        },
+      },
+    },
+    Privacy: {
+      whoCanFindMe: {
+        type: String,
+        enum: ["my friends", "my friends friends", "no one", "everyone"],
+      },
+      ReciveEmailAbout: {
+        type: String,
+        enum: [
+          "update and new features",
+          "when someone join my channel",
+          "security alerts",
+        ],
+      },
+      HideLocation: {
+        type: Boolean,
+      },
+    },
+    Apperance: {
+      ColorOfPattern: {
+        type: String,
+        enum: [
+          "red",
+          "green",
+          "blue",
+          "yellow",
+          "white",
+          "gray",
+          "purple",
+          "violet",
+          "skyblue",
+        ],
+      },
+      Pattern: {
+        type: String,
+      },
+    },
   },
+
   Financial: {
     type: Number,
     default: 0,
@@ -55,17 +107,21 @@ const UserSchema = new Schema({
   },
   Interests: {
     type: [String],
-    require: false,
+    required: false,
     validate: {
       validator: () => {
-        return Boolean(this.length > 2 && this.length < 8);
+        if (!!this?.length) {
+          return Boolean(this?.length > 2 && this?.length < 8);
+        }
+        return true;
       },
+      message: `you must select between 2 and 8 interests`,
     },
-    message: `you must select between 2 and 8 interests`,
+    default: [],
   },
   Age: {
     type: Number,
-    require: false,
+    required: false,
   },
   Friends: [{ type: Schema.Types.ObjectId, ref: "Users" }],
   /* CHANNEL */

@@ -46,9 +46,11 @@ export const ServerSideApiGet = createApi({
   endpoints: (builder) => ({
     /* AUTHENTICATION ROUTER */
     getVerificationCode: builder.query({
-      query: () => "auth/verify",
+      query: () => "email/verify",
     }),
-
+    GenerateQR: builder.query({
+      query: (user_name) => `auth/GenerateQR/${user_name}`,
+    }),
     /* USER ROUTER */
     getUserInfo: builder.query({
       query: (userID) => `users/profile/${userID}`,
@@ -75,6 +77,7 @@ export const {
   useGetUserInfoQuery,
   useCheckAvailabilityQuery,
   useSearchMemebersMutation,
+  useGenerateQRQuery,
 } = ServerSideApiGet;
 
 //<-------------- POST REQ ----------------->

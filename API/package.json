@@ -22,11 +22,14 @@
     "mongoose-deep-populate": "^3.2.0",
     "nodemailer": "^6.9.3",
     "nodemon": "^2.0.22",
+    "otplib": "^12.0.1",
     "passport": "^0.6.0",
     "passport-github": "^1.1.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
+    "passport-totp": "^0.0.2",
     "passport-twitter": "^0.1.5",
+    "qrcode": "^1.5.3",
     "socket.io": "^4.7.2",
     "square": "^31.0.0"
   }

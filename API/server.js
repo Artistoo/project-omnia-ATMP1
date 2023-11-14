@@ -18,6 +18,10 @@ import SearchRouter from "./Routes/SearchRouter.js";
 import PaymentRouter from "./Routes/PaymentRoute.js";
 import ChannelsRoute from "./Routes/ChannelsRoute.js";
 import SocketIo_Router from "./Routes/SocketIo_Router.js";
+import NotificationRoute from "./Routes/NotificationRoute.js";
+
+
+
 const app = express();
 const port = process.env.PORT || 5500;
 
@@ -88,7 +92,9 @@ app.use("/channels", ChannelsRoute);
 app.use("/accountConfig", AccountConfig);
 app.use("/search", SearchRouter);
 app.use("/payment", PaymentRouter);
+app.use('/notification' , NotificationRoute)
 app.use("/socket", SocketIo_Router(io));
+
 
 //____________ TEST _______________
 

@@ -36,6 +36,7 @@ import { BiInfinite } from "react-icons/bi";
 import { changeUserUtility } from "../utils/changeUser";
 import { FaTruckLoading } from "react-icons/fa";
 import { AiOutlineLoading } from "react-icons/ai";
+import { v4 } from "uuid";
 
 /* <___________ JSX _________________ */
 export default function Nav() {
@@ -244,7 +245,14 @@ export default function Nav() {
             } absolute right-0 top-0 h-[680px] w-full bg-white bg-gradient-to-br from-blue-50 to-gray-200 md:hidden`}
           >
             <MenuOpen
-              openBGS={openBGS}
+              MenuBGState={{
+                openBGS,
+                setOpenBGS,
+              }}
+              MenuState={{
+                open,
+                setOpen,
+              }}
               MenuContent={MenuContent}
               NavMenu={NavMenu}
             />
@@ -425,7 +433,7 @@ export default function Nav() {
               right: `${30 - (NavMenu.IndexSelected - 1) * 15}%`,
               transition: `right ${MenuTransitionInMS} ease `,
             }}
-            className={`absolute right-0 top-full hidden h-max  max-h-[365px] min-h-[180px] w-[300px] translate-y-[5px] items-center overflow-hidden overflow-x-hidden  rounded-md  bg-opacity-[0.8]  bg-gradient-to-tl from-gray-300 to-slate-100 backdrop-blur-lg md:flex`}
+            className={`absolute right-0 top-full hidden h-max  maxh-[365px] min-h-[180px] w-[300px] translate-y-[5px] items-center overflow-hidden overflow-x-hidden  rounded-md  bg-opacity-[0.8]  bg-gradient-to-tl from-gray-300 to-slate-100 backdrop-blur-lg md:flex`}
           >
             {/* THE THREE ITEMS CONTAINER  */}
             <div
@@ -726,7 +734,9 @@ export default function Nav() {
               </div>
             </div>
           );
+
           const Show = (e) => <Works e />;
+
           const BTN = (e) => (
             <div
               onClick={() => navigate(e.onClick?.to)}
@@ -751,7 +761,7 @@ export default function Nav() {
             return (
               /* CONTAINER OF EACH NAV SECTION BUTTONS AND LINKS */
               <div
-                key={`NavSectionN${index}`}
+                key={v4()}
                 style={{
                   fontFamily: `OpenSauce`,
                   fontWeight: `thin`,

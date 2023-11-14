@@ -1,14 +1,24 @@
 import React from "react";
 import DOMPurify from "dompurify";
 import axios from "axios";
-import { useCurrentApiQuery } from "../../../redux/API";
-import { useCreateUserMutation, useLoginMutation } from "../../../redux/API";
-import { Router, useNavigate, Route } from "react-router-dom";
+import {
+  Router,
+  useNavigate,
+  Route,
+  useSearchParams,
+  useOutletContext,
+} from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import userStateSlice, { updateUserState } from "../../../redux/userStateSlice";
 import { userStateContext } from "../../../context/Data_context.jsx";
+
 //_____________________API_____________________________
-import { useGenerateResetPasswordLinkMutation } from "../../../redux/API";
+import {
+  useGenerateResetPasswordLinkMutation,
+  useCurrentApiQuery,
+  useCreateUserMutation,
+  useLoginMutation,
+} from "../../../redux/API";
 //_____________________ICONS____________________
 import { CgArrowRight, CgArrowUp, CgGoogle, CgTwitter } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
@@ -30,23 +40,14 @@ import {
 import { validEmail } from "../../../utils/validity";
 
 // _____________AUTHENTICATION FORM ____________________
-export default function AuthenticateForm({
-  Error,
-  form,
-  location,
-  useMyLocation,
-}) {
+export default function AuthenticateForm() {
   const navigate = useNavigate();
+  const [Auth_Error, handleSetError] = useOutletContext().Error;
+  const { not_Robot } = useOutletContext().Recaptcha;
+  const { formIsReady, handleUpdateFormReadyState } =
+    useOutletContext().formReadyState;
 
-  const { formError, setFormError } = Error;
-  const { formData, setformData } = form;
-  const { locationData, isLoading } = location;
-  const { userGeoLocation, setUserGeoLocation } = useMyLocation;
-  /* <---------------- CONTEXT -----------------> */
-
-  const dispatch = useDispatch();
-  const userSlice = useSelector((c) => c.userState?.current_user);
-
+  /* API */
   const [
     Login,
     {
@@ -64,6 +65,10 @@ export default function AuthenticateForm({
     },
   ] = useGenerateResetPasswordLinkMutation();
 
+  const { isLoading: isFindingLocation, data: user_location } =
+    useCurrentApiQuery();
+
+  // const { locationData, isLoading } = location;
   /* <--------------  REACT INPUT REF -----------> */
   const Password = React.useRef(null);
   const UserName = React.useRef(null);
@@ -77,9 +82,8 @@ export default function AuthenticateForm({
     name: ["daniel", "albert", "Isac", "mark", "martin"],
     index: 0,
   });
-  /* TODO : make the hide show password button work  */
+
   const [ResetPasswordLink, setResetPasswordLink] = React.useState("");
-  const [showHidePassword, setShowHidePassword] = React.useState(false);
   const [focused, setFocused] = React.useState(false);
   const [gender, setGender] = React.useState("male");
   const [ProfileName, setProfileName] = React.useState("");
@@ -95,7 +99,6 @@ export default function AuthenticateForm({
     },
   });
   const [formInputs, setForminputs] = React.useState({
-    Req_Type: "up",
     inputs: [
       {
         id: "username",
@@ -179,9 +182,7 @@ export default function AuthenticateForm({
       },
     ],
   });
-
-  /* <------------------ CONTEXT ----------------> */
-  const userState = React.useContext(userStateContext);
+  const [Req_Type, setReq_Type] = useSearchParams({ q: "up" });
 
   /* <------------------ VARIABLES ----------------> */
   const FormReqTypeText = [
@@ -198,7 +199,7 @@ export default function AuthenticateForm({
       show: "fp",
     },
   ];
-  /* API */
+
   //RESET THE VALUE FOR EACH INPUT WHEN THE FORM REQ TYPE CHANGE
   React.useEffect(() => {
     setForminputs((c) => ({
@@ -211,7 +212,7 @@ export default function AuthenticateForm({
         return updated;
       }),
     }));
-  }, [formInputs.Req_Type]);
+  }, [Req_Type.get("q")]);
 
   React.useEffect(() => {
     if (ResetPasswordLink) {
@@ -223,7 +224,7 @@ export default function AuthenticateForm({
   const handleBlur = (inputs, e) => {
     if (inputs.ready.error) {
       e.target.style.border = "solid red thin";
-      setFormError(inputs.ready.errorMSG);
+      handleSetError(inputs.ready.errorMSG);
     } else {
       /* SETTING THE INPUT TO FALSE IF EMPTY */
       if (!inputs.value) {
@@ -241,20 +242,18 @@ export default function AuthenticateForm({
       }).then((e) => clearTimeout(e));
     }
     if (formInputs.inputs.every((x) => x.ready.error === false)) {
-      setFormError("");
+      handleSetError("");
     }
     setFocused(false);
   };
-
   const handleFocus = (inputs) => {
     if (!inputs.ready.error) {
-      setFormError("");
+      handleSetError("");
     } else {
-      setFormError(inputs.ready.errorMSG);
+      handleSetError(inputs.ready.errorMSG);
     }
     setFocused(true);
   };
-
   const handleChange = (index, e) => {
     const { value } = e.target;
     const { sanitize } = DOMPurify;
@@ -297,7 +296,7 @@ export default function AuthenticateForm({
       //Adding some Style on input Error
       if (formInputs.inputs[index].ready.error) {
         e.target.style.border = "solid red thin";
-        setFormError(formInputs.inputs[index].ready.errorMSG);
+        handleSetError(formInputs.inputs[index].ready.errorMSG);
       } else {
         e.target.style.border = "solid green thin";
         focused
@@ -308,7 +307,6 @@ export default function AuthenticateForm({
             );
 
         if (formInputs.inputs.every((x) => !x.ready.error)) {
-          setFormError("");
         } else current.Error = current.Error;
       }
 
@@ -318,7 +316,6 @@ export default function AuthenticateForm({
       };
     });
   };
-
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     setUserAvatar((prevState) => ({
@@ -326,11 +323,16 @@ export default function AuthenticateForm({
       selected: file,
     }));
   };
+  const handleUpdateReqType = (ReqType) => {
+    setReq_Type((prev) => {
+      prev.set("q", ReqType);
+      return prev;
+    });
+  };
 
   const RequiredData = formInputs.inputs.filter((x) =>
-    x.display.includes(formInputs.Req_Type)
+    x.display.includes(Req_Type.get("q"))
   );
-
   const RequiredDataReady = RequiredData.every((x) => x.ready.go);
 
   /* HANDLING FORM SUBMIT */
@@ -360,7 +362,7 @@ export default function AuthenticateForm({
         };
       });
     } else {
-      const data = await AuthenticationHandlers[formInputs.Req_Type]();
+      const data = await AuthenticationHandlers[Req_Type.get("q")]();
     }
   };
 
@@ -377,17 +379,32 @@ export default function AuthenticateForm({
           ? URL.createObjectURL(userAvatar.selected)
           : userAvatar.default[gender];
         data.gender = gender;
-        data.Location = userGeoLocation.allow
-          ? locationData?.country
-          : "blue planet";
+        data.Location = "blue planet";
         data.displayName = ProfileName;
 
-        setformData(data);
+        if (Boolean(not_Robot)) {
+          handleUpdateFormReadyState(false);
+
+          if (document?.startViewTransition) {
+            document.startViewTransition(() => {
+              navigate("/AccountAuth/QR_verify", { state: data });
+            }, 50);
+            return;
+          }
+          navigate("/AccountAuth/QR_verify", { state: data });
+        } else {
+          if (formIsReady) {
+            handleSetError(`please pass the recaptcha test`);
+          } else {
+            handleUpdateFormReadyState(true);
+          }
+        }
       } catch (error) {
         console.error(error);
         throw error;
       }
     },
+
     in: async () => {
       try {
         let data = {};
@@ -402,7 +419,7 @@ export default function AuthenticateForm({
             navigate(`/Profile/${user?._id}`);
           }
         } else if (response?.error?.status === 404) {
-          setFormError(response?.error?.data?.err);
+          handleSetError(response?.error?.data?.err);
           console.log(response?.error);
         }
         console.log(response);
@@ -413,6 +430,7 @@ export default function AuthenticateForm({
         console.log(error);
       }
     },
+
     fp: async () => {
       try {
         const response = await generateLink({
@@ -428,7 +446,7 @@ export default function AuthenticateForm({
           console.log(response?.data);
         } else if (response?.error) {
           console.log(response?.error);
-          setFormError(response?.data?.error);
+          handleSetError(response?.data?.error);
         }
 
         // Instead of setting state directly, return the data
@@ -442,10 +460,20 @@ export default function AuthenticateForm({
 
   return (
     <div
-      className={`flex h-[500px] min-h-[470px] w-[80%]   min-w-[450px] max-w-[600px]
-    flex-col items-center  justify-center gap-y-[20px] rounded-md bg-gradient-to-tr
-    from-gray-100 via-gray-300
-    to-gray-200 px-[22px] py-[5px] backdrop-blur-[50px] md:w-[40%] `}
+      style={{
+        transition: `transform 400ms cubic-bezier(0.68, -0.55, 0.27, 1.55)`,
+        viewTransitionName: `AutherizationProcessTransitionName`,
+      }}
+      className={`flex h-full min-h-[470px] w-[80%]   min-w-[450px] max-w-[600px]
+      flex-col items-center  justify-center gap-y-[20px] rounded-md bg-gradient-to-tr
+      from-gray-100 via-gray-300 to-gray-200 px-[22px] py-[5px] backdrop-blur-[50px] md:w-[40%] 
+      ${
+        formIsReady
+          ? not_Robot
+            ? `translate-y-0`
+            : `translate-y-[-125px]`
+          : `translate-y-0`
+      }`}
     >
       {/*<----------- FORM TITLE AND CARD ----------->*/}
       <div
@@ -453,7 +481,7 @@ export default function AuthenticateForm({
           transition: `transform 320ms ease`,
         }}
         className={`flex h-[120px] w-full items-center   justify-between  ${
-          formInputs.Req_Type != "up"
+          Req_Type.get("q") != "up"
             ? `translate-y-[20px]`
             : `translate-y-[-30px]`
         }`}
@@ -467,8 +495,7 @@ export default function AuthenticateForm({
             style={{
               translate: `0 -${
                 (FormReqTypeText.map(
-                  (x, index) =>
-                    (x.show === formInputs.Req_Type && index) || false
+                  (x, index) => (x.show === Req_Type.get("q") && index) || false
                 ).filter(Boolean) *
                   100) /
                 (~~FormReqTypeText?.length || 3)
@@ -485,7 +512,7 @@ export default function AuthenticateForm({
                 }}
                 key={`formReqText${formReq.text}`}
                 className={`flex h-1/3 w-min items-center justify-start ${
-                  formReq.show != formInputs.Req_Type && "opacity-0"
+                  formReq.show != Req_Type.get("q") && "opacity-0"
                 }`}
               >
                 {formReq.text}
@@ -500,7 +527,7 @@ export default function AuthenticateForm({
             transition: `opacity 250ms ease`,
           }}
           className={` relative flex h-full w-1/2  items-center justify-around rounded-md border border-black bg-gradient-to-tl from-gray-200 to-white ${
-            formInputs.Req_Type != "up" && "pointer-events-none opacity-0"
+            Req_Type.get("q") != "up" && "pointer-events-none opacity-0"
           }`}
         >
           {/*<-- THE LEFT ID CARD SECTION --> */}
@@ -580,30 +607,10 @@ export default function AuthenticateForm({
               </div>
             </div>
             {/* GEO LOCATION */}
-            <div className="relatvie group h-[30px] w-full scale-[0.85] overflow-hidden rounded-full border border-black py-[8px]">
-              <p>
-                {userGeoLocation.allow
-                  ? locationData && isLoading
-                    ? `loading`
-                    : locationData?.country
-                  : "blue planet"}
+            <div className="relatvie group h-[30px] w-full scale-[0.85] overflow-hidden rounded-full border border-black py-[8px] ">
+              <p className={`w-full pl-[5px] [text-overflow:fade(15px)]`}>
+                {user_location?.country}
               </p>
-              <div
-                onClick={() => {
-                  setUserGeoLocation((c) => ({
-                    ...c,
-                    allow: !userGeoLocation.allow,
-                  }));
-                }}
-                style={{
-                  transition: `transform 150ms , opacity 150ms ease`,
-                }}
-                className={`absolute top-0 flex h-full w-full  cursor-pointer  items-center justify-center rounded-full bg-green-400 text-[10px] font-semibold text-gray-800 opacity-0  group-hover:opacity-[1]`}
-              >
-                <p>
-                  {userGeoLocation.allow ? `blue planet` : `Fetch my Location`}
-                </p>
-              </div>
             </div>
           </div>
 
@@ -684,17 +691,17 @@ export default function AuthenticateForm({
               }}
               className={`relative flex h-[38px] w-full items-center justify-center 
         ${inputs?.span ? `col-span-1` : `col-span-4`} ${
-                inputs.display.includes(formInputs.Req_Type) ? "" : inputs.leave
+                inputs.display.includes(Req_Type.get("q")) ? "" : inputs.leave
               } ${
-                (index === 2 || index === 3) && formInputs.Req_Type === "in"
+                (index === 2 || index === 3) && Req_Type.get("q") === "in"
                   ? `my-[6px] h-[42px] translate-y-[-15px]`
                   : `my-[0px] translate-y-[0px]`
               }`}
             >
               {/* Password */}
-              {index === 3 && formInputs.Req_Type === "up" && (
+              {index === 3 && Req_Type.get("q") === "up" && (
                 <div
-                  className={` absolute right-0 z-[1]  mr-[-5px] flex h-[30px] w-[150px] translate-x-[-13px]  items-center justify-center rounded-full border border-black bg-opacity-[1] bg-gradient-to-tl from-white to-gray-200 px-[12px] font-[brandinkLight] opacity-[1]`}
+                  className={`  pointer-events-none absolute  right-0 z-[1] mr-[-5px] flex h-[30px]  w-[150px] translate-x-[-13px] items-center justify-start rounded-full border  border-black bg-transparent bg-opacity-[1] px-[12px] font-[brandinkLight] opacity-[1]`}
                 >
                   {/* SECURITY STARS */}
                   <div
@@ -735,42 +742,6 @@ export default function AuthenticateForm({
                       }
                     )}
                   </div>
-                  {/* EYE PASSWORD */}
-                  <div
-                    onClick={() => {
-                      setShowHidePassword((current) => {
-                        return (current = !showHidePassword);
-                      });
-                      setForminputs((current) => {
-                        const update = { ...current };
-                        const currentType = update.inputs[3].type;
-                        const newType =
-                          currentType === "password" ? "text" : "password";
-                        update.inputs[3] = {
-                          ...update.inputs[3],
-                          type: newType,
-                        };
-
-                        return update;
-                      });
-                    }}
-                    className={`group  z-[1] flex h-full w-[30%] cursor-pointer items-center justify-center`}
-                  >
-                    <div
-                      style={{
-                        transition: `transform 350ms ease`,
-                      }}
-                      className={`origin-bottom-center h-[2px] w-[17px] rotate-[-40deg] bg-black  ${
-                        showHidePassword ? `scale-x-0` : `scale-x-1`
-                      }`}
-                    />
-                    <AiOutlineEye
-                      size={22}
-                      className={`absolute  ${
-                        showHidePassword ? `text-green-500` : `text-gray-700`
-                      }`}
-                    />
-                  </div>
                 </div>
               )}
 
@@ -791,17 +762,13 @@ export default function AuthenticateForm({
               />
 
               {/* Forget Password */}
-              {index === 3 && formInputs.Req_Type === "in" && (
+              {index === 3 && Req_Type.get("q") === "in" && (
                 <div
                   className={`group absolute top-[120%] flex h-[35px] w-[90%] items-center justify-start font-[brandinkLight] text-[15px] `}
                 >
                   <p
                     onClick={async () => {
-                      setForminputs((current) => {
-                        const updated = { ...current };
-                        updated.Req_Type = "fp";
-                        return updated;
-                      });
+                      handleUpdateReqType("fp");
                     }}
                     style={{
                       transition: `opacity 500ms , transform 200ms ease`,
@@ -862,10 +829,13 @@ export default function AuthenticateForm({
             style={{
               transition: `transform 220ms ease`,
             }}
-            className="z-[1] flex h-full 
-       w-[45%] items-center justify-start rounded-full px-[15px] group-hover:translate-x-[-15px]  "
+            className="z-[1] flex h-full w-[45%] items-center justify-start rounded-full px-[15px] group-hover:translate-x-[-15px]  "
           >
-            {formInputs.Req_Type === "in" ? `log in` : `submit `}
+            {Req_Type.get("q") === "in"
+              ? `log in`
+              : not_Robot
+              ? `submit`
+              : `done`}
           </p>
 
           {/* <---- ARROWS -----> */}
@@ -891,14 +861,11 @@ export default function AuthenticateForm({
             transition: `color 200ms , border 500ms , background 100ms ease`,
           }}
           onClick={() =>
-            setForminputs((current) => ({
-              ...current,
-              Req_Type: formInputs.Req_Type === "in" ? "up" : "in",
-            }))
+            handleUpdateReqType(Req_Type.get("q") === "in" ? "up" : "in")
           }
           className={`group relative  flex h-[82%] w-[35%] cursor-pointer select-none  overflow-hidden  rounded-full border border-black bg-transparent  bg-white  bg-opacity-[0.5] pl-[15px] font-[Poppins]  text-[18px] hover:border-white hover:bg-black hover:text-gray-400 `}
         >
-          {formInputs.Req_Type != "fp" ? (
+          {Req_Type.get("q") !== "fp" ? (
             <>
               {/* BTN TEXT */}
               <div
@@ -915,7 +882,7 @@ export default function AuthenticateForm({
                   transition: `transform 500ms ease`,
                 }}
                 className={` flex h-[200%] w-[40%] flex-col  items-start  justify-start ${
-                  formInputs.Req_Type === "up"
+                  Req_Type.get("q") === "up"
                     ? `translate-y-[-0]`
                     : `translate-y-[-50%]`
                 }`}

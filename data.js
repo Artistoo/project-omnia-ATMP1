@@ -60,14 +60,14 @@ export const NavContent = {
           type: "btn",
           text: `sign in `,
           onClick: {
-            to: `user/AccountAuth`,
+            to: `AccountAuth/Authentication?q=in`,
           },
         },
         {
           type: "btn",
           text: `sign up`,
           onClick: {
-            to: `user/AccountAuth`,
+            to: `AccountAuth/Authentication?q=up`,
           },
         },
       ],
@@ -84,11 +84,11 @@ export const MenuContent = {
         content: [
           {
             title: "sign in",
-            to: `user/AccountAuth`,
+            to: `AccountAuth/Authentication?q=in`,
           },
           {
             title: "sign up",
-            to: `user/AccountAuth`,
+            to: `AccountAuth/Authentication?q=up`,
           },
         ],
       },
