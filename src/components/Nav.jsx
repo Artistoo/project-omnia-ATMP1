@@ -1,885 +1,388 @@
 import React from "react";
-import { userStateContext } from "../context/Data_context";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { debounce } from "lodash";
+import { useNavigate } from "react-router-dom";
 
-import { useSelector, useDispatch } from "react-redux";
-
-//________________________API________________________
-import { useLoginMutation, useLogoutMutation } from "../redux/API";
-
-//________________________ASSETS________________________
-import Logo from "../assets/icons/Logo";
-import AddChannel from "../assets/icons/AddChannel.jsx";
-import CommunityArt from "../assets/img/CreateCommunity.png";
-import TribeArt from "../assets/img/CreateTribe.png";
-
-// ________________ DATA _________________
-import { NavContent, MenuContent, HideAt } from "../../data";
-
-// ________________ COMPONENTS _________________
-import MenuIcon from "../assets/icons/menuIcon";
-import Search from "./Search";
-import MenuOpen from "./MenuOpen";
-
-// ________________ ICONS _________________
-import { IoIosArrowDown } from "react-icons/io";
-import {
-  CgArrowDown,
-  CgArrowLeft,
-  CgNotifications,
-  CgSearchLoading,
-} from "react-icons/cg";
-import { RiNotification3Line } from "react-icons/ri";
-import { GrAdd } from "react-icons/gr";
-import { BiInfinite } from "react-icons/bi";
-import { changeUserUtility } from "../utils/changeUser";
-import { FaTruckLoading } from "react-icons/fa";
-import { AiOutlineLoading } from "react-icons/ai";
+//COMPONENTS
+import Logo from "../assets/icons/Logo.jsx";
+import Menu from "../assets/icons/menuIcon.jsx";
+import { NavData } from "../../data.js";
+import { useMediaQuery } from "../hooks/useMediaQuery.jsx";
 import { v4 } from "uuid";
+import { TbRuler2 } from "react-icons/tb";
+import { MdOutlineCancelPresentation } from "react-icons/md";
+import { CiSquareRemove } from "react-icons/ci";
+import { useScrollingDirection } from "../hooks/useScrollingDirection.jsx";
+import { IoMdArrowForward } from "react-icons/io";
 
-/* <___________ JSX _________________ */
-export default function Nav() {
-  // <------------------ STATES ------------------------>
-  const [open, setOpen] = React.useState(true);
-
-  const [NavMenu, setNavMenu] = React.useState({
-    IndexSelected: false,
-    Render: [
-      {
-        header: {
-          icon: CgNotifications,
-          title: null,
-          text: "check out your notificaitons",
-        },
-        content: [],
-        style: {
-          bg: "yellow",
-        },
-      },
-      {
-        header: {
-          icon: null,
-          title: "Create",
-          text: "tell me more",
-        },
-        content: [
-          {
-            icon: GrAdd,
-            title: "tribe",
-            HandleClick: () => "",
-            art: TribeArt,
-
-            details: {
-              price: 0,
-              remining: BiInfinite,
-              about: "best for meeting new peoples and getting help ",
-            },
-          },
-          {
-            icon: GrAdd,
-            title: "Community",
-            HandleClick: () => "",
-            art: CommunityArt,
-            details: {
-              price: 5,
-              remining: BiInfinite,
-              about: "best for contributing in what you value the most  ",
-            },
-          },
-        ],
-        style: {
-          bg: "green",
-        },
-      },
-
-      {
-        header: {
-          icon: null,
-          title:
-            localStorage?.user &&
-            `${JSON.parse(localStorage?.user)?.userName} ${
-              JSON.parse(localStorage?.user)?.LastName
-            }`,
-          text: "",
-        },
-        content: [
-          {
-            icon: CgArrowLeft,
-            title: "profile",
-            HandleClick: () =>
-              navigate(`/Profile/${JSON.parse(localStorage?.user)?._id}`),
-          },
-          {
-            icon: CgArrowLeft,
-            title: "settings",
-            HandleClick: () => navigate(`/Settings`),
-          },
-          {
-            icon: CgArrowLeft,
-            title: "Channels",
-            HandleClick: () => navigate(`/Channels`),
-          },
-        ],
-        style: {
-          bg: "blue",
-        },
-      },
-    ],
-  });
-  const [scrollPosition, setScrollPosition] = React.useState(0);
-  //<--------VARIABLES ----------->
-  const ScrollDown = React.useMemo(
-    () => (Math.floor(scrollPosition) > 0 ? true : false),
-    [scrollPosition]
-  );
-
-  //<---------- FUNCTIONS-------------->
-  const useScrollDirection = () => {
-    const [scrollingDown, setScrollingDown] = React.useState(false);
-
-    React.useEffect(() => {
-      let previousScrollPosition =
-        window.pageYOffset || document.documentElement.scrollTop;
-
-      const handleScroll = () => {
-        const currentScrollPosition =
-          window.pageYOffset || document.documentElement.scrollTop;
-        setScrollingDown(currentScrollPosition > previousScrollPosition);
-        previousScrollPosition = currentScrollPosition;
-      };
-
-      const scrollListener = () => handleScroll();
-
-      window.addEventListener("scroll", scrollListener);
-
-      return () => {
-        window.removeEventListener("scroll", scrollListener);
-      };
-    }, []);
-
-    return scrollingDown;
-  };
-
-  /* <----------- REACT ROUTER -------> */
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
-
-  //<-------------------CONTEXT------------------------->
-  const { admin, loged } = React.useContext(userStateContext)?.userState;
-
-  const userStateMemo = React.useMemo(() => loged, [loged]);
-
-  //<-----------current User ----------->
-  const user = localStorage?.user && JSON.parse(localStorage.user);
-  //<-----------CONDITIONS--------------->
-  /* IF NO NAV BAR DISPLAY  */
-  if (HideAt.Nav.some((x) => x === pathname)) {
-    return (
-      <Logo
-        ScrollingDown={useScrollDirection()}
-        scale={ScrollDown ? 1.4 : 1.2}
-        Menu={true}
-        color={
-          ScrollDown || open
-            ? {
-                main: "black",
-                colors: [`black`, `black`, `black`],
-              }
-            : {
-                main: "white",
-                colors: [`white`, `white`, `white`],
-              }
-        }
+const Components = {
+  text: ({ eleData, important = false }) => (
+    <>
+      <IoMdArrowForward
+        style={{
+          transition: `transform 400ms cubic-bezier(0.32, 1.39, 0.67, 1)`,
+        }}
+        size={16}
+        className={`absolute translate-x-[-15px] opacity-0 group-hover:translate-x-0 group-hover:opacity-100 `}
       />
-    );
-  }
+      {React.createElement(
+        important ? "b" : "p",
+        {
+          style: {
+            transition: `transform 200ms cubic-bezier(0.32, 1.39, 0.67, 1)`,
+          },
+          className: `text-[15px]  translate-x-0 group-hover:translate-x-[20px]`,
+        },
+        eleData?.title
+      )}
+    </>
+  ),
 
-  //<-----------COMPONENTS--------------->
-  const WhiteBgNavBar = () => {
-    const [openBGS, setOpenBGS] = React.useState(false);
-    const [smallScreen, setsmallScreen] = React.useState(false);
-    React.useEffect(() => {
-      if (open) {
-        setOpenBGS(true);
-        document.body.style.overflow = "hidden";
-      } else {
-        setOpenBGS(false);
-        document.body.style.overflow = "auto";
+  btn: ({ eleData, index }) => (
+    <button
+      onMouseOver={(e) =>
+        (document.getElementById(
+          `navBtnClipPathCircle_${index}`
+        ).style.clipPath = `circle(200% at 100% 100%)`)
       }
-    }, [open]);
-    React.useEffect(() => {
-      if (window.innerWidth <= 760) {
-        setsmallScreen(true);
-      } else {
-        setsmallScreen(false);
-        setOpenBGS(false);
-        setOpen(false);
-        document.body.style.overflow = "auto";
+      onMouseLeave={(e) =>
+        (document.getElementById(
+          `navBtnClipPathCircle_${index}`
+        ).style.clipPath = `circle(0% at 100% 100%)`)
       }
-    }, [window.innerWidth]);
+      className={`relative flex w-auto flex-grow items-center justify-center rounded-sm border border-gray-900/50  py-[5.5px] font-[openSauceReg]  hover:text-gray-200`}
+    >
+      <span
+        id={`navBtnClipPathCircle_${index}`}
+        style={{
+          clipPath: `circle(0% at 100% 100%)`,
+          transition: `clip-path 800ms cubic-bezier(0.32, 1.39, 0.67, 1)`,
+        }}
+        className={`absolute left-0  h-full w-full bg-black `}
+      />
+      <p className={`z-[1]`}>{eleData?.title}</p>
+    </button>
+  ),
 
-    return (
-      <>
-        <div
-          style={{
-            transition: `translate 1000ms ease-in-out`,
-          }}
-          className={`absolute top-0 z-[-1] h-full w-full   bg-opacity-[0.6] backdrop-blur-[40px]  ${
-            ScrollDown ? "translate-y-[0%]" : `translate-y-[-100%]`
-          }${
-            HideAt.Nav.some((ex) => ex.includes(location.pathname))
-              ? `bg-black`
-              : `bg-purple-200`
-          }`}
-        />
-        {openBGS && (
-          <div
-            style={{
-              transition: `transform 550ms , opacity 200ms ease-in-out`,
-            }}
-            className={` ${
-              openBGS
-                ? `translate-y-0 opacity-[1]`
-                : `translate-y-[-100%] opacity-[0]`
-            } absolute right-0 top-0 h-[680px] w-full bg-white bg-gradient-to-br from-blue-50 to-gray-200 md:hidden`}
-          >
-            <MenuOpen
-              MenuBGState={{
-                openBGS,
-                setOpenBGS,
-              }}
-              MenuState={{
-                open,
-                setOpen,
-              }}
-              MenuContent={MenuContent}
-              NavMenu={NavMenu}
-            />
-          </div>
-        )}
-      </>
-    );
-  };
-  const Works = ({ e }) => {
+  icon: ({
+    eleData,
+    search_state,
+    index,
+    scrollingDir,
+    open_menu,
+    onClick = () => null,
+  }) => {
     return (
       <div
-        onClick={() => navigate(e.onClick?.to || `user/AccountAuth`)}
-        className={` group flex cursor-pointer flex-col items-center justify-center 
+        onClick={onClick}
+        style={{
+          transition: `transform 250ms ${
+            index * 50
+          }ms cubic-bezier(0.25, 0.46, 0.45, 0.94) , 
+          opacity 300ms ${index * 50}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
+        }}
+        className={`flex-center  h-full w-[5%] min-w-[60px] cursor-pointer border border-gray-200/30  md:relative md:opacity-100
         ${
-          !e
-            ? `font-[openSauce] text-[17px] text-gray-200  ${
-                ScrollDown && `text-gray-800`
-              }`
-            : `translate-y-[-2px]`
-        } ${open && `pointer-events-none opacity-0`}`}
+          search_state.isSearching
+            ? ` translate-y-[180px] opacity-0`
+            : !!!Boolean(open_menu.at)
+            ? !scrollingDir
+              ? `translate-y-0 opacity-100`
+              : ` -translate-y-[50%] opacity-0`
+            : `translate-y-0 opacity-100`
+        }`}
       >
-        <p>{e?.text || "works"}</p>
-        <IoIosArrowDown
+        <eleData.Icon
           style={{
-            transition: `opacity 150ms , transform 150ms ease-in-out`,
+            transition: `transform 250ms cubic-bezier(0.32, 1.39, 0.67, 1) , fill 250ms cubic-bezier(0.32, 1.39, 0.67, 1) , filter 500ms cubic-bezier(0.32, 1.39, 0.67, 1)  `,
           }}
-          className={`absolute opacity-0 group-hover:translate-y-[17px] group-hover:opacity-[1]`}
+          fill={"white"}
+          size={26}
+          className={`  ${
+            open_menu.at - 1 === index &&
+            [
+              "fill-yellow-300 drop-shadow-[0px_0px_9px_yellow]",
+              "rotate-[45deg]",
+            ][open_menu.at - 1]
+          } `}
         />
       </div>
     );
+  },
+
+  form: ({ eleData, search_state, index, scrollingDir, open_menu }) => (
+    <form
+      style={{
+        transition: `transform  250ms ${index * 50}ms ease`,
+      }}
+      className={`relative  z-[5] flex h-full w-[100px] min-w-full items-center justify-end border  border-red-200 md:w-[340px] ${
+        !!!Boolean(open_menu.at)
+          ? scrollingDir
+            ? `-translate-y-[50%]`
+            : `translate-y-0`
+          : `translate-y-0`
+      }`}
+    >
+      <div
+        style={{
+          transition: `width 200ms ${
+            search_state.isSearching ? `250ms` : `0ms`
+          } cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
+        }}
+        className={`flex-center absolute left-0 h-full max-w-[330px] border  border-purple-200 md:w-full md:max-w-none 
+          ${search_state.isSearching ? `w-[220%]` : `w-full `}`}
+      >
+        {/* SEARCH NAV INPUT */}
+        <input
+          style={{
+            transition: `opacity 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94) , border 100ms  150ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
+          }}
+          placeholder={eleData.placeholder}
+          className={`absolute left-0 h-[45px] w-full rounded-sm border bg-gray-900/80 px-[10px] font-[openSauce] text-[14.8px] outline-none backdrop-blur-lg placeholder:text-gray-500  md:left-auto md:w-[95%] md:border-gray-600 md:opacity-100 
+            ${
+              search_state.isSearching
+                ? `border-gray-600 opacity-100`
+                : `border-transparent opacity-0`
+            }
+          `}
+        />
+        {/* ICONS SEARCH NAV BAR */}
+        <div
+          className={`flex-center absolute right-0 aspect-square w-[40px] cursor-pointer md:cursor-auto`}
+        >
+          {[
+            { Icon: eleData.Icon, id: "MainNavSearchIcon" },
+            { Icon: CiSquareRemove, id: "MainNavCancelSearchIcon" },
+          ].map(({ Icon, id }, index) => (
+            <Icon
+              key={id}
+              onClick={() => search_state.setIsSearching(!Boolean(index))}
+              style={{
+                transition: `transform 200ms 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94) , color 250ms ease`,
+              }}
+              size={23}
+              className={`absolute text-gray-100 md:right-[20px]
+              ${
+                Boolean(index)
+                  ? `hover:text-gray-50 md:scale-0`
+                  : `hover:text-gray-50 md:scale-100`
+              }
+              ${
+                search_state.isSearching
+                  ? Boolean(index)
+                    ? `scale-100`
+                    : `scale-0`
+                  : Boolean(index)
+                  ? `scale-0`
+                  : `scale-100`
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </form>
+  ),
+
+  img: ({ eleData, onClick = () => null, index, open_menu }) => (
+    <div
+      onClick={onClick}
+      className={`flex-center group relative z-[5] h-full w-[8%] min-w-[80px] cursor-pointer border border-gray-200/30`}
+    >
+      <img
+        src={eleData?.img}
+        className={` aspect-square w-[65px] rounded-full`}
+        alt={`profile avatar z-[5]`}
+      />
+      {console.log(open_menu.at + 1)}
+      <div
+        style={{
+          transition: `transform 250ms ease`,
+        }}
+        className={`absolute h-full w-full scale-[.8] rounded-full border border-gray-100  opacity-0  ${
+          open_menu.at + 1 === 4
+            ? `scale-[.9] opacity-100`
+            : `group-hover:scale-[.9]
+          group-hover:opacity-100`
+        }`}
+      />
+    </div>
+  ),
+};
+
+export default function Nav() {
+  //ROUTER DOM
+  const navigate = useNavigate();
+  const [open_menu, setOpen_menu] = React.useState({ state: false, at: "" });
+  const [isSearching, setIsSearching] = React.useState(false);
+
+  /* VARIABLES */
+  const user_state = localStorage?.user ? "in" : "out";
+
+
+  //COSTOM HOOKS
+  const [matches] = useMediaQuery();
+  const [scrollingDir] = useScrollingDirection();
+
+  //LOGS
+
+  
+  //EFFECT
+  React.useEffect(() => {
+    if (isSearching) {
+      setOpen_menu((c) => ({ ...c, at: 0 }));
+    }
+  }, [isSearching]);
+
+  const dataToComponents = {
+    search_state: {
+      isSearching,
+      setIsSearching,
+    },
+    scrollingDir,
+    open_menu,
   };
 
-  // <------------------- API CALL --------------------->
-  const [
-    logOut,
-    { isLoading: isLoggingOut, isSuccess: userIsLogedOut, error: LogOutError },
-  ] = useLogoutMutation();
-
-  /* user loged components */
-  const UserProfile = ({ Avatar, Menu, menuState }) => {
-    const { NavMenu, setNavMenu } = Menu;
-    const { open, setOpen } = menuState;
-    return (
-      /* TODO: match the menu bg color with the user avatar */
+  return (
+    <nav
+      style={{
+        transition: `transform 200ms cubic-bezier(0.18, 1.02, 0.49, 1)`,
+      }}
+      className={`sticky top-0 z-[15] flex h-[85px] w-full items-center justify-between bg-gray-950/90 px-[10px] font-[openSauceReg] text-gray-100 backdrop-blur-md ${
+        !!!Boolean(open_menu.at)
+          ? !scrollingDir
+            ? `translate-y-0`
+            : `-translate-y-full`
+          : `translate-y-0`
+      }`}
+    >
       <div
         onClick={() => {
-          if (window.innerWidth < 768) {
-            setOpen((c) => (c = NavMenu.IndexSelected === 3 ? false : true));
-            setNavMenu((c) => ({
-              ...c,
-              IndexSelected: NavMenu.IndexSelected === 3 ? false : 3,
-            }));
-          } else {
-            setNavMenu((c) => ({
-              ...c,
-              IndexSelected: NavMenu.IndexSelected === 3 ? false : 3,
-            }));
-          }
+          navigate("/");
         }}
-        className={`group flex h-full w-full  items-center justify-center overflow-hidden  p-[15px]`}
+        className={`flex-center h-full w-[15%] cursor-pointer border`}
       >
-        <img
-          src={Avatar}
-          className={`h-auto max-h-full w-auto scale-[1.3] cursor-pointer rounded-full border group-hover:opacity-60 `}
+        <Logo
+          Menu={true}
+          loading={false}
+          scale={1.1}
+          ScrollingDown={!scrollingDir}
+          color={{ main: "whitesmoke", colors: ["white", "blue", "white"] }}
         />
       </div>
-    );
-  };
-  const UserLoged = () => {
-    const {
-      userName,
-      LastName,
-      DisplayName,
-      Email,
-      gender,
-      Avatar,
-      Location,
-      admin,
-    } = user;
 
-    const MenuTransitionInMS = "350ms";
-    const [isSearching, setIsSearching] = React.useState(false);
-    const [showLogOut, setShowLogOut] = React.useState(false);
-    React.useEffect(() => {
-      if (open) setIsSearching(false);
-    }, [open]);
-    return (
       <div
-        className={`NavLogedUserContainer relative flex h-[85%] w-[400px] items-center justify-end   border md:w-[570px] md:justify-around lg:w-[60%]`}
+        className={`relative flex h-full w-[80%] items-center justify-end gap-x-[20px]  overflow-hidden border border-gray-100/30 pr-[25px]  md:justify-between md:gap-1`}
       >
-        {/* _____SEARCH_____ */}
-        <div
-          style={{
-            transition: `width 300ms , transform 150ms ease `,
-          }}
-          className={` relative flex h-full  max-w-[600px]  origin-right items-center  justify-center border border-pink-800 md:w-[60%] md:translate-x-0  lg:w-[60%] 
-            ${isSearching ? `w-[66%] ` : `w-[33%] `} 
-            ${open ? `hidden` : `flex`}
-            
-            `}
-        >
-          <Search
-            SearchingState={{ isSearching, setIsSearching }}
-            isScrollDown={ScrollDown}
-          />
-        </div>
-
-        {/* ____NOTIFICATION ADD CHANNEL BUTTON____ */}
-        <div
-          style={{
-            transition: `width 250ms ease `,
-          }}
-          className={`relative flex h-full  max-w-[200px] items-center justify-around border  md:pointer-events-auto md:relative md:w-[20%] md:translate-x-0 md:opacity-[1] 
-            ${isSearching ? ` w-[0%] opacity-0` : " w-[33%] opacity-[1]"}`}
-        >
-          {/* THE BLACK GRADIENT COVER IN SMALl SCREEN */}
-          <div
-            style={{
-              transition: `scale 2500ms 2000ms ease`,
-            }}
-            className={`absolute left-0 z-[11] h-full w-full border bg-gradient-to-r from-black to-transparent md:hidden ${
-              isSearching
-                ? `pointer-events-auto scale-x-[1]`
-                : `pointer-events-none scale-x-0`
-            }`}
-          />
-          <div
-            className={`absolute flex h-full w-full items-center justify-around `}
-          >
-            {[{ icon: RiNotification3Line }, { icon: AddChannel }].map(
-              (Icon, index) => (
-                <div
-                  onClick={() => {
-                    if (window.innerWidth < 768) {
-                      setOpen(
-                        (c) =>
-                          (c =
-                            NavMenu.IndexSelected === index + 1 ? false : true)
-                      );
-                    }
-                    setNavMenu((c) => ({
-                      ...c,
-                      IndexSelected:
-                        NavMenu.IndexSelected === index + 1 ? false : index + 1,
-                    }));
-                  }}
-                  key={`NavIcons${index}`}
-                  className={`group flex w-[45%]  cursor-pointer items-center  justify-center`}
-                >
-                  <Icon.icon
-                    className={`z-10 h-[25px] w-auto ${
-                      open ? `text-gray-900` : `text-white`
-                    }`}
-                    Color={open ? `black` : "white"}
-                    ScrollingDown={ScrollDown}
-                    Menu={{ NavMenu, setNavMenu }}
+        {NavData[user_state].map((navSection, navSection_index) => {
+          return React.createElement(
+            "div", //ELEMENT
+            {
+              className: `flex border border-green-500 justify-center items-center h-full flex-grow gap-x-[5px] relative w-auto `,
+            },
+            (() => {
+              //RETURNING THE MEDI ON SM DISPLAY
+              if (
+                matches != "lg" &&
+                Boolean(navSection_index) &&
+                user_state === "out"
+              ) {
+                return (
+                  <Menu
+                    open={open_menu}
+                    onClick={() => setOpen_menu((c) => !c)}
                   />
+                );
+              } else {
+                return navSection.map((ele, index) => {
+                  console.log({ index, type: ele.type });
+                  const NavComponent = Components[ele.type];
+                  return (
+                    <>
+                      <NavComponent
+                        eleData={ele}
+                        {...dataToComponents}
+                        index={index}
+                        onClick={() => {
+                          if (ele?.func === "update") {
+                            setOpen_menu((c) => ({
+                              ...c,
+                              at: c.at === index + 1 ? 0 : index + 1,
+                            }));
+                          }
+                        }}
+                      />
+                    </>
+                  );
+                });
+              }
+            })()
+          );
+        })}
+      </div>
+
+      <div
+        style={{
+          transition: `opacity 300ms cubic-bezier(0.32, 1.39, 0.67, 1)`,
+        }}
+        className={`pointer-events-none absolute  left-0 top-full  flex   h-screen w-screen items-start justify-end bg-gray-950/80 text-sm text-gray-900
+         ${!Boolean(open_menu.at) ? `opacity-0` : `opacity-100`}`}
+      >
+        <div
+          style={{
+            left: `${open_menu.at && 35 + (100 / 3) * (open_menu.at - 1)}px 0 `,
+            translate: `${
+              open_menu.at && -70 + (100 / 3) * (open_menu.at - 1)
+            }% 0 `,
+            transition: `all 250ms cubic-bezier(0.32, 1.39, 0.67, 1)`,
+          }}
+          className={`pointer-events-auto  absolute top-[5px] flex h-[262px] min-h-max w-[250px]  items-center overflow-hidden
+          justify-${["start", "center", "end"][open_menu.at - 1]}`}
+        >
+          <div className={`absolute flex w-[300%] bg-transparent`}>
+            {[...NavData[user_state][1].map((sec) => sec.menu)].map(
+              ({ title, options }, i) => (
+                <div
+                  className={`flex   h-[50%]  w-1/3 flex-col items-start justify-start gap-y-[5px] rounded-md
+                  ${["bg-zinc-200", "bg-slate-200", `bg-gray-200`][i]}`}
+                >
+                  <strong
+                    className={`h-max w-full bg-gray-300/40 p-[8px_15px] font-[brandinkLight] text-lg `}
+                  >
+                    {title}
+                  </strong>
+
+                  <div
+                    className={` my-[5px] flex h-max w-full flex-col  items-start  justify-center gap-y-[10px] border  p-[1px_5px] `}
+                  >
+                    {options.map((itemSection) => (
+                      <div className={`flex w-full flex-col  gap-y-[2px] `}>
+                        {itemSection.map((item, itemIndex) => {
+                          console.log(item);
+                          const ItemComponent = item?.type ? (
+                            Components[item.type]
+                          ) : (
+                            <div></div>
+                          );
+                          return (
+                            <div
+                              className={`group relative flex  w-full cursor-pointer items-center justify-start   px-[10px]    
+                              ${
+                                {
+                                  text: "rounded-sm py-[3.5px] hover:bg-gray-300/50",
+                                  btn: "",
+                                }[item?.type]
+                              }`}
+                            >
+                              <ItemComponent eleData={item} index={itemIndex} />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )
             )}
           </div>
         </div>
-
-        {/*  ____USER PROFILE____  */}
-        <div className={`z-10 h-full w-[33%] md:w-[15%]`}>
-          <UserProfile
-            Avatar={Avatar}
-            Menu={{ NavMenu, setNavMenu }}
-            menuState={{ open, setOpen }}
-          />
-        </div>
-
-        {/*<------- MENU -------> */}
-        {NavMenu.IndexSelected && (
-          <div
-            id={"mdMenuBox"}
-            style={{
-              right: `${30 - (NavMenu.IndexSelected - 1) * 15}%`,
-              transition: `right ${MenuTransitionInMS} ease `,
-            }}
-            className={`absolute right-0 top-full hidden h-max  maxh-[365px] min-h-[180px] w-[300px] translate-y-[5px] items-center overflow-hidden overflow-x-hidden  rounded-md  bg-opacity-[0.8]  bg-gradient-to-tl from-gray-300 to-slate-100 backdrop-blur-lg md:flex`}
-          >
-            {/* THE THREE ITEMS CONTAINER  */}
-            <div
-              style={{
-                translate: `-${
-                  (NavMenu.IndexSelected - 1) * (100 / NavMenu.Render.length)
-                }% 0`,
-                transition: `translate ${MenuTransitionInMS} ease `,
-              }}
-              className={`absolute flex h-full w-[300%]  `}
-            >
-              {/* THE THREE ITEMS MAPPING */}
-              {NavMenu.Render.map((item, itemIndex) => (
-                <div
-                  className={`flex w-1/3 flex-col items-center justify-center px-[12px] bg-${item.style.bg}-200 MenuScrollBar overflow-y-scroll bg-opacity-[0.4]`}
-                >
-                  {/* THE HEADER OF EACH MENU ITEM */}
-                  <div
-                    className={`relative flex h-[30%] w-full items-center justify-between  `}
-                  >
-                    <div
-                      style={{
-                        width:
-                          100 /
-                            [...Object.values(item.header)].filter(Boolean)
-                              .length +
-                          "%",
-                        transition: `opacity 150ms , transform 150ms ease-in-out`,
-                        transitionDelay: MenuTransitionInMS,
-                      }}
-                      className={` w-[40%]  font-[garet] text-[25px] font-semibold ${
-                        NavMenu.IndexSelected - 1 != itemIndex
-                          ? `translate-y-[15px] opacity-0`
-                          : `opacity-1 translate-y-0`
-                      } `}
-                    >
-                      {item.header.title && itemIndex != 2 ? (
-                        <h2>{item.header.title}</h2>
-                      ) : (
-                        <div
-                          style={{
-                            transition: `transform 250ms ease-in-out`,
-                          }}
-                          className={`group flex h-full w-full items-center justify-center overflow-hidden px-[5px]`}
-                        >
-                          <div
-                            onClick={() => setShowLogOut((e) => !e)}
-                            style={{
-                              transition: `transform 250ms , opacity 150ms ease-in-out`,
-                            }}
-                            className={`z-[2] flex w-[10%] translate-x-5 items-center justify-center opacity-0 group-hover:translate-x-0 group-hover:opacity-100`}
-                          >
-                            <CgArrowLeft
-                              style={{
-                                transition: `transform 250ms ease-in-out`,
-                              }}
-                              className={` cursor-pointer hover:scale-[1.1] ${
-                                showLogOut
-                                  ? `rotate-0 hover:translate-x-[-8px] `
-                                  : `rotate-[180deg] hover:translate-x-[8px]`
-                              }`}
-                            />
-                          </div>
-                          <div
-                            className={`flex min-h-max w-[90%] items-center  overflow-hidden `}
-                          >
-                            <div
-                              className={`absolute flex h-full w-[200%] items-center justify-between ${
-                                showLogOut
-                                  ? `-translate-x-1/2`
-                                  : `translate-x-0`
-                              }`}
-                            >
-                              {[
-                                {
-                                  title: [item?.header.title],
-                                  onClick: () => "",
-                                },
-                                {
-                                  title: ["log out", "change user"],
-                                  onClick: async (index) => {
-                                    if (index) {
-                                      changeUserUtility();
-                                      changeUserUtility().navigate &&
-                                        navigate(changeUserUtility().navigate);
-                                    } else {
-                                      logOut()
-                                        .then((res) => console.log(res))
-                                        .catch((err) => console.log(err));
-                                      if (LogOutError) {
-                                        console.log(LogOutError);
-                                      }
-                                    }
-                                  },
-                                },
-                              ].map((titleLogout, titleLogOutIndex) => (
-                                <div
-                                  style={{
-                                    transition: `opacity 250ms ease-in-out`,
-                                  }}
-                                  onClick={() =>
-                                    titleLogout.onClick(titleLogOutIndex)
-                                  }
-                                  className={` flex h-max w-[45%]  items-center justify-between  ${
-                                    !titleLogOutIndex
-                                      ? showLogOut
-                                        ? `opacity-0`
-                                        : `opacity-100`
-                                      : showLogOut
-                                      ? `translate-x-[-21px]  opacity-100`
-                                      : `opacity-0`
-                                  }`}
-                                >
-                                  {titleLogout?.title.map(
-                                    (Headline, HeadLineindex) => (
-                                      <div
-                                        className={`relative flex  items-center justify-center rounded-full ${
-                                          !titleLogOutIndex
-                                            ? ``
-                                            : `border border-black ${
-                                                !HeadLineindex
-                                                  ? `hover:bg-red-500 `
-                                                  : `hover:bg-black`
-                                              } cursor-pointer py-[4px] hover:text-white`
-                                        }`}
-                                        style={{
-                                          transition:
-                                            "background 150ms ease-in-out",
-                                          width:
-                                            100 / titleLogout.title.length -
-                                            4 +
-                                            "%",
-                                        }}
-                                      >
-                                        <p
-                                          className={`${
-                                            !titleLogOutIndex
-                                              ? `text-[1em]`
-                                              : `text-[13px]`
-                                          }`}
-                                        >
-                                          {Headline}
-                                        </p>
-                                        {titleLogOutIndex
-                                          ? !HeadLineindex && (
-                                              <AiOutlineLoading
-                                                style={{
-                                                  transition: `top 150ms , opacity 150ms ease-in-out`,
-                                                }}
-                                                className={`
-                                                  absolute right-[10px] h-[12px] w-[12px]
-                                                  ${
-                                                    isLoggingOut
-                                                      ? `top-auto animate-spin opacity-100`
-                                                      : `top-[150%] opacity-0`
-                                                  }`}
-                                              />
-                                            )
-                                          : ``}
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {item.header.icon && <item.header.icon />}
-                    </div>
-                    {item.header.text && (
-                      <p
-                        style={{
-                          width: (!item.header.title ? 100 : 30) + "%",
-                          transition: `opacity 150ms , transform 150ms ease-in-out`,
-                          transitionDelay:
-                            +MenuTransitionInMS.replace("ms", "") + 150 + "ms",
-                        }}
-                        className={`font-[OpenSauceReg] text-[12px]  ${
-                          NavMenu.IndexSelected - 1 != itemIndex
-                            ? `translate-y-[15px] opacity-0`
-                            : `opacity-1 translate-y-0`
-                        }  `}
-                      >
-                        {item.header.text}
-                      </p>
-                    )}
-                  </div>
-
-                  <div
-                    className={`relative flex h-[70%] w-full flex-col items-center justify-between border `}
-                  >
-                    {item.content.map((opt, optIndex) => (
-                      <div
-                        onClick={() => opt?.HandleClick()}
-                        style={{
-                          height: 100 / item.content.length - 2 + "%",
-                          transition: `opacity 450ms , transform 350ms ease-in-out`,
-                          transitionDelay: (optIndex + 1) * 200 + "ms",
-                        }}
-                        className={`group my-[2px]  flex w-full cursor-pointer items-center justify-start gap-x-[15px]  overflow-hidden  px-[25px] font-[OpenSauceReg] ${
-                          itemIndex === 1
-                            ? "border border-black "
-                            : optIndex != 2
-                            ? "border-b border-black border-opacity-30"
-                            : ""
-                        } ${
-                          NavMenu.IndexSelected - 1 === itemIndex
-                            ? `translate-y-0 opacity-[1] `
-                            : `translate-y-[150px] opacity-0`
-                        }`}
-                      >
-                        {opt?.icon && (
-                          <opt.icon
-                            style={{
-                              transition: `opacity 550ms , transform 150ms ease-in`,
-                            }}
-                            className={`${
-                              itemIndex != 1 &&
-                              "absolute opacity-0 group-hover:translate-x-[-5px] group-hover:opacity-100"
-                            } `}
-                          />
-                        )}
-                        <p
-                          style={{
-                            transition: ` transform 150ms ease-in`,
-                          }}
-                          className={` w-[50%]  ${
-                            itemIndex != 1
-                              ? " group-hover:translate-x-[18px]"
-                              : `group-hover:translate-x-full group-hover:scale-[0.8] group-hover:opacity-[0.5]`
-                          }  `}
-                        >
-                          {opt?.title}
-                        </p>
-
-                        {/* PRICES LABEL */}
-                        {itemIndex === 1 && (
-                          <div
-                            style={{
-                              transition: `transform 250ms ease `,
-                            }}
-                            className={`absolute right-0 flex h-full w-[60%]  translate-x-full items-center justify-around bg-blue-300 group-hover:translate-x-0 `}
-                          >
-                            <h2 className="flex w-[35%] items-center justify-center text-[2.2rem] font-semibold text-gray-700">
-                              {opt?.details?.price}
-                              <b className="scale-[0.5]">$</b>
-                            </h2>
-                            <div className="h-[65%] w-[1px] bg-gray-800 opacity-[0.3]" />
-                            <div className="flex w-[50%] flex-col items-center justify-center ">
-                              <p className={`text-[10px] leading-none  `}>
-                                {opt?.details?.about}
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-  const UserNotLoged = () => (
-    <>
-      <div
-        className={`hidden h-full w-[75%] items-center  justify-around text-[17px]  md:flex
-          ${ScrollDown ? "text-gray-800" : "text-gray-100 "}
-      `}
-      >
-        {/* THE NAV BAR FOR IF THE USER IS NOT LOGED */}
-        {(() => {
-          /* <-- COMPONENTS --> */
-          const Links = (e, defaultStyle) => (
-            <div
-              onClick={() => navigate(e.onClick?.to)}
-              className={`${defaultStyle} group flex h-[30%] flex-col items-center justify-start  overflow-hidden rounded-full px-[10px]`}
-            >
-              <p
-                className={`transition-translate duration-[250ms] group-hover:translate-y-[-100%]`}
-              >
-                {e.text}
-              </p>
-              <div
-                className={`transition-translate relative flex w-full items-center justify-center duration-[250ms] group-hover:translate-y-[-100%]`}
-              >
-                <p>GO</p>
-                <CgArrowDown
-                  style={{
-                    transition: `transform 500ms 100ms ,opacity 400ms ease-in-out  `,
-                  }}
-                  className="absolute  origin-center rotate-[-90deg] opacity-0  group-hover:translate-x-[22px] group-hover:opacity-[1]"
-                />
-              </div>
-            </div>
-          );
-
-          const Show = (e) => <Works e />;
-
-          const BTN = (e) => (
-            <div
-              onClick={() => navigate(e.onClick?.to)}
-              style={{
-                transition: `opacity 200ms ,background 250ms , border 500ms ease-in-out `,
-              }}
-              className={`backdrop-lg flex min-w-[40%] cursor-pointer items-center justify-center rounded-full border px-[20px] py-[5px]
-            
-            ${
-              ScrollDown
-                ? `border-black hover:border-white hover:bg-black hover:bg-opacity-[0.8] hover:text-gray-100`
-                : `hover:bg-white hover:bg-opacity-[0.7] hover:text-gray-950`
-            }`}
-            >
-              <p>{e.text}</p>
-            </div>
-          );
-
-          /* THE TWO SECTION BUTTONS AND LINKS CONTAINER */
-
-          return NavContent?.notLoged?.map((Nav, index) => {
-            return (
-              /* CONTAINER OF EACH NAV SECTION BUTTONS AND LINKS */
-              <div
-                key={v4()}
-                style={{
-                  fontFamily: `OpenSauce`,
-                  fontWeight: `thin`,
-                }}
-                className={`flex h-full min-w-max items-center justify-center gap-x-[20px]  
-                ${
-                  Nav.type === "btn"
-                    ? "w-[40%] gap-x-[20px]"
-                    : "w-[60%] gap-x-[15px]"
-                }`}
-              >
-                {/* THE NAV BAR CONTENT */}
-                {Nav?.content?.map((item) => {
-                  return ((
-                    defaultStyle = `cursor-pointer 
-                    ${
-                      ScrollDown ? `hover:text-gray-50` : `hover:text-green-300`
-                    }
-                    `
-                  ) => {
-                    switch (item.type) {
-                      case "link":
-                        return Links(item, defaultStyle);
-                      case "show":
-                        return Show(item, defaultStyle);
-                      case "btn":
-                        return BTN(item);
-                    }
-                  })();
-                })}
-              </div>
-            );
-          });
-        })()}
-        {/* THE NAV BAR FOR IF THE USER IS LOGED */}
-      </div>
-
-      <div
-        className={`flex h-full w-[80%]  items-center  justify-between px-[25px] md:hidden `}
-      >
-        <div className={`flex w-[70%] scale-[1.1] items-center justify-center`}>
-          <Works />
-        </div>
-
-        <div className={` flex h-full w-[20%] items-center  justify-end `}>
-          <MenuIcon ScrollPosition={ScrollDown} menuState={{ open, setOpen }} />
-        </div>
-      </div>
-    </>
-  );
-
-  //<----------------EFFECT HOOK --------------------->
-  /* updating the tracking position when the user scroll */
-  React.useEffect(() => {
-    const handleScrolling = debounce(() => {
-      setScrollPosition(window.scrollY);
-    }, 200);
-
-    window.addEventListener("scroll", handleScrolling);
-    return () => {
-      removeEventListener("scroll", handleScrolling);
-    };
-  }, []);
-  /* closing the menu when the render change */
-  React.useEffect(() => {
-    setNavMenu((c) => ({
-      ...c,
-      IndexSelected: false,
-    }));
-    setOpen(false);
-  }, [location?.pathname]);
-
-  /* NAV BAR DISPLAY */
-  return (
-    <nav
-      style={{
-        transition: `height 100ms ease-in-out`,
-        width: "100vw",
-      }}
-      className={`navBar z-[15]    mb-[15px] flex h-[100px] flex-col items-center justify-between    border ${
-        HideAt.Nav.some((x) => x === location.pathname)
-          ? `pointer-events-none opacity-0`
-          : `pointer-events-auto opacity-[1]`
-      }`}
-    >
-      {/* <------ WHITE BACKGROUND IN THE NAVBAR -------> */}
-      <WhiteBgNavBar />
-
-      <div
-        className={`flex h-full w-full items-center justify-between  px-[15px] lg:w-[95%]`}
-      >
-        {/* <--------- LOGO ---------> */}
-        <Link
-          to={"/"}
-          className={`flex h-full w-[140px]  cursor-pointer items-center justify-center lg:w-[10%]  `}
-        >
-          <Logo
-            ScrollingDown={useScrollDirection()}
-            scale={ScrollDown ? 1.4 : 1.2}
-            Menu={true}
-            color={
-              ScrollDown || open
-                ? {
-                    main: "black",
-                    colors: [`black`, `black`, `black`],
-                  }
-                : {
-                    main: "white",
-                    colors: [`white`, `white`, `white`],
-                  }
-            }
-          />
-        </Link>
-
-        {/* <---------------------- LOGEDOUT USER NAVBAR ----------------------> */}
-        {!user && <UserNotLoged />}
-        {/* <---------------------- LOGEDIN USER NAVBAR ----------------------> */}
-        {!!user && <UserLoged />}
       </div>
     </nav>
   );

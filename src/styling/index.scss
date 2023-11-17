@@ -22,6 +22,22 @@ body {
   overflow-x: hidden;
 }
 
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flex-center-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.flex-center-around {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
 /* HERO SECTION */
 .blueBG {
   background: linear-gradient(to bottom, FnC.$DarkBlue 30%, black);

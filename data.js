@@ -1,3 +1,5 @@
+import React from "react";
+
 import M1Avatar from "/src/assets/img/Characters/Male/No comments 7.png";
 import M2Avatar from "/src/assets/img/Characters/Male/Teamwork-1.png";
 import M3Avatar from "/src/assets/img/Characters/Male/No gravity-2.png";
@@ -13,11 +15,151 @@ import F1Avatar from "/src/assets/img/Characters/Female/Funny Bunny-6.png";
 import F2Avatar from "/src/assets/img/Characters/Female/Funny Bunny-8.png";
 import F3Avatar from "/src/assets/img/Characters/Female/No gravity-1.png";
 import F4Avatar from "/src/assets/img/Characters/Female/Upstream-12.png";
-import F5Avatar from "/src/assets/img/Characters/Female/Teamwork.png";
 import F6Avatar from "/src/assets/img/Characters/Female/Upstream-10.png";
-import F7Avatar from "/src/assets/img/Characters/Female/Teamwork-6.png";
+
+import { IoMdAdd } from "react-icons/io";
+import { FaNewspaper } from "react-icons/fa";
+import { RiBellLine } from "react-icons/ri";
+import { FiSearch } from "react-icons/fi";
 
 // <---------- MENU AND NAV BAR CONTENT -------->
+
+export const NavData = {
+  out: [
+    [
+      {
+        type: "text",
+        func: "nav",
+        to: "/",
+        title: "more",
+        mediaQueryClass: `md:flex hidden`,
+      },
+      {
+        type: "text",
+        func: "nav",
+        to: "/",
+        title: "works",
+        mediaQueryClass: `flex`,
+      },
+      {
+        type: "text",
+        func: "nav",
+        to: "/",
+        title: "about",
+        mediaQueryClass: `md:flex hidden`,
+      },
+    ],
+    [
+      {
+        type: "btn",
+        func: "nav",
+        to: "/",
+        title: "sign in",
+        mediaQueryClass: `md:flex hidden`,
+      },
+      {
+        type: "btn",
+        func: "nav",
+        to: "/",
+        title: "sign up",
+        mediaQueryClass: `md:flex hidden`,
+      },
+    ],
+  ],
+  in: [
+    [
+      {
+        type: "form",
+        func: "nav",
+        to: "",
+        onClick: () => null,
+        Icon: FiSearch,
+        placeholder: "search for members and channels",
+      },
+    ],
+
+    [
+      {
+        type: "icon",
+        func: "update",
+        onClick: () => null,
+        Icon: RiBellLine,
+        menu: {
+          title: "Notifications",
+          options: [[]],
+        },
+      },
+      {
+        type: "icon",
+        func: "update",
+        Icon: IoMdAdd,
+        menu: {
+          title: "create channel",
+          options: [
+            [
+              {
+                title: "create a tribe",
+                type: "text",
+                func: "open",
+                onClick: (popover) => {
+                  try {
+                    popover?.showPopover();
+                  } catch (err) {
+                    console.log(err);
+                  }
+                },
+              },
+              {
+                title: "create a community",
+                type: "text",
+                func: "open",
+                onClick: (popover) => {
+                  try {
+                    popover?.showPopover();
+                  } catch (err) {
+                    console.log(err);
+                  }
+                },
+              },
+            ],
+          ],
+        },
+      },
+      {
+        type: "img",
+        func: "update",
+
+        img: localStorage?.user ? JSON.parse(localStorage?.user)?.Avatar : null,
+        menu: {
+          title: "profile",
+          options: [
+            [
+              { title: "Profile", type: "text", func: "nav", to: "/" },
+              { title: "settings", type: "text", func: "nav", to: "/" },
+              { title: "more", type: "text", func: "nav", to: "/" },
+              { title: "contact", type: "text", func: "nav", to: "/" },
+            ],
+            [
+              {
+                title: "log out",
+                type: "btn",
+                fun: "fire",
+                onClick: () => null,
+              },
+              {
+                title: "change user",
+                type: "btn",
+                fun: "fire",
+                onClick: () => null,
+              },
+            ],
+          ],
+        },
+      },
+    ],
+  ],
+};
+
 export const NavContent = {
   notLoged: [
     {
