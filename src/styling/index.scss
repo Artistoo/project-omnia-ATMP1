@@ -1,19 +1,51 @@
-@use "fonts&colors" as FnC;
-@use "reset.scss";
+@use 'fonts&colors' as FnC;
+@use 'reset.scss';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.scroller-rounded {
+  overflow-y: scroll;
+  padding-right: 8px;
+  &::-webkit-scrollbar {
+    opacity: 0;
+    width: 10px;
+    margin-inline: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(196, 196, 196, 0.726);
+    border-radius: 2px;
+    position: absolute;
+
+    &:hover {
+      background: rgb(165, 165, 165);
+    }
+  }
+}
 
 @mixin scrollRemove() {
   &::-webkit-scrollbar {
     display: none;
   }
 }
+
 @mixin FlexCenter() {
   display: flex;
   align-items: center;
   justify-items: center;
 }
+
+/* .scroller-remove{
+  &::-webkit-scrollbar{
+    opacity : 0 ; 
+  }
+  &::-webkit-scrollbar-thumb{
+    border-radius: 8px;
+    background : red ;
+
+  }
+} */
 
 //----------BODY THE SCROLL BAR --------
 body {
@@ -51,12 +83,7 @@ body {
 }
 .btn-one {
   width: 240px;
-  background: linear-gradient(
-    180deg,
-    rgba(26, 1, 255, 0.281),
-    rgba(103, 33, 216, 0.15),
-    rgba(104, 102, 219, 0.089)
-  );
+  background: linear-gradient(180deg, rgba(26, 1, 255, 0.281), rgba(103, 33, 216, 0.15), rgba(104, 102, 219, 0.089));
   color: white;
   border-radius: 50px;
   backdrop-filter: blur(250px) !important;
@@ -64,17 +91,12 @@ body {
 }
 .btn-two {
   width: 300px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.144),
-    rgba(255, 255, 255, 0.178)
-  );
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.144), rgba(255, 255, 255, 0.178));
   letter-spacing: 15px;
   backdrop-filter: blur(150px);
   background-size: 100% 100%;
   border-radius: 30px;
-  transition: background 100ms, filter 1200ms, color 150ms, border 200ms,
-    box-shadow 450ms ease-in-out;
+  transition: background 100ms, filter 1200ms, color 150ms, border 200ms, box-shadow 450ms ease-in-out;
   color: white;
   border: solid thin white;
   outline: none;
@@ -141,17 +163,9 @@ body {
 
 // <----------- COLORS SECTION ------------>
 .masked {
-  mask-image: url("../assets/mask/LinesMask.png");
+  mask-image: url('../assets/mask/LinesMask.png');
   mask-size: 100% 100%;
-  background: linear-gradient(
-    45deg,
-    #ff3d8e,
-    rgb(247, 25, 236),
-    #ff8e3d,
-    #e7ff3d,
-    #3dff8e,
-    purple
-  );
+  background: linear-gradient(45deg, #ff3d8e, rgb(247, 25, 236), #ff8e3d, #e7ff3d, #3dff8e, purple);
 }
 .animateBg {
   animation: animateBg 2000ms alternate infinite;
@@ -232,7 +246,7 @@ body {
 
 .bgColorful {
   &:before {
-    content: "";
+    content: '';
     width: 360px;
     aspect-ratio: 1/1;
     border-radius: 100%;
@@ -246,7 +260,7 @@ body {
     scale: 3;
   }
   &::after {
-    content: "";
+    content: '';
     width: 360px;
     aspect-ratio: 1/1;
     border-radius: 100%;
@@ -309,7 +323,7 @@ body {
   padding-inline: 5px;
   &::-webkit-scrollbar {
     width: 5px;
-    background: rgb(29, 29, 29);
+    background: gray;
     border-radius: 8px;
     margin-block: 15px;
     border: solid rgb(39, 39, 39) 0.2px;
@@ -430,7 +444,7 @@ body {
 
 .linear_border {
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     width: 100%;
     height: 100%;
@@ -503,6 +517,16 @@ body {
     scale: 0;
   }
 }
+@keyframes FadeInView {
+  from {
+    translate: 0 100px;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
 
 .valuesBox {
   animation: values_box_view 500ms alternate;
@@ -523,12 +547,20 @@ body {
 }
 .slide_inView_animation {
   transition-property: opacity transform;
-  transition-duration: 250ms;
+  transition-duration: 5000ms;
   transition-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55);
-  animation: slide_inView_animation 500ms alternate;
+  animation: FadeAndScale 500ms alternate;
+  animation-timeline: view();
+  animation-range: entry 20%, exit 0;
+}
+.fade_inView_animation {
+  transition-property: opacity transform;
+  transition-duration: 500ms;
+  transition-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  animation: FadeInView 500ms alternate;
   animation-delay: 100ms;
   animation-timeline: view();
-  animation-range: entry 0%, exit;
+  animation-range: entry 0, exit 0;
 }
 
 ::view-transition-old(AutherizationProcessTransitionName) {

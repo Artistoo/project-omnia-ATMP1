@@ -105,20 +105,22 @@ const UserSchema = new Schema({
     default: 0,
     required: false,
   },
+
   Interests: {
     type: [String],
     required: false,
     validate: {
       validator: () => {
         if (!!this?.length) {
-          return Boolean(this?.length > 2 && this?.length < 8);
+          return Boolean(this?.length > 5);
         }
         return true;
       },
-      message: `you must select between 2 and 8 interests`,
+      message: `please select at least 5 interests`,
     },
     default: [],
   },
+
   Age: {
     type: Number,
     required: false,

@@ -7,7 +7,7 @@ import session from "express-session";
 import MongoSession from "connect-mongodb-session";
 import { Server } from "socket.io";
 
-//_______________RaOUTES _______________________
+//_______________ROUTES _______________________
 import UserSchema from "./models/Users.js";
 import AuthRoute from "./Routes/AuthenticationRouter.js";
 import AuthZRoute from "./Routes/AuthorizationRouter.js";
@@ -19,8 +19,6 @@ import PaymentRouter from "./Routes/PaymentRoute.js";
 import ChannelsRoute from "./Routes/ChannelsRoute.js";
 import SocketIo_Router from "./Routes/SocketIo_Router.js";
 import NotificationRoute from "./Routes/NotificationRoute.js";
-
-
 
 const app = express();
 const port = process.env.PORT || 5500;
@@ -42,7 +40,6 @@ const store = MongoStore({
   connection: mongoose.connection,
 });
 
-
 //_____________Database______________
 /* mongoose.set("strictQuery", true); */
 mongoose
@@ -55,32 +52,45 @@ mongoose
 //__________SOCKET IO CONNECTION ________
 const io = new Server(server, {
   cors: {
+    credentials: true,
     origin: ["http://localhost:5173"],
   },
 });
-
+app.set("trust proxy", 1);
 //_____________MiddleWares________________
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: "http://localhost:5173",
     credentials: true,
+    origin: "http://localhost:5173",
+    allowedHeaders: "Content-Type,Authorization",
   })
 );
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
+  res.setHeader("Cache-Control", "max-age=30");
+
+  next();
+});
 app.use(
   session({
     secret: "MyPassword",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: true,
+      secure: false,
       httpOnly: true,
-      sameSite: "None",
+      sameSite: "Lax",
     },
     store,
   })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -92,35 +102,27 @@ app.use("/channels", ChannelsRoute);
 app.use("/accountConfig", AccountConfig);
 app.use("/search", SearchRouter);
 app.use("/payment", PaymentRouter);
-app.use('/notification' , NotificationRoute)
+app.use("/notification", NotificationRoute);
 app.use("/socket", SocketIo_Router(io));
-
 
 //____________ TEST _______________
 
 /* TODO: find a way to recieve the cookies and save the session when loggin in  */
-app.get("/showUser", (req, res, next) => {
-  try{
-    if(req.user){
-      res.status(200).json({success : `cookies is set you are logged as ${req.session}`})
-      return 
-    }
-    return res.status(500).json({failed : `you have failed to set the cookies in the browser`})
-  }catch(err){
-    console.log(err)
+app.get("/create", (req, res) => {
+  try {
+    req.session.name = "please SAVE";
+
+    return res.json({ success: `the name is ${req.session?.name}` });
+  } catch ({ message: error }) {
+    return res.json({ error });
   }
 });
-
-app.get("/createOne", (req, res) => {
-  try {
-    res.cookie("isAuth", "true", {
-      sameSite: "None",
-      secure: true,
-    });
-
-    // You might want to redirect or send a response here if needed.
-    res.status(200).json({ success: `Cookie set successfully` });
-  } catch (err) {
-    res.status(500).json({ err: `An error occurred ${err.message}` });
-  }
+app.get("/show", (req, res) => {
+  const success = Boolean(req.session?.name);
+  console.log(req.session);
+  return res.json({
+    [success ? "success" : "fail"]: `session is ${
+      success ? `saved` : `failed`
+    }`,
+  });
 });

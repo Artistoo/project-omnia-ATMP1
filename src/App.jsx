@@ -35,6 +35,7 @@ import GetReady from "./pages/Auth/stages/GetReady.jsx";
 import VerifyEmail from "./pages/Auth/stages/Verify_Email.jsx";
 import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
 import User_Interests from "./pages/Auth/stages/User_interests.jsx";
+import Birth_Date from "./pages/Auth/stages/Birth_Date.jsx";
 
 import QR_Verification from "./pages/Auth/stages/QR_Verificaiton.jsx";
 //___________________JSX component______________________
@@ -81,7 +82,6 @@ function App() {
     return element;
   };
 
-
   return !pageLoading ? (
     <div
       style={{
@@ -109,8 +109,9 @@ function App() {
         <Route path="/AccountAuth" element={<AuthenticationFormPage />}>
           <Route path={`Authentication`} element={<AuthenticationForm />} />
           <Route path={`Verification_Code`} element={<VerifyEmail />} />
-          <Route path={`select_interest`} element={<User_Interests />} />
           <Route path={`QR_verify`} element={<QR_Verification />} />
+          <Route path={`Birth_Date`} element={<Birth_Date />} />
+          <Route path={`select_interest`} element={<User_Interests />} />
         </Route>
 
         <Route path="Profile/:profileID" element={<Profile />} />
