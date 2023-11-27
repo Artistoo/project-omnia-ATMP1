@@ -354,7 +354,7 @@ export const channel_parameter = [
     {
       type: 'box',
       name: 'Goal',
-
+      value: '',
       placeholder: `whats your goal`,
       validator: {
         validate: function () {
@@ -367,10 +367,11 @@ export const channel_parameter = [
     {
       type: 'boolean',
       name: 'Locked',
+      explain: `if set to true every one will be able to join your channel without sending a requiest`,
 
-      placeholder: 'everyone can join',
-      value: [],
-      options: [true, false],
+      placeholder: 'is open',
+      value: true,
+
       validator: {
         validate: function () {
           return this.value instanceof Boolean;
@@ -383,10 +384,11 @@ export const channel_parameter = [
     {
       type: 'boolean',
       name: 'Visibility',
+      explain: `the channel won't apear on the search resuls if private `,
 
-      placeholder: `make it private (no one can find it)`,
-      value: [],
-      options: [true, false],
+      placeholder: `is private`,
+      value: false,
+
       validator: {
         validate: function () {
           return this.value instanceof Boolean;
@@ -409,7 +411,7 @@ export const channel_parameter = [
           return [/^.{300,520}$/u].map((con) => con.test(this.value)).every(Boolean);
         },
         async: false,
-        error_message: `please make sure the describtion is longer than 300 letter and less than 520`,
+        error_message: `describtion must be between 300 and 520`,
       },
     },
   ],
