@@ -1,5 +1,5 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { method } from "lodash";
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { method } from 'lodash';
 
 const keys = {
   pixabay: import.meta.env.VITE_PIXABAY_API_KEY,
@@ -12,7 +12,7 @@ export const LocationApi = createApi({
   }),
   endpoints: (builder) => ({
     currentApi: builder.query({
-      query: () => "http://ip-api.com/json/?fields=61439",
+      query: () => 'http://ip-api.com/json/?fields=61439',
     }),
     listOfCountries: builder.query({
       query: () => `https://restcountries.com/v3.1/all`,
@@ -21,17 +21,14 @@ export const LocationApi = createApi({
 });
 
 export const PixabayAPI = createApi({
-  reducerPath: "pixaby",
+  reducerPath: 'pixaby',
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://pixabay.com/api/",
+    baseUrl: 'https://pixabay.com/api/',
   }),
   endpoints: (builder) => ({
     PhotosSearchGet: builder.query({
-      /* param, page, type */
-      query: ({ result_type, param, page }) =>
-        `${result_type === "vid" ? `videos/` : ""}?key=${
-          keys.pixabay
-        }&q=${param}&page=${page}&per_page=20&safe_search=true`,
+      query: ({ param, page, per_page }) =>
+        `videos/?key=${keys.pixabay}&q=${param}&page=${page}&per_page=${per_page}&safe_search=true`,
       refetchOnMountOrArgChange: true,
     }),
   }),
@@ -46,7 +43,7 @@ export const ServerSideApiGet = createApi({
   endpoints: (builder) => ({
     /* AUTHENTICATION ROUTER */
     getVerificationCode: builder.query({
-      query: () => "email/verify",
+      query: () => 'email/verify',
     }),
     GenerateQR: builder.query({
       query: (user_name) => `auth/GenerateQR/${user_name}`,
@@ -85,41 +82,41 @@ export const ServerSideApiPost = createApi({
   reducerPath: `ServerSideApiPost`,
   baseQuery: fetchBaseQuery({
     baseUrl: `http://localhost:5500`,
-    credentials: "include",
+    credentials: 'include',
   }),
   endpoints: (builder) => ({
     sendMeEmail: builder.mutation({
       query: (email) => ({
-        url: "/email",
-        method: "POST",
+        url: '/email',
+        method: 'POST',
         body: email,
       }),
     }),
     createUser: builder.mutation({
       query: (userData) => ({
         url: `auth/register`,
-        method: "POST",
+        method: 'POST',
         body: userData,
       }),
     }),
     verifyAccount: builder.mutation({
       query: (email) => ({
         url: `email/verify`,
-        method: "POST",
+        method: 'POST',
         body: email,
       }),
     }),
     Login: builder.mutation({
       query: (user) => ({
-        url: "auth/login",
-        method: "POST",
+        url: 'auth/login',
+        method: 'POST',
         body: user,
       }),
     }),
     Logout: builder.mutation({
       query: () => ({
-        method: "POST",
-        url: "/auth/logout",
+        method: 'POST',
+        url: '/auth/logout',
       }),
     }),
     ConfirmPassword: builder.mutation({
@@ -131,8 +128,8 @@ export const ServerSideApiPost = createApi({
     }),
     Notify: builder.mutation({
       query: (ip) => ({
-        url: "",
-        method: "POST",
+        url: '',
+        method: 'POST',
         body: ip,
       }),
     }),
@@ -145,22 +142,22 @@ export const ServerSideApiPost = createApi({
     }),
     AccountConfigure: builder.mutation({
       query: (changes) => ({
-        url: "accountConfig/",
-        method: "POST",
+        url: 'accountConfig/',
+        method: 'POST',
         body: changes,
       }),
     }),
     GenerateResetPasswordLink: builder.mutation({
       query: (userEmail) => ({
-        url: "auth/ResetPasswordLink",
-        method: "POST",
+        url: 'auth/ResetPasswordLink',
+        method: 'POST',
         body: userEmail,
       }),
     }),
     ChangePassword: builder.mutation({
       query: (newPassword) => ({
-        url: "auth/changePassword",
-        method: "POST",
+        url: 'auth/changePassword',
+        method: 'POST',
         body: newPassword,
       }),
     }),
@@ -172,18 +169,18 @@ export const ServerSideApiPost = createApi({
       }),
     }),
     UserState: builder.mutation({
-      query: () => ({ url: `auth/userState`, method: "POST" }),
+      query: () => ({ url: `auth/userState`, method: 'POST' }),
     }),
     createChannel: builder.mutation({
       query: (data) => ({
-        url: "channels/create_channel",
+        url: 'channels/create_channel',
         body: data,
-        method: "POST",
+        method: 'POST',
       }),
     }),
     DeleteChannel: builder.mutation({
       query: ({ userID, Name, Admins }) => ({
-        url: "channels/delete_channel",
+        url: 'channels/delete_channel',
         method: `POST`,
         body: { userID, Name, Admins },
       }),
@@ -193,7 +190,7 @@ export const ServerSideApiPost = createApi({
         url: `payment/pay/${service}`,
         body: { token, plan },
         method: `POST`,
-        headers: { "Content-type": "application/json" },
+        headers: { 'Content-type': 'application/json' },
       }),
     }),
     FetchChannels: builder.mutation({
@@ -205,30 +202,30 @@ export const ServerSideApiPost = createApi({
     }),
     ChannelInteract: builder.mutation({
       query: (interactionData) => ({
-        method: "POST",
+        method: 'POST',
         body: { ...interactionData },
-        url: "channels/channelInteract",
+        url: 'channels/channelInteract',
       }),
     }),
     ReportChannel: builder.mutation({
       query: (report_info) => ({
-        method: "POST",
+        method: 'POST',
         body: report_info,
         url: `channels/channel_report`,
       }),
     }),
     ChannelJoinRequest: builder.mutation({
       query: (channel_name) => ({
-        method: "POST",
+        method: 'POST',
         body: channel_name,
         url: `channels/channel_join`,
       }),
     }),
     JoinRequiestNotification: builder.mutation({
       query: (notification_body) => ({
-        url: "notification/",
+        url: 'notification/',
         body: notification_body,
-        method: "POST",
+        method: 'POST',
       }),
     }),
   }),

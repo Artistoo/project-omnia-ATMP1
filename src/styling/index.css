@@ -601,6 +601,28 @@ body::-webkit-scrollbar {
   border-radius: 0.35rem;
 }
 
+.loading_screen {
+  animation: Loading_screen_animation 2500ms linear alternate infinite;
+}
+@keyframes Loading_screen_animation {
+  from {
+    background-position: 0% 0%;
+    background-size: 2000%;
+  }
+  to {
+    background-position: 100% 0%;
+    background-size: 1000%;
+  }
+}
+
+.stretch {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
 /* MAIN LOGED IN HOME PAGE SECTIONS VIEW TRANSITION API ANIMATION */
 @keyframes ViewTransitionAnimationSlideIn {
   from {
