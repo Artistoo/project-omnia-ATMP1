@@ -16,10 +16,12 @@ import create_community from '../assets/img/CreateCommunity.png';
 
 //ICONS
 import { CiSquareInfo, CiSquarePlus, CiSquareRemove } from 'react-icons/ci';
-import { IoMdArrowForward } from 'react-icons/io';
+import { IoIosArrowRoundForward, IoMdArrowForward } from 'react-icons/io';
 //HOOKS
 import { useClickAway, useMediaQuery } from '@uidotdev/usehooks';
 import { handlePopoverState } from '../utils/handlePopoverState.js';
+import { FaArrowRight } from 'react-icons/fa';
+import { useCreateChannelMutation } from '../redux/API.js';
 
 const Components = {
   text: ({ Ele_data, important = false, type }) => (
@@ -242,8 +244,10 @@ const Components = {
   ),
 
   box: ({ Ele_data, isMD, sectionIndex, open_menu, index, box_parameter }) => {
+    /* <---- STATES -----> */
     const [isCreating, set_isCreating] = box_parameter;
 
+    /* <---- VARIABLES -----> */
     const selected = isCreating === Ele_data.title;
     const transition = (properties) =>
       Array.isArray(properties) && {
@@ -255,12 +259,23 @@ const Components = {
         ),
       };
 
+    /* <----- REF ------> */
+    const Channel_parameters_ref = React.useRef(null);
+
+    /* <---- HANDLERS -----> */
     const handleOpenChannelCreationPopover = (state) => {
       handlePopoverState(`create_channel_popover_${Ele_data.title}`, state);
       set_isCreating((c) => (c === Ele_data.title ? false : Ele_data.title));
     };
     const handleIfSelected = (isSelected, notSelected, noneSelected, inMD = false) =>
       !inMD && !isMD && Boolean(isCreating) ? (selected ? isSelected || '' : notSelected || '') : noneSelected || '';
+
+    const handleChannelCreation = function () {
+      if (!Channel_parameters_ref?.current) return;
+      Channel_parameters_ref.current.handleSubmit();
+    };
+
+    /* <---- EFFECTS -----> */
 
     //hiding the popover on page reload
     React.useEffect(() => {
@@ -295,37 +310,53 @@ const Components = {
                 .fill('')
                 .map((_, btn_index) => (
                   <button
-                    style={{ ...transition(['opacity', 'left', 'transform ease', 'background linear 100', 'color']) }}
-                    onClick={() => {
-                      !isMD && !Boolean(btn_index) ? handleOpenChannelCreationPopover(!isCreating) : null;
+                    //ID
+                    key={`createChannelBoxBTN_${btn_index}`}
+                    //EVENTS
+                    onClick={() =>
+                      !isMD && !Boolean(btn_index)
+                        ? handleOpenChannelCreationPopover(!isCreating)
+                        : handleChannelCreation()
+                    }
+                    //STYLING
+                    style={{
+                      ...transition(['opacity', 'left', 'transform ease', 'background linear 100', 'color']),
                     }}
-                    className={`flex-center absolute rounded-md  border  border-gray-700/80 pr-[20px] hover:bg-black  hover:text-gray-200 md:bottom-auto md:right-0 md:h-[30px] md:w-[40%] md:border-transparent md:bg-transparent md:hover:bg-transparent md:hover:text-black
-
+                    className={`flex-center group absolute  rounded-md  border border-gray-700/80 pr-[20px]  hover:bg-black hover:text-gray-200 md:bottom-auto md:right-0 md:h-[30px] md:w-[40%] md:border-transparent md:bg-transparent md:hover:bg-transparent md:hover:text-black
                     ${
                       Boolean(btn_index)
-                        ? ` ${handleIfSelected(`left-[101%]`, null, `pointer-events-none left-0 opacity-0`)}`
+                        ? handleIfSelected(`left-[101%]`, null, `pointer-events-none left-0 opacity-0`)
                         : handleIfSelected(`left-0 translate-x-[-105%]`, null, null)
                     }
 
-                    ${handleIfSelected(
-                      `bottom-0 h-full w-[20%] min-w-[70px] bg-black text-gray-200`,
-                      null,
-                      `bottom-[15px] h-[30px] w-[45%]`
-                    )}`}
+                      ${handleIfSelected(
+                        `bottom-0 h-full w-[20%] min-w-[70px] bg-black text-gray-200`,
+                        null,
+                        `bottom-[15px] h-[30px] w-[45%]`
+                      )}`}
                   >
                     {[
-                      handleIfSelected(btn_index ? CiSquarePlus : CiSquareRemove, CiSquarePlus, CiSquarePlus),
+                      handleIfSelected(btn_index ? IoIosArrowRoundForward : CiSquareRemove, CiSquarePlus, CiSquarePlus),
                       CiSquareInfo,
                     ].map((Channel_creation_icon, Channel_creation_icon_index) => (
                       <Channel_creation_icon
-                        style={{ ...transition(['left', 'transform']) }}
+                        //PROPS
+                        size={isMD ? 30 : handleIfSelected(32, 27, 27)}
+                        //EVENTS
                         onClick={() => {
                           isMD && !Channel_creation_icon_index ? handleOpenChannelCreationPopover(true) : null;
                         }}
-                        size={isMD ? 30 : handleIfSelected(32, 27, 27)}
-                        className={`absolute md:left-auto   hover:md:scale-[1.1]
+                        //STYLINGS
+                        style={{ ...transition(['left', 'transform', 'color']) }}
+                        className={` absolute md:left-auto   hover:md:scale-[1.1]
                         translate-x-[${Channel_creation_icon_index * 100}%] 
-                        ${Boolean(Channel_creation_icon_index) ? (isMD ? `flex` : `hidden`) : 'flex'}
+                        ${
+                          Boolean(btn_index)
+                            ? `group-hover:translate-x-[-8px] group-hover:scale-x-[1.1]`
+                            : `group-hover:rotate-[90deg] 
+                              ${handleIfSelected(`group-hover:text-red-400`, null, null)}`
+                        }
+                        ${Boolean(Channel_creation_icon_index) ? (isMD ? `flex` : `hidden`) : `flex`}
                         ${handleIfSelected(`left-1/2 -translate-x-1/2`, null, `left-0`)}`}
                       />
                     ))}
@@ -348,10 +379,15 @@ const Components = {
 
         {/* POPOVER */}
         <div
-          {...(isMD && { popover: 'auto' })}
+          //ID
           id={`create_channel_popover_${Ele_data.title}`}
+          //PROP
+          {...(isMD && { popover: 'auto' })}
+          //STYLING
           style={{
-            transition: `transform 250ms cubic-bezier(0.45, 0.05, 0.55, 0.95) , opacity 250ms  cubic-bezier(0.45, 0.05, 0.55, 0.95) `,
+            transitionProperty: `transform , opacity`,
+            transitionTimingFunction: `cubic-bezier(0.45, 0.05, 0.55, 0.95)`,
+            transitionDuration: `250ms , 250ms`,
             transitionDelay: isCreating ? `250ms` : `0ms`,
           }}
           className={`pointer-events-none rounded-md
@@ -368,6 +404,11 @@ const Components = {
           }`}
         >
           <Channel_card
+            //EVENTS
+            handleChannelCreation={(channel_params) => handleChannelCreation(channel_params)}
+            //REF
+            ref={Channel_parameters_ref}
+            //DATA
             Ele_data={Ele_data}
             selected={selected}
             isCreating={isCreating}

@@ -130,7 +130,7 @@ const UserSchema = new Schema({
   Channels: [{ type: Schema.Types.ObjectId, ref: "channel" }],
   ChannelsLimit: {
     type: Number,
-    defualt: 3,
+    default: 3,
   },
 });
 

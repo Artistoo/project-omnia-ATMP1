@@ -293,25 +293,20 @@ export const channel_parameter = [
       value: '',
       ref: React.createRef(),
       validator: {
-        validate: function (name = this.value) {
-          if (!name) return false;
-          return fetch(`http://localhost:5500/channels/check_availibility/${name}`, {
+        validate: function () {
+          if (!this.value || !Boolean(this.value.length)) return false;
+          return fetch(`http://localhost:5500/channels/check_availibility/${this.value}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
           })
             .then((response) => response.json())
             .then((data) => {
-              console.log(name);
               if ('available' in data) {
-                console.log(data);
-                return [data.available, Boolean(name?.length)].every(Boolean);
+                return data.available;
               }
-              console.log(data);
               throw new Error(`the server didn't return true or false for the availibility`);
             })
-            .catch(({ message: err }) => {
-              console.log({ err });
-            });
+            .catch(({ message: err }) => console.log({ err }));
         },
         async: true,
         error_message: `please make sure the name is unique`,
@@ -321,34 +316,49 @@ export const channel_parameter = [
   [
     {
       type: 'list popover',
-      name: 'Type',
+      name: 'Languages',
 
-      placeholder: 'select type',
+      placeholder: 'select a language',
       value: [],
-      options: ['community', 'tribe'],
+      options: async () => {
+        try {
+          const fetch_params = {
+            method: 'GET',
+            headers: { 'Content-Type': 'Application/json' },
+          };
+          const fetch_languages = await fetch(`https://restcountries.com/v3.1/all`, fetch_params);
+          const languages_json = await fetch_languages.json();
+          const languages_array = Array.from(
+            new Set(languages_json.map((lang) => lang.languages && lang.languages[Object.keys(lang.languages)[0]]))
+          );
+
+          return languages_array;
+        } catch ({ message: error }) {
+          console.log({ error });
+        }
+      },
       validator: {
         validate: function () {
-          return ['community', 'tribe'].some((sel) => sel === this.value);
+          return [this.value.length >= 1, this.value.length <= 4].every(Boolean);
         },
-        error_message: '',
         async: false,
-        limit: { max: 1, min: 1 },
+        limit: { max: 4, min: 1 },
+        error_message: 'please select few languages',
       },
     },
     {
       type: 'list popover',
       name: 'Categories',
-
       placeholder: 'select some categories',
       value: [],
       options: [...Interests.map((int) => int.title)],
       validator: {
         validate: function () {
-          return Boolean(this.value.length > 3);
+          return [this.value.length >= 2, this.value.length <= 8].every(Boolean);
         },
         error_message: 'please select at least three categories to continue',
         async: false,
-        limit: { max: 8, min: 3 },
+        limit: { max: 8, min: 2 },
       },
     },
     {
@@ -356,47 +366,20 @@ export const channel_parameter = [
       name: 'Goal',
       value: '',
       placeholder: `whats your goal`,
-      validator: {
-        validate: function () {
-          return true;
-        },
-        error_message: '',
-        async: false,
-      },
     },
     {
       type: 'boolean',
       name: 'Locked',
       explain: `if set to true every one will be able to join your channel without sending a requiest`,
-
       placeholder: 'is open',
       value: true,
-
-      validator: {
-        validate: function () {
-          return this.value instanceof Boolean;
-        },
-        error_message: '',
-        async: false,
-        limit: { max: 1, min: 1 },
-      },
     },
     {
       type: 'boolean',
       name: 'Visibility',
       explain: `the channel won't apear on the search resuls if private `,
-
       placeholder: `is private`,
       value: false,
-
-      validator: {
-        validate: function () {
-          return this.value instanceof Boolean;
-        },
-        error_message: 'please select at least three categories to continue',
-        async: false,
-        limit: { max: 1, min: 1 },
-      },
     },
   ],
   [
