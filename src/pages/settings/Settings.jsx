@@ -2,8 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 /*<---- Components ----> */
-import SettingsOptions from "../../components/SettingsOptions.jsx";
-import InputToggle from "../../components/InputToggle.jsx";
+import SettingsOptions from "../../components/Elements/SettingsOptions.jsx";
+import InputToggle from "../../components/Elements/InputToggle.jsx";
 
 /* <--- CONTEXT ----> */
 import user from "../../context/Data_context.jsx";
@@ -43,7 +43,7 @@ import { RxArrowTopRight } from "react-icons/rx";
 
 //<---- ASSETS ----->
 import done from "../../assets/img/Done.png";
-import Modal from "../../components/Modal.jsx";
+import Modal from "../../components/Popovers/Modal.jsx";
 
 /* ___________ THE JSX FOR THE SETTINGS PAGE ____________  */
 export default function Settings() {

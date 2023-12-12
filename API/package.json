@@ -12,12 +12,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
     "bcrypt": "^5.1.0",
     "connect-mongodb-session": "^3.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
+    "json-bigint": "^1.0.0",
     "mongoose": "^7.2.1",
     "mongoose-deep-populate": "^3.2.0",
     "nodemailer": "^6.9.3",
@@ -29,6 +31,7 @@
     "passport-local": "^1.0.0",
     "passport-totp": "^0.0.2",
     "passport-twitter": "^0.1.5",
+    "paypal-rest-sdk": "^1.8.1",
     "qrcode": "^1.5.3",
     "socket.io": "^4.7.2",
     "square": "^31.0.0"

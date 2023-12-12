@@ -85,27 +85,25 @@ export const ServerSideApiPost = createApi({
     credentials: 'include',
   }),
   endpoints: (builder) => ({
-    sendMeEmail: builder.mutation({
-      query: (email) => ({
-        url: '/email',
-        method: 'POST',
-        body: email,
+    //GENERAL
+    Search: builder.mutation({
+      query: (body) => ({
+        url: `search/${body.params}`,
+        method: `POST`,
+        body: body.filter,
       }),
     }),
-    createUser: builder.mutation({
-      query: (userData) => ({
-        url: `auth/register`,
+
+    //CONFIGURATION
+    AccountConfigure: builder.mutation({
+      query: (changes) => ({
+        url: 'accountConfig/',
         method: 'POST',
-        body: userData,
+        body: changes,
       }),
     }),
-    verifyAccount: builder.mutation({
-      query: (email) => ({
-        url: `email/verify`,
-        method: 'POST',
-        body: email,
-      }),
-    }),
+
+    //AUTH
     Login: builder.mutation({
       query: (user) => ({
         url: 'auth/login',
@@ -119,32 +117,13 @@ export const ServerSideApiPost = createApi({
         url: '/auth/logout',
       }),
     }),
-    ConfirmPassword: builder.mutation({
-      query: (userPassword) => ({
-        url: `authZ/confirmPassword`,
-        method: `POST`,
-        body: userPassword,
-      }),
-    }),
-    Notify: builder.mutation({
-      query: (ip) => ({
-        url: '',
+
+    //SECURITY
+    verifyAccount: builder.mutation({
+      query: (email) => ({
+        url: `email/verify`,
         method: 'POST',
-        body: ip,
-      }),
-    }),
-    DeleteUser: builder.mutation({
-      query: (loggedAccount) => ({
-        url: `auth/deleteUser`,
-        method: `POST`,
-        body: loggedAccount,
-      }),
-    }),
-    AccountConfigure: builder.mutation({
-      query: (changes) => ({
-        url: 'accountConfig/',
-        method: 'POST',
-        body: changes,
+        body: email,
       }),
     }),
     GenerateResetPasswordLink: builder.mutation({
@@ -161,23 +140,60 @@ export const ServerSideApiPost = createApi({
         body: newPassword,
       }),
     }),
-    Search: builder.mutation({
-      query: (body) => ({
-        url: `search/${body.params}`,
-        method: `POST`,
-        body: body.filter,
+    Notify: builder.mutation({
+      query: (ip) => ({
+        url: '',
+        method: 'POST',
+        body: ip,
       }),
     }),
+    ConfirmPassword: builder.mutation({
+      query: (userPassword) => ({
+        url: `authZ/confirmPassword`,
+        method: `POST`,
+        body: userPassword,
+      }),
+    }),
+
+    //ADMIN
+    sendMeEmail: builder.mutation({
+      query: (email) => ({
+        url: '/email',
+        method: 'POST',
+        body: email,
+      }),
+    }),
+
+    //USER
     UserState: builder.mutation({
       query: () => ({ url: `auth/userState`, method: 'POST' }),
     }),
-    createChannel: builder.mutation({
-      query: (data) => ({
-        url: 'channels/create_channel',
-        body: data,
-        method: 'POST',
+    DeleteUser: builder.mutation({
+      query: (loggedAccount) => ({
+        url: `auth/deleteUser`,
+        method: `POST`,
+        body: loggedAccount,
       }),
     }),
+    createUser: builder.mutation({
+      query: (userData) => ({
+        url: `auth/register`,
+        method: 'POST',
+        body: userData,
+      }),
+    }),
+
+    //PAYMENT
+    CreateOrder: builder.mutation({
+      query: (order_param) => ({
+        method: `POST`,
+        url: `payment/create_order`,
+        body: order_param,
+        headers: { 'Content-type': 'application/json' },
+      }),
+    }),
+
+    //CHANNELS
     DeleteChannel: builder.mutation({
       query: ({ userID, Name, Admins }) => ({
         url: 'channels/delete_channel',
@@ -185,12 +201,11 @@ export const ServerSideApiPost = createApi({
         body: { userID, Name, Admins },
       }),
     }),
-    PaymentForService: builder.mutation({
-      query: ({ token, service, plan }) => ({
-        url: `payment/pay/${service}`,
-        body: { token, plan },
-        method: `POST`,
-        headers: { 'Content-type': 'application/json' },
+    createChannel: builder.mutation({
+      query: (data) => ({
+        url: 'channels/create_channel',
+        body: data,
+        method: 'POST',
       }),
     }),
     FetchChannels: builder.mutation({
@@ -248,10 +263,11 @@ export const {
   useUserStateMutation,
   useCreateChannelMutation,
   useDeleteChannelMutation,
-  usePaymentForServiceMutation,
+  useCreateOrderMutation,
   useFetchChannelsMutation,
   useChannelInteractMutation,
   useReportChannelMutation,
   useChannelJoinRequestMutation,
   useJoinRequiestNotificationMutation,
+  usePayMutation,
 } = ServerSideApiPost;

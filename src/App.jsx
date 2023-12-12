@@ -17,9 +17,9 @@ import HomePage from "./pages/Home/HomePage";
 import Channel from "./pages/Channel/Channel_chat_room";
 
 //___________________COMPONENTS_______________________
-import Nav from "./components/Nav";
-import Footer from "./components/Footer";
-import Loading from "./components/Loading";
+import Nav from "./components/Layouts/Nav";
+import Footer from "./components/Layouts/Footer";
+import Loading from "./pages/Loading/Loading";
 import FooterInfo from "./pages/Dynamic/FooterInfomation/FooterInfo";
 import Details from "./pages/Details/Details";
 import NoPageFound from "./pages/NotFound/NoPageFound";

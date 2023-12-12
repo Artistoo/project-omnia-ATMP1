@@ -43,7 +43,7 @@ import { CiMusicNote1 } from 'react-icons/ci';
 import { TbBooks, TbBrandYoutubeKids, TbGardenCart, TbWriting, TbYoga } from 'react-icons/tb';
 import { GiArabicDoor, GiCook, GiKnockedOutStars, GiRobotAntennas, GiTurtle } from 'react-icons/gi';
 import { BsMusicPlayer } from 'react-icons/bs';
-import ChannelCard from './src/components/ChannelCard.jsx';
+import ChannelCard from './src/components/Elements/CreateChannelCard.jsx';
 
 // <---------- MENU AND NAV BAR CONTENT -------->
 
@@ -282,6 +282,54 @@ export const validEmailServiceProviders = [
 ];
 
 export const AvatarArray = Avatars.map((x) => Object.values(x)).flat();
+
+export const transitionTimingFunctions = {
+  Soft_Swing: `cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
+  Quick_Bounce: `cubic-bezier(0.17, 0.67, 0.83, 0.67)`,
+  Slow_Swing: `cubic-bezier(0.22, 0.61, 0.36, 1)`,
+  Smooth_Start_Quick_Middle_Slow_End: `cubic-bezier(0.4, 0, 0.2, 1)`,
+  Elastic_Out_And_Settle: `cubic-bezier(0.68, -0.55, 0.27, 1.55)`,
+  Slow_Sine_Wave: `cubic-bezier(0.445, 0.05, 0.55, 0.95)`,
+  Soft_Sigmoid_Swing: `cubic-bezier(0.455, 0.03, 0.515, 0.955)`,
+  Quick_Bounce_And_Overshoot: `cubic-bezier(0.17, 0.67, 0.83, 0.67)`,
+  Elastic_Bounce_And_Settle_Alternate: `cubic-bezier(0.68, -0.55, 0.27, 1.55)`,
+  Soft_Swing_And_Settle: `cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
+  Smooth_Anticipation_And_Quick_Settle: `cubic-bezier(0.36, 0.66, 0.04, 1)`,
+  Quick_Start_Slow_Middle_Quick_End: `cubic-bezier(0.77, 0, 0.175, 1)`,
+  Soft_Sigmoid: `cubic-bezier(0.455, 0.03, 0.515, 0.955)`,
+  Slow_Start_Quick_Middle_Slow_End_Alternate: `cubic-bezier(0.37, 0.26, 0.26, 0.87)`,
+  Stiff_Bounce_Variation: `cubic-bezier(0.68, 1.55, 0.27, 1.55)`,
+  Smooth_Parabolic_Swing: `cubic-bezier(0.25, 0.1, 0.25, 1)`,
+  Quick_Overshoot_And_Settle_Variation: `cubic-bezier(0.22, 0.61, 0.36, 1)`,
+  Soft_Jitter: `cubic-bezier(0.3, 0.71, 0.2, 1)`,
+  Slight_Elasticity_Variation: `cubic-bezier(0.39, 0.26, 0.4, 0.98)`,
+  Quick_Swing: `cubic-bezier(0.36, 0.66, 0.04, 1)`,
+  Soft_Back_And_Forth: `cubic-bezier(0.68, -0.55, 0.27, 1.55)`,
+  Quick_Bounce_And_Settle: `cubic-bezier(0.17, 0.67, 0.83, 0.67)`,
+  Slow_Swing_Variation: `cubic-bezier(0.22, 0.61, 0.36, 1)`,
+  Smooth_Start_Quick_Middle_Slow_End_Alternate: `cubic-bezier(0.4, 0, 0.2, 1)`,
+  Elastic_Out_And_Settle_Alternate: `cubic-bezier(0.68, -0.55, 0.27, 1.55)`,
+  Slow_Sine_Wave: `cubic-bezier(0.445, 0.05, 0.55, 0.95)`,
+  Soft_Sigmoid_Swing: `cubic-bezier(0.455, 0.03, 0.515, 0.955)`,
+  Quick_Bounce_And_Overshoot: `cubic-bezier(0.17, 0.67, 0.83, 0.67)`,
+  Elastic_Bounce_And_Settle_Alternate: `cubic-bezier(0.68, -0.55, 0.27, 1.55)`,
+  Soft_Swing_And_Settle: `cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
+  Smooth_Anticipation_And_Quick_Settle: `cubic-bezier(0.36, 0.66, 0.04, 1)`,
+  Quick_Start_Slow_Middle_Quick_End: `cubic-bezier(0.77, 0, 0.175, 1)`,
+  Soft_Sigmoid: `cubic-bezier(0.455, 0.03, 0.515, 0.955)`,
+  Slow_Start_Quick_Middle_Slow_End_Alternate: `cubic-bezier(0.37, 0.26, 0.26, 0.87)`,
+  Stiff_Bounce_Variation: `cubic-bezier(0.68, 1.55, 0.27, 1.55)`,
+  Smooth_Parabolic_Swing: `cubic-bezier(0.25, 0.1, 0.25, 1)`,
+  Quick_Overshoot_And_Settle_Variation: `cubic-bezier(0.22, 0.61, 0.36, 1)`,
+  Soft_Jitter: `cubic-bezier(0.3, 0.71, 0.2, 1)`,
+  Slight_Elasticity_Variation: `cubic-bezier(0.39, 0.26, 0.4, 0.98)`,
+  Quick_Swing: `cubic-bezier(0.36, 0.66, 0.04, 1)`,
+  Soft_Back_And_Forth: `cubic-bezier(0.68, -0.55, 0.27, 1.55)`,
+  Quick_Bounce_And_Settle: `cubic-bezier(0.17, 0.67, 0.83, 0.67)`,
+  Slow_Swing_Variation: `cubic-bezier(0.22, 0.61, 0.36, 1)`,
+  Smooth_Start_Quick_Middle_Slow_End_Alternate: `cubic-bezier(0.4, 0, 0.2, 1)`,
+  Elastic_Out_And_Settle_Alternate: `cubic-bezier(0.68, -0.55, 0.27, 1.55)`,
+};
 
 export const channel_parameter = [
   [
