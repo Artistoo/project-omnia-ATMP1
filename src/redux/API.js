@@ -27,8 +27,7 @@ export const PixabayAPI = createApi({
   }),
   endpoints: (builder) => ({
     PhotosSearchGet: builder.query({
-      query: ({ param, page, per_page }) =>
-        `videos/?key=${keys.pixabay}&q=${param}&page=${page}&per_page=${per_page}&safe_search=true`,
+      query: ({ param, page, per_page }) => `videos/?key=${keys.pixabay}&q=${param}&page=${page}&per_page=${per_page}&safe_search=true`,
       refetchOnMountOrArgChange: true,
     }),
   }),
@@ -69,13 +68,7 @@ export const ServerSideApiGet = createApi({
 export const { usePhotosSearchGetQuery } = PixabayAPI;
 export const { useCurrentApiQuery, useListOfCountriesQuery } = LocationApi;
 
-export const {
-  useGetVerificationCodeQuery,
-  useGetUserInfoQuery,
-  useCheckAvailabilityQuery,
-  useSearchMemebersMutation,
-  useGenerateQRQuery,
-} = ServerSideApiGet;
+export const { useGetVerificationCodeQuery, useGetUserInfoQuery, useCheckAvailabilityQuery, useSearchMemebersMutation, useGenerateQRQuery } = ServerSideApiGet;
 
 //<-------------- POST REQ ----------------->
 export const ServerSideApiPost = createApi({
@@ -195,10 +188,10 @@ export const ServerSideApiPost = createApi({
 
     //CHANNELS
     DeleteChannel: builder.mutation({
-      query: ({ userID, Name, Admins }) => ({
+      query: (body) => ({
         url: 'channels/delete_channel',
         method: `POST`,
-        body: { userID, Name, Admins },
+        body,
       }),
     }),
     createChannel: builder.mutation({

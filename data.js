@@ -20,7 +20,7 @@ import F6Avatar from '/src/assets/img/Characters/Female/Upstream-10.png';
 import Create_Community from './src/assets/img/CreateCommunity.png';
 import Create_Tribe from './src/assets/img/CreateTribe.png';
 
-import { IoMdAdd } from 'react-icons/io';
+import { IoIosFemale, IoIosMale, IoMdAdd } from 'react-icons/io';
 import { FaEye, FaHatCowboySide, FaNewspaper } from 'react-icons/fa';
 import { RiBellLine } from 'react-icons/ri';
 import { FiSearch } from 'react-icons/fi';
@@ -28,6 +28,8 @@ import Logout_utility from './src/utils/Logout_utility';
 import {
   MdBiotech,
   MdHistoryEdu,
+  MdLockOpen,
+  MdLockOutline,
   MdMovieFilter,
   MdOutlineCamera,
   MdOutlineDesignServices,
@@ -39,7 +41,7 @@ import {
   MdOutlineSportsFootball,
 } from 'react-icons/md';
 import { CgGames, CgGym } from 'react-icons/cg';
-import { CiMusicNote1 } from 'react-icons/ci';
+import { CiDollar, CiMusicNote1 } from 'react-icons/ci';
 import { TbBooks, TbBrandYoutubeKids, TbGardenCart, TbWriting, TbYoga } from 'react-icons/tb';
 import { GiArabicDoor, GiCook, GiKnockedOutStars, GiRobotAntennas, GiTurtle } from 'react-icons/gi';
 import { BsMusicPlayer } from 'react-icons/bs';
@@ -284,6 +286,31 @@ export const validEmailServiceProviders = [
 export const AvatarArray = Avatars.map((x) => Object.values(x)).flat();
 
 export const transitionTimingFunctions = {
+  Swirl: `cubic-bezier(0.76, 0.21, 0.39, 1.1)`,
+  Bounce_and_Twist: `cubic-bezier(0.42, 0.02, 0.72, 1.2)`,
+  Swaying_Hula: `cubic-bezier(0.6, -0.05, 0.4, 1.3)`,
+  Moonwalk: `cubic-bezier(0.15, 1, 0.4, -0.4)`,
+  Jelly_Bounce: `cubic-bezier(0.4, -0.3, 0.7, 1.5)`,
+  Funky_Slide: `cubic-bezier(0.6, 0.1, 0.2, 1)`,
+  Disco_Fever: `cubic-bezier(0.5, 0.1, 0.5, 0.9)`,
+  Twist_and_Shout: `cubic-bezier(0.5, 0.3, 0.8, 1)`,
+  Happy_Hop: `cubic-bezier(0.4, -0.3, 0.7, 1.5)`,
+  Playful_Bounce: `cubic-bezier(0.68, -0.55, 0.27, 1.55)`,
+  Dizzy_Spin: `cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
+  Whimsical_Waltz: `cubic-bezier(0.35, 0.1, 0.5, 0.95)`,
+  Carousel_Ride: `cubic-bezier(0.55, 0.15, 0.45, 0.85)`,
+  Mysterious_Moonwalk: `cubic-bezier(0.15, 1, 0.4, -0.4)`,
+  Quirky_Quake: `cubic-bezier(0.6, -0.05, 0.4, 1.3)`,
+  Wavy_Wonder: `cubic-bezier(0.76, 0.21, 0.39, 1.1)`,
+  Cheeky_Chacha: `cubic-bezier(0.5, 0.3, 0.8, 1)`,
+  Funky_Flip: `cubic-bezier(0.42, 0.02, 0.72, 1.2)`,
+  Groovy_Glide: `cubic-bezier(0.6, 0.1, 0.2, 1)`,
+  Jovial_Jig: `cubic-bezier(0.5, 0.1, 0.5, 0.9)`,
+  Merry_Motion: `cubic-bezier(0.55, 0.15, 0.45, 0.85)`,
+  Peppy_Parade: `cubic-bezier(0.35, 0.1, 0.5, 0.95)`,
+  Radiant_Rumba: `cubic-bezier(0.76, 0.21, 0.39, 1.1)`,
+  Snazzy_Slide: `cubic-bezier(0.42, 0.02, 0.72, 1.2)`,
+  Tango_Twist: `cubic-bezier(0.6, -0.05, 0.4, 1.3)`,
   Soft_Swing: `cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
   Quick_Bounce: `cubic-bezier(0.17, 0.67, 0.83, 0.67)`,
   Slow_Swing: `cubic-bezier(0.22, 0.61, 0.36, 1)`,
@@ -331,6 +358,8 @@ export const transitionTimingFunctions = {
   Elastic_Out_And_Settle_Alternate: `cubic-bezier(0.68, -0.55, 0.27, 1.55)`,
 };
 
+export const user_id = localStorage?.user && JSON.parse(localStorage.user)?._id;
+
 export const channel_parameter = [
   [
     {
@@ -376,9 +405,9 @@ export const channel_parameter = [
           };
           const fetch_languages = await fetch(`https://restcountries.com/v3.1/all`, fetch_params);
           const languages_json = await fetch_languages.json();
-          const languages_array = Array.from(
-            new Set(languages_json.map((lang) => lang.languages && lang.languages[Object.keys(lang.languages)[0]]))
-          );
+          const languages_array = Array.from(new Set(languages_json.map((lang) => lang.languages && lang.languages[Object.keys(lang.languages)[0]])));
+
+          console.log(languages_array);
 
           return languages_array;
         } catch ({ message: error }) {
@@ -416,6 +445,7 @@ export const channel_parameter = [
       placeholder: `whats your goal`,
     },
     {
+      /* TODO : maybe add a joining price option */
       type: 'boolean',
       name: 'Locked',
       explain: `if set to true every one will be able to join your channel without sending a requiest`,
@@ -439,26 +469,71 @@ export const channel_parameter = [
       ref: React.createRef(),
       validator: {
         validate: function () {
-          return [/^.{300,520}$/u].map((con) => con.test(this.value)).every(Boolean);
+          return [/^.{100,300}$/u].map((con) => con.test(this.value)).every(Boolean);
         },
         async: false,
-        error_message: `describtion must be between 300 and 520`,
+        error_message: `describtion must be between 100 and 300`,
       },
     },
   ],
 ];
 
-/* 
-name 
-goal 
-type ,
-cover
-category 
-state = open - close
-visibility 
-admin
-desc
-*/
+export const search_page_filters = {
+  chans: [
+    { param: `category`, options: { select: Interests.map((opt) => opt.title), Icon: Interests.map((opt) => opt.Icon) } },
+    {
+      param: `language`,
+      options: (async () => {
+        try {
+          const fetch_params = {
+            method: 'GET',
+            headers: { 'Content-Type': 'Application/json' },
+          };
+          const fetch_languages = await fetch(`https://restcountries.com/v3.1/all`, fetch_params);
+          const localtion_data_json = await fetch_languages.json();
+          const Loclanguages_array = Array.from(new Set(localtion_data_json.map((lang) => lang?.languages && lang.languages[Object.keys(lang.languages)[0]])));
+          const LocFlagsList_array = Array.from(new Set(localtion_data_json.map((flag) => flag?.flags && flag?.flags?.png)));
+
+          return {
+            select: Loclanguages_array,
+            image: LocFlagsList_array,
+          };
+        } catch ({ message: error }) {
+          console.log({ error });
+        }
+      })(),
+    },
+    { param: `state`, options: { select: ['open', 'locked'], Icon: [MdLockOpen, MdLockOutline] } },
+    { param: `members`, options: { range: [0, 20000] } },
+  ],
+  users: [
+    { param: `age`, options: { range: [0, 70] } },
+    { param: `interest`, options: { select: Interests.map((opt) => opt.title), Icon: Interests.map((opt) => opt.Icon) } },
+    { param: `gender`, options: { select: [`male`, `female`], Icon: [IoIosMale, IoIosFemale] } },
+    {
+      param: `location`,
+      options: (async () => {
+        try {
+          const fetch_params = {
+            method: 'GET',
+            headers: { 'Content-Type': 'Application/json' },
+          };
+          const fetch_languages = await fetch(`https://restcountries.com/v3.1/all`, fetch_params);
+          const localtion_data_json = await fetch_languages.json();
+          const Loclanguages_array = Array.from(new Set(localtion_data_json.map((lang) => lang?.languages && lang.languages[Object.keys(lang.languages)[0]])));
+          const LocFlagsList_array = Array.from(new Set(localtion_data_json.map((flag) => flag?.flags && flag?.flags?.png)));
+
+          return {
+            select: Loclanguages_array,
+            image: LocFlagsList_array,
+          };
+        } catch ({ message: error }) {
+          console.log({ error });
+        }
+      })(),
+    },
+  ],
+};
 
 export const categoryExamples = {
   Tribe: [
