@@ -78,12 +78,12 @@ export const ServerSideApiPost = createApi({
     credentials: 'include',
   }),
   endpoints: (builder) => ({
-    //GENERAL
+    //FEATURES
     Search: builder.mutation({
       query: (body) => ({
-        url: `search/${body.params}`,
+        url: `search`,
         method: `POST`,
-        body: body.filter,
+        body,
       }),
     }),
 

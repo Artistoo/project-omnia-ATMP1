@@ -120,7 +120,6 @@ const UserSchema = new Schema({
     },
     default: [],
   },
-
   Age: {
     type: Number,
     required: false,

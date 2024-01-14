@@ -480,9 +480,19 @@ export const channel_parameter = [
 
 export const search_page_filters = {
   chans: [
-    { param: `category`, options: { select: Interests.map((opt) => opt.title), Icon: Interests.map((opt) => opt.Icon) } },
+    {
+      param: `category`,
+      id: `Categories`,
+      selected: [],
+      options: Interests.map(({ title: select, Icon }) => ({
+        select,
+        Icon,
+      })),
+    },
     {
       param: `language`,
+      id: `Languages`,
+      selected: [],
       options: (async () => {
         try {
           const fetch_params = {
@@ -494,24 +504,54 @@ export const search_page_filters = {
           const Loclanguages_array = Array.from(new Set(localtion_data_json.map((lang) => lang?.languages && lang.languages[Object.keys(lang.languages)[0]])));
           const LocFlagsList_array = Array.from(new Set(localtion_data_json.map((flag) => flag?.flags && flag?.flags?.png)));
 
-          return {
-            select: Loclanguages_array,
-            image: LocFlagsList_array,
-          };
+          return Array.from(
+            new Set(
+              localtion_data_json.map((location_data) => ({
+                select: location_data?.languages && location_data.languages[Object.keys(location_data.languages)[0]],
+                image: location_data?.flags && location_data?.flags?.png,
+              }))
+            )
+          );
         } catch ({ message: error }) {
           console.log({ error });
         }
       })(),
     },
-    { param: `state`, options: { select: ['open', 'locked'], Icon: [MdLockOpen, MdLockOutline] } },
-    { param: `members`, options: { range: [0, 20000] } },
+    {
+      param: `state`,
+      id: `Locked`,
+      selected: [],
+      options: [
+        { select: 'open', Icon: MdLockOpen },
+        { select: 'locked', Icon: MdLockOutline },
+      ],
+    },
+    { param: `members`, id: `Members`, selected: [], options: { range: [0, 20000] } },
   ],
   users: [
-    { param: `age`, options: { range: [0, 70] } },
-    { param: `interest`, options: { select: Interests.map((opt) => opt.title), Icon: Interests.map((opt) => opt.Icon) } },
-    { param: `gender`, options: { select: [`male`, `female`], Icon: [IoIosMale, IoIosFemale] } },
+    { param: `age`, id: 'Age', selected: [], options: { range: [0, 70] } },
+    {
+      param: `interest`,
+      id: `Interests`,
+      selected: [],
+      options: Interests.map(({ title: select, Icon }) => ({
+        select,
+        Icon,
+      })),
+    },
+    {
+      param: `gender`,
+      id: `gender`,
+      selected: [],
+      options: [
+        { select: `male`, Icon: IoIosMale },
+        { select: `female`, Icon: IoIosFemale },
+      ],
+    },
     {
       param: `location`,
+      id: `Location`,
+      selected: [],
       options: (async () => {
         try {
           const fetch_params = {
@@ -523,10 +563,14 @@ export const search_page_filters = {
           const Loclanguages_array = Array.from(new Set(localtion_data_json.map((lang) => lang?.languages && lang.languages[Object.keys(lang.languages)[0]])));
           const LocFlagsList_array = Array.from(new Set(localtion_data_json.map((flag) => flag?.flags && flag?.flags?.png)));
 
-          return {
-            select: Loclanguages_array,
-            image: LocFlagsList_array,
-          };
+          return Array.from(
+            new Set(
+              localtion_data_json.map((location_data) => ({
+                select: location_data?.name?.common && location_data?.name?.common,
+                image: location_data?.flags && location_data?.flags?.png,
+              }))
+            )
+          );
         } catch ({ message: error }) {
           console.log({ error });
         }

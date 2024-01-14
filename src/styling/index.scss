@@ -38,11 +38,16 @@
     display: none;
   }
 }
-
 @mixin FlexCenter() {
   display: flex;
   align-items: center;
   justify-items: center;
+}
+@mixin ScrollingAnimation($name, $duration, $timeline, $range) {
+  animation: #{$name} #{$duration} linear;
+  animation-timeline: $timeline;
+  animation-timeline: view(block nearest);
+  animation-range: $range;
 }
 
 /* .scroller-remove{
@@ -418,6 +423,7 @@ body {
   }
 }
 
+//GLOBAL ACCESS ANIMATIONS
 @keyframes values_box_view {
   from {
     translate: 0 50px;
@@ -451,56 +457,14 @@ body {
   }
 }
 
-//BORDER
-.border-sm {
-  box-shadow: 0 0 0 0.4px black;
-}
-.border-md {
-  box-shadow: 0 0 0 0.7px black;
-}
-.border-lg {
-  box-shadow: 0 0 0 1px black;
-}
-
-.linear_border {
-  &::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(160deg, rgba(197, 196, 196, 0.685), rgba(90, 89, 89, 0.562), rgba(207, 206, 206, 0.884));
-    z-index: -1;
-    top: 0;
-    left: 0;
-    scale: 1.002;
-    border-radius: inherit;
+@keyframes fade_away {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
-
-.shadow-gray {
-  box-shadow: 0 0 15px -8px gray;
-}
-
-.loading_screen {
-  animation: Loading_screen_animation 2500ms linear alternate infinite;
-  @keyframes Loading_screen_animation {
-    from {
-      background-position: 0% 0%;
-      background-size: 2000%;
-    }
-    to {
-      background-position: 100% 0%;
-      background-size: 1000%;
-    }
-  }
-}
-.stretch {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 /* MAIN LOGED IN HOME PAGE SECTIONS VIEW TRANSITION API ANIMATION */
 @keyframes ViewTransitionAnimationSlideIn {
   from {
@@ -522,7 +486,6 @@ body {
     opacity: 1;
   }
 }
-
 @keyframes HeaderText {
   from {
     translate: 0 150px;
@@ -568,6 +531,58 @@ body {
   }
 }
 
+//BORDER
+.border-sm {
+  box-shadow: 0 0 0 0.4px black;
+}
+.border-md {
+  box-shadow: 0 0 0 0.7px black;
+}
+.border-lg {
+  box-shadow: 0 0 0 1px black;
+}
+
+
+
+.linear_border {
+  &::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(160deg, rgba(197, 196, 196, 0.685), rgba(90, 89, 89, 0.562), rgba(207, 206, 206, 0.884));
+    z-index: -1;
+    top: 0;
+    left: 0;
+    scale: 1.002;
+    border-radius: inherit;
+  }
+}
+
+.shadow-gray {
+  box-shadow: 0 0 15px -8px gray;
+}
+
+.loading_screen {
+  animation: Loading_screen_animation 2500ms linear alternate infinite;
+  @keyframes Loading_screen_animation {
+    from {
+      background-position: 0% 0%;
+      background-size: 2000%;
+    }
+    to {
+      background-position: 100% 0%;
+      background-size: 1000%;
+    }
+  }
+}
+.stretch {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .valuesBox {
   animation: values_box_view 500ms alternate;
   animation-timeline: scroll(block nearest);
@@ -579,10 +594,8 @@ body {
   animation-range: 0% 34%;
 }
 .transitHeaderText {
-  animation: HeaderText 500ms alternate;
+  @include ScrollingAnimation(HeaderText, 500ms, view(block nearest), 20% 0%);
   animation-delay: calc(var(--header_text_index) * 100ms);
-  animation-timeline: view(block nearest);
-  animation-range: 20% 0%;
 }
 .slide_inView_animation {
   transition-property: opacity transform;
@@ -613,6 +626,13 @@ body {
   animation: ViewTransitionAnimationComeUp 3000ms ease-in-out reverse;
 }
 ::view-transition-new(LogedPagesScrollingAnimation) {
+  animation: ViewTransitionAnimationComeUp 3000ms ease-in-out;
+}
+
+::view-transition-old(search_page_filters) {
+  animation: ViewTransitionAnimationComeUp 3000ms ease-in-out reverse;
+}
+::view-transition-new(search_page_filters) {
   animation: ViewTransitionAnimationComeUp 3000ms ease-in-out;
 }
 
