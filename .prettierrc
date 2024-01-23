@@ -1,0 +1,13 @@
+{
+     "printWidth": 20000, 
+     "max-len": 1000000,
+     "bracketSpacing": false , 
+     "singleQuote": true ,
+     "proseWrap": "preserve" ,
+     "jsxBracketSameLine": true,
+     "jsxSingleQuote": true,
+     "emptyLines": {
+          "beforeFunctions": true,
+          "beforeBlocks": false
+     }
+}
